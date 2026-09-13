@@ -7,3 +7,6 @@ dist/
 .wrangler/
 .venv/
 .env
+storage/
+secure_storage/
+*.db
