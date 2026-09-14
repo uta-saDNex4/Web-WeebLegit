@@ -3,12 +3,24 @@
  * Base URL được lấy từ biến môi trường NEXT_PUBLIC_API_URL.
  */
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+export function getBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
-// Localtunnel yêu cầu header này để bypass trang cảnh báo
-const TUNNEL_HEADER: Record<string, string> = BASE.includes('.loca.lt')
-  ? { 'bypass-tunnel-reminder': 'true' }
-  : {};
+  if (typeof window !== 'undefined') {
+    // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, hoặc domain thật), ưu tiên sử dụng
+    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+      return envUrl;
+    }
+    // Nếu truy cập từ máy khác qua IP LAN hoặc hostname khác localhost/127.0.0.1
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return `${window.location.protocol}//${window.location.hostname}:8000`;
+    }
+    if (envUrl) return envUrl;
+    return `${window.location.protocol}//${window.location.hostname}:8000`;
+  }
+
+  return envUrl || 'http://localhost:8000';
+}
 
 // ─── Token helpers ────────────────────────────────────────────────────────────
 
@@ -32,8 +44,13 @@ async function apiFetch<T>(
   options: RequestInit = {},
   auth = true,
 ): Promise<T> {
+  const baseUrl = getBaseUrl();
+  const tunnelHeader: Record<string, string> = baseUrl.includes('.loca.lt')
+    ? { 'bypass-tunnel-reminder': 'true' }
+    : {};
+
   const headers: Record<string, string> = {
-    ...TUNNEL_HEADER,
+    ...tunnelHeader,
     ...(options.headers as Record<string, string>),
   };
 
@@ -42,7 +59,7 @@ async function apiFetch<T>(
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  const res = await fetch(`${baseUrl}${path}`, { ...options, headers });
 
   if (!res.ok) {
     let message = `HTTP ${res.status}`;

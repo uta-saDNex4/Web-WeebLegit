@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import {
-  ShieldCheck,
   Menu,
   X,
   ArrowRight,
@@ -47,7 +47,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Brand Logo */}
         <a href="#" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white shadow-sm shadow-[#0b5fff]/30 transition-transform group-hover:scale-105">
-            <ShieldCheck className="w-5 h-5 stroke-[2.2]" />
+            <div className="w-5 h-5 stroke-[2.2]">
+              <Image
+                src="/weebforce_concept_3.svg"
+                alt="WeebLegit Logo"
+                width={100}
+                height={100}
+              />
+            </div>
           </div>
           <span className="font-bold text-lg tracking-tight text-[#10253f]">
             WeebLegit

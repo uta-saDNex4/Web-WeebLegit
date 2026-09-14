@@ -67,7 +67,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <ShieldCheck className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="font-bold text-[#10253f] text-base">Contractly</h2>
+                <h2 className="font-bold text-[#10253f] text-base">WeebLegit</h2>
                 <p className="text-xs text-[#8297ac]">Nền tảng xác thực hợp đồng</p>
               </div>
             </div>

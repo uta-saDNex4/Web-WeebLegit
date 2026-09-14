@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800">
+  <title>Weebforce WF Balance Logo</title>
+  <desc>Minimal geometric Weebforce logo combining a W monogram, justice scales and a diamond.</desc>
+
+  <!-- Emblem -->
+  <g fill="#EAD7B8">
+    <!-- Diamond -->
+    <path d="M500 55 L535 90 L500 125 L465 90 Z"/>
+
+    <!-- Left scale pan -->
+    <path d="M150 315 L215 425 Q150 485 85 425 Z"/>
+    <path d="M150 295 L95 385 L205 385 Z" fill="none" stroke="#EAD7B8" stroke-width="18" stroke-linejoin="round"/>
+
+    <!-- Right scale pan -->
+    <path d="M850 315 L915 425 Q850 485 785 425 Z"/>
+    <path d="M850 295 L795 385 L905 385 Z" fill="none" stroke="#EAD7B8" stroke-width="18" stroke-linejoin="round"/>
+
+    <!-- W monogram / outer strokes -->
+    <path d="M135 215 L205 215 L345 505 L500 350 L655 505 L795 215 L865 215 L685 585 L500 405 L315 585 Z"/>
+
+    <!-- Central balance T -->
+    <path d="M335 215 H665 V275 H545 V420 L500 465 L455 420 V275 H335 Z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="500" y="690"
+        text-anchor="middle"
+        fill="#EAD7B8"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="92"
+        font-weight="700"
+        letter-spacing="2">Weebforce</text>
+</svg>
