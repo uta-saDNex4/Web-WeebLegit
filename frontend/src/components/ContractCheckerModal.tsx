@@ -190,7 +190,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white">
+            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
@@ -215,8 +215,8 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           {/* ── Chưa đăng nhập ── */}
           {!user && (
             <div className="p-5 rounded-xl bg-[#f2f7fc] border border-[#d8e3ef] flex flex-col items-center gap-3 text-center">
-              <div className="w-12 h-12 rounded-full bg-[#0b5fff]/10 flex items-center justify-center">
-                <Lock className="w-6 h-6 text-[#0b5fff]" />
+              <div className="w-12 h-12 rounded-full bg-[#EAD7B8]/20 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-[#8a6834]" />
               </div>
               <div>
                 <p className="font-semibold text-[#10253f] text-sm">
@@ -228,7 +228,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               </div>
               <button
                 onClick={onNeedAuth}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#0b5fff] text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-[#004ee6] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#EAD7B8] text-[#10253f] text-sm font-semibold rounded-xl shadow-sm hover:bg-[#dfc59f] transition-colors cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4" /> Đăng nhập / Đăng ký
               </button>
@@ -248,10 +248,10 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
                   isDragging
-                    ? "border-[#0b5fff] bg-[#0b5fff]/5"
+                    ? "border-[#EAD7B8] bg-[#EAD7B8]/10"
                     : selectedFile
                       ? "border-[#159f7b] bg-[#eafbf7]"
-                      : "border-[#b9cadd] hover:border-[#0b5fff] bg-[#f8fafd]/80"
+                      : "border-[#b9cadd] hover:border-[#EAD7B8] bg-[#f8fafd]/80"
                 }`}
               >
                 <input
@@ -275,7 +275,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                   </>
                 ) : (
                   <>
-                    <UploadCloud className="w-9 h-9 text-[#0b5fff] mx-auto mb-2" />
+                    <UploadCloud className="w-9 h-9 text-[#8a6834] mx-auto mb-2" />
                     <p className="font-bold text-sm text-[#10253f] mb-1">
                       Kéo thả hoặc nhấn để chọn file
                     </p>
@@ -295,7 +295,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               {selectedFile && user && (
                 <button
                   onClick={handleUploadAndVerify}
-                  className="w-full py-3 bg-gradient-to-r from-[#0b5fff] to-[#004ee6] hover:from-[#004ee6] hover:to-[#0040cc] text-white text-sm font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-3 bg-[#EAD7B8] hover:bg-[#dfc59f] text-[#10253f] text-sm font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Upload & Xác thực SHA-256
@@ -310,12 +310,12 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
             <div className="flex flex-col items-center justify-center py-12 gap-4">
               <div className="relative w-16 h-16">
                 <div className="w-16 h-16 rounded-full border-4 border-[#d8e3ef]" />
-                <div className="absolute inset-0 rounded-full border-4 border-[#0b5fff] border-t-transparent animate-spin" />
+                <div className="absolute inset-0 rounded-full border-4 border-[#EAD7B8] border-t-transparent animate-spin" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   {stage === "uploading" ? (
-                    <UploadCloud className="w-6 h-6 text-[#0b5fff]" />
+                    <UploadCloud className="w-6 h-6 text-[#8a6834]" />
                   ) : (
-                    <ShieldCheck className="w-6 h-6 text-[#0b5fff]" />
+                    <ShieldCheck className="w-6 h-6 text-[#8a6834]" />
                   )}
                 </div>
               </div>
@@ -484,13 +484,13 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                         {risk.title}
                       </h5>
                     </div>
-                    <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#0b5fff]">
+                    <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#EAD7B8]">
                       &quot;{risk.clauseText}&quot;
                     </div>
                     <div className="text-xs text-[#49627d] leading-relaxed">
                       <strong>Phân tích:</strong> {risk.analysis}
                     </div>
-                    <div className="text-xs text-[#0b5fff] font-medium flex items-center gap-1.5">
+                    <div className="text-xs text-[#8a6834] font-medium flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5" />
                       <span>{risk.law}</span>
                     </div>
@@ -530,7 +530,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               {/* Reset button */}
               <button
                 onClick={resetAll}
-                className="w-full py-2.5 border border-[#d8e3ef] text-sm font-semibold text-[#49627d] hover:text-[#10253f] hover:border-[#0b5fff]/40 rounded-xl flex items-center justify-center gap-2 transition-all"
+                className="w-full py-2.5 border border-[#d8e3ef] text-sm font-semibold text-[#49627d] hover:text-[#10253f] hover:border-[#EAD7B8] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <RefreshCw className="w-4 h-4" /> Kiểm tra file khác
               </button>

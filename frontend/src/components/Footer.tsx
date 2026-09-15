@@ -19,7 +19,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenNextjsCode }) => {
           {/* Brand */}
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white shadow-sm shadow-[#0b5fff]/30">
+              <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f] shadow-sm shadow-[#EAD7B8]/30">
                 <ShieldCheck className="w-5 h-5 stroke-[2.2]" />
               </div>
               <span className="font-bold text-lg tracking-tight">

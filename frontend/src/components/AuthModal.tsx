@@ -63,8 +63,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="px-6 pt-6 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0b5fff] to-[#004ee6] flex items-center justify-center shadow-md">
-                <ShieldCheck className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#EAD7B8] to-[#d8bf97] flex items-center justify-center shadow-md">
+                <ShieldCheck className="w-5 h-5 text-[#10253f]" />
               </div>
               <div>
                 <h2 className="font-bold text-[#10253f] text-base">WeebLegit</h2>
@@ -85,7 +85,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   onClick={() => switchTab(t)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                     tab === t
-                      ? 'bg-white text-[#0b5fff] shadow-sm'
+                      ? 'bg-white text-[#8a6834] shadow-sm'
                       : 'text-[#49627d] hover:text-[#10253f]'
                   }`}
                 >
@@ -106,7 +106,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   placeholder="Họ và tên (tuỳ chọn)"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#0b5fff] focus:ring-2 focus:ring-[#0b5fff]/10 transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
                 />
               </div>
             )}
@@ -119,7 +119,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#0b5fff] focus:ring-2 focus:ring-[#0b5fff]/10 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
               />
             </div>
 
@@ -132,7 +132,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 required
                 minLength={8}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#0b5fff] focus:ring-2 focus:ring-[#0b5fff]/10 transition-all"
+                className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
               />
               <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8297ac] hover:text-[#10253f] transition-colors">
                 {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -154,10 +154,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-gradient-to-r from-[#0b5fff] to-[#004ee6] hover:from-[#004ee6] hover:to-[#0040cc] text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+              className="w-full py-2.5 bg-[#EAD7B8] hover:bg-[#dfc59f] text-[#10253f] text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
             >
               {loading ? (
-                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[#10253f]/40 border-t-[#10253f] rounded-full animate-spin" />
               ) : tab === 'login' ? (
                 <><LogIn className="w-4 h-4" /> Đăng nhập</>
               ) : (

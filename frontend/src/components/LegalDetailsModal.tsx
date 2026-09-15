@@ -22,7 +22,7 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white">
+            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f]">
               <Scale className="w-4.5 h-4.5" />
             </div>
             <div>
@@ -52,13 +52,13 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
           <div className="space-y-3">
             {source.articles.map((art, idx) => (
               <div key={idx} className="p-3.5 bg-[#f8fafd] rounded-xl border border-[#e6edf4] text-xs text-[#10253f] leading-relaxed flex gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-[#0b5fff] shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4 h-4 text-[#8a6834] shrink-0 mt-0.5" />
                 <span>{art}</span>
               </div>
             ))}
           </div>
 
-          <div className="p-3 rounded-xl bg-[#e6f0ff]/60 border border-[#b9cadd]/60 text-xs text-[#0b5fff] flex items-center justify-between mt-4">
+          <div className="p-3 rounded-xl bg-[#FAF5ED] border border-[#EAD7B8]/70 text-xs text-[#8a6834] flex items-center justify-between mt-4">
             <span className="font-semibold">{source.linkText}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </div>

@@ -38,7 +38,7 @@ function AppInner() {
   const handleOpenChecker = () => setIsCheckerOpen(true);
 
   return (
-    <div className="min-h-screen bg-[#f7fafc] text-[#10253f] flex flex-col font-sans antialiased selection:bg-[#0b5fff]/15 selection:text-[#0b5fff]">
+    <div className="min-h-screen bg-[#f7fafc] text-[#10253f] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#10253f]">
       {/* Top sticky Navbar */}
       <Navbar
         onOpenChecker={handleOpenChecker}

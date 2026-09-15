@@ -11,7 +11,7 @@ interface TemplateLibraryProps {
 const getTemplateIcon = (category: string) => {
   switch (category) {
     case 'work':
-      return <Briefcase className="w-5 h-5 text-[#0b5fff]" />;
+      return <Briefcase className="w-5 h-5 text-[#8a6834]" />;
     case 'internship':
       return <GraduationCap className="w-5 h-5 text-[#159f7b]" />;
     case 'freelance':
@@ -19,14 +19,14 @@ const getTemplateIcon = (category: string) => {
     case 'housing':
       return <Home className="w-5 h-5 text-[#d77714]" />;
     default:
-      return <Briefcase className="w-5 h-5 text-[#0b5fff]" />;
+      return <Briefcase className="w-5 h-5 text-[#8a6834]" />;
   }
 };
 
 const getCategoryBg = (category: string) => {
   switch (category) {
     case 'work':
-      return 'bg-[#e6f0ff] border-[#b9cadd]';
+      return 'bg-[#FAF5ED] border-[#EAD7B8]/70';
     case 'internship':
       return 'bg-[#eafbf7] border-[#b7f6e5]';
     case 'freelance':
@@ -34,7 +34,7 @@ const getCategoryBg = (category: string) => {
     case 'housing':
       return 'bg-[#fff4e6] border-[#ffd8a8]';
     default:
-      return 'bg-[#e6f0ff] border-[#b9cadd]';
+      return 'bg-[#FAF5ED] border-[#EAD7B8]/70';
   }
 };
 
@@ -45,7 +45,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTempla
         
         {/* Section Header */}
         <div className="max-w-2xl mb-12">
-          <div className="text-xs font-bold uppercase tracking-wider text-[#0b5fff] mb-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#8a6834] mb-2">
             THƯ VIỆN BẮT ĐẦU
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#10253f] tracking-tight mb-3">
@@ -66,7 +66,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTempla
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
               onClick={() => onSelectTemplate(tmpl)}
-              className="group cursor-pointer bg-white rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 shadow-sm transition-all hover:border-[#0b5fff]/60 hover:shadow-lg hover:shadow-[#113d64]/8 flex flex-col justify-between"
+              className="group cursor-pointer bg-white rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 shadow-sm transition-all hover:border-[#EAD7B8] hover:shadow-lg hover:shadow-[#113d64]/8 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between mb-4">
@@ -80,7 +80,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTempla
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-[#10253f] mb-2 group-hover:text-[#0b5fff] transition-colors">
+                <h3 className="text-xl font-bold text-[#10253f] mb-2 group-hover:text-[#8a6834] transition-colors">
                   {tmpl.title}
                 </h3>
                 
@@ -106,7 +106,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTempla
                   ))}
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0b5fff] group-hover:translate-x-1 transition-transform">
+                <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8a6834] group-hover:translate-x-1 transition-transform">
                   <span>Mở mẫu</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>

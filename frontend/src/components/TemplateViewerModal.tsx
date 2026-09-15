@@ -46,7 +46,7 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white">
+            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f]">
               <FileText className="w-4.5 h-4.5" />
             </div>
             <div>
@@ -60,7 +60,7 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyFullText}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#0b5fff] bg-[#e6f0ff] hover:bg-[#d0e4ff] rounded-lg transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-lg transition-colors cursor-pointer"
             >
               {copied ? (
                 <Check className="w-3.5 h-3.5" />
@@ -126,12 +126,12 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
                     }`}
                   >
                     <div className="font-semibold mb-0.5 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3 text-[#0b5fff]" />
+                      <Sparkles className="w-3 h-3 text-[#8a6834]" />
                       <span>Lời khuyên của WeebLegit:</span>
                     </div>
                     {clause.advice}
                     {clause.lawReference && (
-                      <div className="mt-1 font-medium text-[#0b5fff] text-[11px]">
+                      <div className="mt-1 font-medium text-[#8a6834] text-[11px]">
                         ⚖️ {clause.lawReference}
                       </div>
                     )}

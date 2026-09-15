@@ -12,8 +12,8 @@ export const VerificationProcess: React.FC<VerificationProcessProps> = ({ onStar
       number: '01',
       title: 'Tải lên hoặc bắt đầu từ mẫu',
       description: 'Chọn tài liệu có sẵn hoặc thêm biểu mẫu mới của bạn vào thư viện cá nhân.',
-      icon: <UploadCloud className="w-6 h-6 text-[#0b5fff]" />,
-      badgeColor: 'bg-[#e6f0ff] text-[#0b5fff] border-[#0b5fff]/20'
+      icon: <UploadCloud className="w-6 h-6 text-[#8a6834]" />,
+      badgeColor: 'bg-[#FAF5ED] text-[#8a6834] border-[#EAD7B8]/60'
     },
     {
       number: '02',
@@ -37,7 +37,7 @@ export const VerificationProcess: React.FC<VerificationProcessProps> = ({ onStar
         
         {/* Section Header */}
         <div className="max-w-2xl mb-14">
-          <div className="text-xs font-bold uppercase tracking-wider text-[#0b5fff] mb-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#8a6834] mb-2">
             TỪ BẢN NHÁP ĐẾN TỰ TIN KÝ
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#10253f] tracking-tight mb-3">
@@ -57,7 +57,7 @@ export const VerificationProcess: React.FC<VerificationProcessProps> = ({ onStar
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.15 }}
-              className="bg-[#f7fafc] rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 flex flex-col justify-between relative hover:border-[#0b5fff]/40 transition-all hover:bg-white hover:shadow-md"
+              className="bg-[#f7fafc] rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 flex flex-col justify-between relative hover:border-[#EAD7B8] transition-all hover:bg-white hover:shadow-md"
             >
               <div>
                 {/* Step number and icon */}
@@ -82,7 +82,7 @@ export const VerificationProcess: React.FC<VerificationProcessProps> = ({ onStar
               {/* Bottom decorative indicator */}
               <div className="pt-6 mt-4 border-t border-[#e6edf4]/80 flex items-center justify-between text-xs font-semibold text-[#8297ac]">
                 <span>Bước {idx + 1} của 3</span>
-                <span className="w-2 h-2 rounded-full bg-[#0b5fff]/40"></span>
+                <span className="w-2 h-2 rounded-full bg-[#EAD7B8]"></span>
               </div>
             </motion.div>
           ))}

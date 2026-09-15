@@ -12,26 +12,26 @@ interface LegalReferencesProps {
 const getSourceIcon = (type: string) => {
   switch (type) {
     case 'labor':
-      return <Scale className="w-6 h-6 text-[#0b5fff]" />;
+      return <Scale className="w-6 h-6 text-[#8a6834]" />;
     case 'housing':
       return <Home className="w-6 h-6 text-[#159f7b]" />;
     case 'storage':
       return <CloudUpload className="w-6 h-6 text-[#7652cc]" />;
     default:
-      return <Scale className="w-6 h-6 text-[#0b5fff]" />;
+      return <Scale className="w-6 h-6 text-[#8a6834]" />;
   }
 };
 
 const getSourceBadgeBg = (type: string) => {
   switch (type) {
     case 'labor':
-      return 'bg-[#e6f0ff] border-[#b9cadd]';
+      return 'bg-[#FAF5ED] border-[#EAD7B8]/70';
     case 'housing':
       return 'bg-[#eafbf7] border-[#b7f6e5]';
     case 'storage':
       return 'bg-[#f3eeff] border-[#d8cbf5]';
     default:
-      return 'bg-[#e6f0ff] border-[#b9cadd]';
+      return 'bg-[#FAF5ED] border-[#EAD7B8]/70';
   }
 };
 
@@ -42,7 +42,7 @@ export const LegalReferences: React.FC<LegalReferencesProps> = ({ onSelectSource
         
         {/* Section Header */}
         <div className="max-w-2xl mb-12">
-          <div className="text-xs font-bold uppercase tracking-wider text-[#0b5fff] mb-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#8a6834] mb-2">
             DẪN CHỨNG MINH BẠCH
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#10253f] tracking-tight mb-3">
@@ -69,14 +69,14 @@ export const LegalReferences: React.FC<LegalReferencesProps> = ({ onSelectSource
                   onSelectSource(source);
                 }
               }}
-              className="group cursor-pointer bg-[#f7fafc] rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 flex flex-col justify-between hover:bg-white hover:border-[#0b5fff]/50 hover:shadow-lg transition-all"
+              className="group cursor-pointer bg-[#f7fafc] rounded-2xl border border-[#d8e3ef] p-6 sm:p-7 flex flex-col justify-between hover:bg-white hover:border-[#EAD7B8] hover:shadow-lg transition-all"
             >
               <div>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center border mb-5 ${getSourceBadgeBg(source.iconType)}`}>
                   {getSourceIcon(source.iconType)}
                 </div>
 
-                <h3 className="text-lg font-bold text-[#10253f] mb-3 group-hover:text-[#0b5fff] transition-colors leading-snug">
+                <h3 className="text-lg font-bold text-[#10253f] mb-3 group-hover:text-[#8a6834] transition-colors leading-snug">
                   {source.title}
                 </h3>
 
@@ -85,7 +85,7 @@ export const LegalReferences: React.FC<LegalReferencesProps> = ({ onSelectSource
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-[#e6edf4] flex items-center justify-between text-xs font-semibold text-[#0b5fff]">
+              <div className="pt-4 border-t border-[#e6edf4] flex items-center justify-between text-xs font-semibold text-[#8a6834]">
                 <span>{source.iconType === 'storage' ? 'Tải lên & Quét ngay' : 'Xem các điều luật'}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>

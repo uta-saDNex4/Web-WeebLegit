@@ -125,7 +125,7 @@ export default function Home() {
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#26435e] flex items-center justify-between bg-[#0c1c30]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white">
+            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f]">
               <Code2 className="w-4.5 h-4.5" />
             </div>
             <div>
@@ -141,7 +141,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <button
               onClick={copyText}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#0b5fff] hover:bg-[#004ee6] rounded-lg transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-lg transition-colors cursor-pointer"
             >
               {copied ? (
                 <Check className="w-3.5 h-3.5" />
@@ -164,7 +164,7 @@ export default function Home() {
           <button
             onClick={() => setActiveTab("structure")}
             className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "structure"
-              ? "bg-[#0b5fff] text-white font-semibold"
+              ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
           >
@@ -174,7 +174,7 @@ export default function Home() {
           <button
             onClick={() => setActiveTab("page")}
             className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "page"
-              ? "bg-[#0b5fff] text-white font-semibold"
+              ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
           >
@@ -184,7 +184,7 @@ export default function Home() {
           <button
             onClick={() => setActiveTab("guide")}
             className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "guide"
-              ? "bg-[#0b5fff] text-white font-semibold"
+              ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
           >

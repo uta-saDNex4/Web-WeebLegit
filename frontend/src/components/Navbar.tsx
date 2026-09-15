@@ -42,23 +42,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#f7fafc]/90 border-b border-[#d8e3ef]/70 transition-all">
+    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#f7fafc]/90 transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <a href="#" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-[#0b5fff] flex items-center justify-center text-white shadow-sm shadow-[#0b5fff]/30 transition-transform group-hover:scale-105">
-            <div className="w-5 h-5 stroke-[2.2]">
-              <Image
-                src="/weebforce_concept_3.svg"
-                alt="WeebLegit Logo"
-                width={100}
-                height={100}
-              />
-            </div>
-          </div>
-          <span className="font-bold text-lg tracking-tight text-[#10253f]">
-            WeebLegit
-          </span>
+          <Image
+            src="/Logo WeebLegit.png"
+            alt="WeebLegit Logo"
+            width={120}
+            height={120}
+            className="h-14 w-auto object-contain transition-transform group-hover:scale-105"
+            priority
+          />
         </a>
 
         {/* Desktop Navigation Links */}
@@ -96,9 +91,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#d8e3ef] hover:border-[#0b5fff]/40 hover:bg-[#f2f7fc] transition-all text-sm font-medium text-[#10253f] cursor-pointer"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#d8e3ef] hover:border-[#EAD7B8] hover:bg-[#FAF6EF] transition-all text-sm font-medium text-[#10253f] cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0b5fff] to-[#004ee6] flex items-center justify-center text-white text-xs font-bold uppercase">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#EAD7B8] to-[#d8bf97] flex items-center justify-center text-[#10253f] text-xs font-bold uppercase">
                   {(user.full_name ?? user.email).charAt(0)}
                 </div>
                 <span className="max-w-[120px] truncate">
@@ -146,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={onOpenChecker}
-                className="inline-flex items-center gap-2 px-4 py-2 text-[14px] font-semibold text-white bg-[#0b5fff] hover:bg-[#004ee6] rounded-xl shadow-sm shadow-[#0b5fff]/25 transition-all hover:shadow-md hover:shadow-[#0b5fff]/35 cursor-pointer active:scale-[0.98]"
+                className="inline-flex items-center gap-2 px-4 py-2 text-[14px] font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-xl shadow-sm shadow-[#EAD7B8]/40 transition-all hover:shadow-md hover:shadow-[#EAD7B8]/50 cursor-pointer active:scale-[0.98]"
               >
                 <span>Dùng thử miễn phí</span>
                 <ArrowRight className="w-4 h-4" />
@@ -159,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2 md:hidden">
           <button
             onClick={onOpenNextjsCode}
-            className="p-2 text-xs font-medium text-[#0b5fff] bg-[#0b5fff]/10 rounded-lg border border-[#0b5fff]/20"
+            className="p-2 text-xs font-medium text-[#8a6834] bg-[#FAF5ED] rounded-lg border border-[#EAD7B8]/60"
           >
             <Code2 className="w-4 h-4" />
           </button>
@@ -218,7 +213,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setMobileMenuOpen(false);
                     onOpenChecker();
                   }}
-                  className="w-full py-2.5 text-center text-sm font-semibold text-white bg-[#0b5fff] rounded-xl"
+                  className="w-full py-2.5 text-center text-sm font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-xl"
                 >
                   Kiểm tra hợp đồng
                 </button>
@@ -248,7 +243,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setMobileMenuOpen(false);
                     onOpenChecker();
                   }}
-                  className="w-full py-2.5 text-center text-sm font-semibold text-white bg-[#0b5fff] rounded-xl"
+                  className="w-full py-2.5 text-center text-sm font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-xl"
                 >
                   Dùng thử miễn phí
                 </button>

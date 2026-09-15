@@ -11,7 +11,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
   return (
     <section className="relative overflow-hidden pt-12 pb-20 sm:pt-16 sm:pb-24">
       {/* Subtle background radial glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[400px] bg-gradient-to-tr from-[#0b5fff]/10 via-[#6fe0c0]/10 to-transparent blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[400px] bg-gradient-to-tr from-[#EAD7B8]/25 via-[#f5ede1]/20 to-transparent blur-3xl -z-10 pointer-events-none" />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
         
@@ -20,9 +20,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-[#0b5fff] bg-[#e6f0ff] border border-[#0b5fff]/20 mb-6"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-[#8a6834] bg-[#FAF5ED] border border-[#EAD7B8]/60 mb-6"
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#0b5fff]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#8a6834]" />
           <span>XÁC THỰC HỢP ĐỒNG CHO SINH VIÊN</span>
         </motion.div>
 
@@ -34,7 +34,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
           className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#10253f] leading-[1.15] mb-6"
         >
           Ký đúng điều. <br className="hidden sm:inline" />
-          <span className="text-[#0b5fff]">Tự tin bắt đầu.</span>
+          <span className="text-[#8a6834]">Tự tin bắt đầu.</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -56,7 +56,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
         >
           <button
             onClick={onOpenChecker}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-base font-semibold text-white bg-[#0b5fff] hover:bg-[#004ee6] rounded-xl shadow-lg shadow-[#0b5fff]/25 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-base font-semibold text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] rounded-xl shadow-lg shadow-[#EAD7B8]/40 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <FileSearch className="w-5 h-5" />
             <span>Kiểm tra hợp đồng</span>
@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
           
           <button
             onClick={onOpenTemplates}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold text-[#10253f] bg-white hover:bg-[#f2f7fc] rounded-xl border border-[#d8e3ef] shadow-sm transition-all hover:border-[#b9cadd] cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold text-[#10253f] bg-white hover:bg-[#FAF6EF] rounded-xl border border-[#d8e3ef] shadow-sm transition-all hover:border-[#EAD7B8] cursor-pointer"
           >
             <span>Xem mẫu hợp đồng</span>
           </button>
@@ -91,12 +91,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
         >
           <div 
             onClick={onOpenChecker}
-            className="group cursor-pointer text-left bg-white rounded-2xl border border-[#d8e3ef] p-5 sm:p-7 shadow-xl shadow-[#113d64]/6 transition-all hover:border-[#0b5fff]/50 hover:shadow-2xl hover:shadow-[#0b5fff]/10"
+            className="group cursor-pointer text-left bg-white rounded-2xl border border-[#d8e3ef] p-5 sm:p-7 shadow-xl shadow-[#113d64]/6 transition-all hover:border-[#EAD7B8] hover:shadow-2xl hover:shadow-[#EAD7B8]/20"
           >
             {/* Document Header Bar */}
             <div className="flex items-center justify-between border-b border-[#e6edf4] pb-4 mb-5">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-[#e6f0ff] flex items-center justify-center text-[#0b5fff]">
+                <div className="w-9 h-9 rounded-lg bg-[#FAF5ED] flex items-center justify-center text-[#8a6834]">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
@@ -118,7 +118,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChecker, onOpenTemplates }) =>
                 <h3 className="font-extrabold text-base sm:text-lg text-[#10253f] uppercase tracking-wide">
                   THỎA THUẬN THỰC TẬP
                 </h3>
-                <span className="text-xs font-medium text-[#0b5fff] flex items-center gap-1 group-hover:underline">
+                <span className="text-xs font-medium text-[#8a6834] flex items-center gap-1 group-hover:underline">
                   <span>Xem chi tiết</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </span>
