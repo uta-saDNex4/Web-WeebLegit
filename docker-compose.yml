@@ -1,12 +1,29 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: contract-verifier-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: matkhau_xinfu
+      POSTGRES_DB: contract_verifier_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d contract_verifier_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
     container_name: contract-verifier-backend
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db}
-      SECRET_KEY: change-me-in-production
+      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@db:5432/contract_verifier_db}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
       STORAGE_ROOT: /data/storage
       SECURE_STORAGE_ROOT: /data/secure_storage
@@ -17,6 +34,9 @@ services:
     volumes:
       - backend-storage:/data/storage
       - backend-secure-storage:/data/secure_storage
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -24,7 +44,7 @@ services:
       dockerfile: frontend/Dockerfile
     container_name: contract-verifier-frontend
     environment:
-      BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL:-http://backend:8000}
+      BACKEND_INTERNAL_URL: http://backend:8000
     ports:
       - "3000:3000"
     depends_on:
@@ -37,12 +57,16 @@ services:
     container_name: contract-verifier-import-data
     command: ["python", "-m", "backend.import_excel"]
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@db:5432/contract_verifier_db}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
     profiles:
       - seed
 
 volumes:
+  pgdata:
   backend-storage:
   backend-secure-storage:

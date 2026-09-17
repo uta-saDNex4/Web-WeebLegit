@@ -53,55 +53,55 @@ The backend container must connect to the host machine through:
 postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db
 ```
 
-## Quick Start with cmd
+## Quick Start (Bất kỳ máy nào cũng chạy được)
 
-1. Copy `.env.example` to `.env`
+### Cách 1: Dùng script tự động 1-click (Khuyến nghị)
 
-```bash
-copy .env.example .env
-```
+- **Trên Windows**: Nhấp đúp file `run.bat` hoặc mở cmd chạy `.\run.bat`
+- **Trên Linux/macOS**: Chạy `./run.sh`
 
-2. Keep or edit these values:
+Script sẽ tự động:
+1. Phát hiện địa chỉ IP mạng LAN của máy bạn để in ra màn hình.
+2. Kiểm tra Docker: nếu có Docker sẽ tự động bật toàn bộ (PostgreSQL DB + Backend + Frontend).
+3. Nếu Docker chưa bật, sẽ chuyển sang chế độ chạy trực tiếp (Python + Node.js).
 
-```env
-DATABASE_URL=postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db
-CORS_ORIGINS=*
-BACKEND_INTERNAL_URL=http://backend:8000
-```
+### Cách 2: Dùng lệnh Docker Compose chuẩn
 
-3. Start the web app:
+Nếu máy đã có Docker Desktop đang chạy, bạn chỉ cần gõ đúng 1 lệnh duy nhất tại thư mục dự án:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
-4. Open the app:
+Compose sẽ tự động:
+- Khởi động container PostgreSQL (`db`) và cấu hình sẵn database `contract_verifier_db`.
+- Khởi động backend FastAPI (`backend`), tự tạo bảng (schema), tự tạo tài khoản Admin mặc định.
+- Khởi động frontend Next.js (`frontend`).
 
-- Frontend: `http://localhost:3000`
-- Backend health check: `http://localhost:8000/health`
+### Cách 3: Nạp dữ liệu mẫu từ Excel (Tùy chọn)
 
-If you are on another laptop in the same network, replace `localhost` with the host machine IP, for example:
-
-- Frontend: `http://192.168.1.20:3000`
-- Backend health check: `http://192.168.1.20:8000/health`
-
-## Import Sample Data
-
-The app starts empty by default. To load the Excel-based reference data and sample contracts from `data/`:
+Nếu bạn muốn nạp 250 quy tắc pháp lý, 250 điều khoản rủi ro và các hợp đồng mẫu từ thư mục `data/`:
 
 ```bash
 docker compose --profile seed run --rm import-data
 ```
 
-The import job is idempotent for the dedicated import account. It removes previously imported rows for that account before inserting fresh data.
+---
 
-## Docker Services
+## Địa chỉ truy cập
 
-The Compose stack includes:
+### 1. Trên chính máy đang chạy:
+- **Trang chủ Web**: [http://localhost:3000](http://localhost:3000)
+- **Admin Dashboard**: [http://localhost:3000/admin](http://localhost:3000/admin)
+  - Tài khoản Admin: `admin@weeblegit.vn`
+  - Mật khẩu: `Admin@123456`
+- **Tài liệu API (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-- `backend`: FastAPI API
-- `frontend`: web UI
-- `import-data`: manual seed/import job
+### 2. Từ các máy khác trong cùng mạng LAN (Điện thoại, Laptop khác):
+Chỉ cần thay `localhost` bằng địa chỉ IP LAN của máy đang chạy web (ví dụ `192.168.105.126`):
+- **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000` (ví dụ: `http://192.168.105.126:3000`)
+- **Admin Dashboard**: `http://<IP_MÁY_CHẠY>:3000/admin`
+- Frontend đã được cấu hình tự động nhận diện IP của máy chủ để gọi API backend `http://<IP_MÁY_CHẠY>:8000`, kèm header CORS và Private Network Access (PNA) cho các trình duyệt Chrome/Edge trên thiết bị khác.
 
 The backend and importer both use `DATABASE_URL` from the environment, so they can connect to the PostgreSQL container already running on your host.
 

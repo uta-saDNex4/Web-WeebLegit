@@ -113,6 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <p className="text-xs text-[#8297ac] truncate">
                       {user.email}
                     </p>
+                  </div>
                   {user.role === 'admin' && (
                     <a
                       href="/admin"
@@ -214,6 +215,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <strong className="text-[#10253f]">
                     {user.full_name ?? user.email}
                   </strong>
+                </div>
                 {user.role === 'admin' && (
                   <a
                     href="/admin"
