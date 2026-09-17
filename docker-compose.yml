@@ -10,6 +10,7 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
       STORAGE_ROOT: /data/storage
       SECURE_STORAGE_ROOT: /data/secure_storage
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

@@ -43,7 +43,7 @@ def _call_gemini_api(contract_text: str, metadata: dict[str, Any] | None = None)
     if not api_key:
         return None
 
-    models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash", "gemini-flash-latest"]
+    models = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-2.5-flash"]
     prompt = (
         f"Bạn là chuyên gia pháp lý tư vấn hợp đồng cho sinh viên (thuê trọ, thực tập, CTV, khóa học, vay tiêu dùng).\n"
         f"Hãy rà soát văn bản hợp đồng sau và phát hiện các bẫy điều khoản, chi phí bất hợp lý, hoặc rủi ro pháp lý.\n\n"

@@ -197,3 +197,181 @@ export async function verifyContract(
 export async function getContract(contractId: string): Promise<ContractResponse> {
   return apiFetch<ContractResponse>(`/api/contracts/${contractId}`);
 }
+
+// ─── Contract List ─────────────────────────────────────────────────────────────
+
+export interface ContractListResponse {
+  items: ContractResponse[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export async function listContracts(params?: {
+  status?: string;
+  contract_type?: string;
+  page?: number;
+  limit?: number;
+}): Promise<ContractListResponse> {
+  const q = new URLSearchParams();
+  if (params?.status) q.set('status', params.status);
+  if (params?.contract_type) q.set('contract_type', params.contract_type);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString() ? `?${q.toString()}` : '';
+  return apiFetch<ContractListResponse>(`/api/contracts${qs}`);
+}
+
+// ─── AI Analysis Polling ───────────────────────────────────────────────────────
+
+export interface AiAnalysisResult {
+  status: 'processing' | 'completed';
+  message?: string;
+  risk_score?: number;
+  risk_label?: string;
+  overview?: string;
+  findings?: Array<{
+    severity: string;
+    title: string;
+    clause_text?: string;
+    analysis?: string;
+    law_reference?: string;
+    negotiation_script?: string;
+  }>;
+}
+
+export async function getAiAnalysis(
+  contractId: string,
+  logId: string,
+): Promise<AiAnalysisResult> {
+  return apiFetch<AiAnalysisResult>(
+    `/api/contracts/${contractId}/analysis?log_id=${logId}`,
+  );
+}
+
+// ─── Market Compare ────────────────────────────────────────────────────────────
+
+export interface MarketComparisonResponse {
+  contract_id: string;
+  contract_type: string | null;
+  district: string | null;
+  price_evaluation: string;
+  price_difference_percent: number | null;
+  market_average: number | null;
+  recommendations: string[];
+}
+
+export async function marketCompare(
+  contractId: string,
+  params?: { district?: string; base_rent?: number },
+): Promise<MarketComparisonResponse> {
+  const q = new URLSearchParams();
+  if (params?.district) q.set('district', params.district);
+  if (params?.base_rent != null) q.set('base_rent', String(params.base_rent));
+  const qs = q.toString() ? `?${q.toString()}` : '';
+  return apiFetch<MarketComparisonResponse>(
+    `/api/contracts/${contractId}/market-compare${qs}`,
+    { method: 'POST' },
+  );
+}
+
+// ─── Verification History ──────────────────────────────────────────────────────
+
+export interface VerificationLogResponse {
+  id: string;
+  contract_id: string;
+  requested_by: string;
+  expected_sha256: string;
+  actual_sha256: string;
+  result: string;
+  error_code: string | null;
+  error_message: string | null;
+  duration_ms: number | null;
+  created_at: string;
+}
+
+export async function getVerificationHistory(
+  contractId: string,
+): Promise<VerificationLogResponse[]> {
+  return apiFetch<VerificationLogResponse[]>(
+    `/api/contracts/${contractId}/verifications`,
+  );
+}
+
+// ─── Clauses ───────────────────────────────────────────────────────────────────
+
+export interface ClauseResponse {
+  id: string;
+  contract_id: string;
+  clause_type: string;
+  clause_order: number;
+  title: string | null;
+  content: string | null;
+  dynamic_metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getClauses(contractId: string): Promise<ClauseResponse[]> {
+  return apiFetch<ClauseResponse[]>(`/api/contracts/${contractId}/clauses`);
+}
+
+// ─── Upload Image ──────────────────────────────────────────────────────────────
+
+export interface ContractImageResponse {
+  id: string;
+  uploaded_by: string;
+  contract_id: string | null;
+  original_filename: string;
+  mime_type: string;
+  file_size_bytes: number;
+  sha256_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function uploadContractImage(
+  file: File,
+  contractId?: string,
+): Promise<ContractImageResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const qs = contractId ? `?contract_id=${contractId}` : '';
+  return apiFetch<ContractImageResponse>(`/api/contracts/upload-image${qs}`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// ─── Update User Profile ───────────────────────────────────────────────────────
+
+export async function updateMe(payload: {
+  full_name?: string | null;
+  password?: string | null;
+}): Promise<UserResponse> {
+  return apiFetch<UserResponse>('/api/auth/me', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+// ─── AI Chat ───────────────────────────────────────────────────────────────────
+
+export interface AiChatResponse {
+  answer: string;
+  citation: string | null;
+}
+
+export async function aiChat(question: string): Promise<AiChatResponse> {
+  return apiFetch<AiChatResponse>(
+    '/api/ai/chat',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    },
+    false, // không cần auth — public endpoint
+  );
+}
+
