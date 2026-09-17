@@ -113,7 +113,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <p className="text-xs text-[#8297ac] truncate">
                       {user.email}
                     </p>
-                  </div>
+                  {user.role === 'admin' && (
+                    <a
+                      href="/admin"
+                      className="w-full text-left px-3 py-2 text-xs font-bold text-[#8a6834] bg-[#FAF5ED] hover:bg-[#faeedd] flex items-center gap-2 transition-colors border-b border-[#e6edf4]"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-[#8a6834]" /> Admin Dashboard
+                    </a>
+                  )}
                   <button
                     onClick={onOpenChecker}
                     className="w-full text-left px-3 py-2 text-sm text-[#49627d] hover:bg-slate-50 hover:text-[#10253f] flex items-center gap-2 transition-colors cursor-pointer"
@@ -207,7 +214,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <strong className="text-[#10253f]">
                     {user.full_name ?? user.email}
                   </strong>
-                </div>
+                {user.role === 'admin' && (
+                  <a
+                    href="/admin"
+                    className="w-full py-2.5 text-center text-xs font-bold text-[#8a6834] bg-[#FAF5ED] border border-[#EAD7B8] rounded-xl flex items-center justify-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-4 h-4" /> Bảng quản trị Admin
+                  </a>
+                )}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);

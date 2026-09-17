@@ -8,6 +8,8 @@ from .database import create_empty_database
 from .models import User
 from .routers.auth_routes import router as auth_router
 from .routers.contract_routes import router as contract_router
+from .routers.ai_routes import router as ai_router
+from .routers.admin_routes import router as admin_router
 
 # Create the database schema
 create_empty_database()
@@ -34,8 +36,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_private_network_headers(request, call_next):
+    """Support Private Network Access (PNA) for Chrome/Edge when accessing across LAN devices."""
+    response = await call_next(request)
+    if request.headers.get("access-control-request-private-network"):
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
+
 app.include_router(auth_router)
 app.include_router(contract_router)
+app.include_router(ai_router)
+app.include_router(admin_router)
 
 
 @app.get("/health", tags=["system"])

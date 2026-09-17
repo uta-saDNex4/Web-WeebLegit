@@ -58,10 +58,18 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
             ))}
           </div>
 
-          <div className="p-3 rounded-xl bg-[#FAF5ED] border border-[#EAD7B8]/70 text-xs text-[#8a6834] flex items-center justify-between mt-4">
-            <span className="font-semibold">{source.linkText}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </div>
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-3.5 rounded-xl bg-[#FAF5ED] hover:bg-[#faeedd] border border-[#EAD7B8] text-xs text-[#8a6834] flex items-center justify-between mt-4 transition-all shadow-sm group cursor-pointer"
+          >
+            <span className="font-semibold group-hover:underline flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              {source.linkText}
+            </span>
+            <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </a>
         </div>
 
         {/* Footer */}

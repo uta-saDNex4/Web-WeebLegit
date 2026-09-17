@@ -3,12 +3,14 @@ import { ContractTemplate } from '../types';
 export const CONTRACT_TEMPLATES: ContractTemplate[] = [
   {
     id: 'parttime-work',
-    title: 'Việc làm part-time / full-time',
+    title: 'Việc làm part-time / full-time (CTV)',
     subtitle: 'Lương, ca làm, thử việc và quyền lợi.',
     category: 'work',
-    description: 'Hợp đồng lao động dành cho sinh viên làm thêm quán cafe, trợ giảng, bán hàng hoặc nhân viên thử việc.',
+    description: 'Hợp đồng lao động & cộng tác viên dành cho sinh viên làm thêm quán cafe, trợ giảng, bán hàng hoặc nhân viên thử việc.',
     tags: ['Lương theo giờ', 'Ca làm linh hoạt', 'Thử việc', 'Phụ cấp'],
     riskCount: 3,
+    officialUrl: 'https://thuvienphapluat.vn/lao-dong-tien-luong/tai-ve-mau-hop-dong-cong-tac-vien-moi-nhat-2025-va-huong-dan-chi-tiet-cach-viet-65902.html',
+    officialSource: 'Thư viện Pháp luật (Mẫu HĐ CTV 2025)',
     clauses: [
       {
         title: 'Điều 1: Vị trí và thời gian làm việc',
@@ -44,12 +46,14 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
   },
   {
     id: 'internship-agreement',
-    title: 'Thỏa thuận thực tập',
+    title: 'Thỏa thuận thực tập sinh',
     subtitle: 'Mentor, phụ cấp và mục tiêu công việc.',
     category: 'internship',
     description: 'Thỏa thuận tiếp nhận thực tập sinh doanh nghiệp, phân định rõ giữa học tập thực tế và làm việc như nhân viên chính thức.',
     tags: ['Mentor hướng dẫn', 'Phụ cấp thực tập', 'Dấu mộc báo cáo', 'Bảo mật NDA'],
     riskCount: 2,
+    officialUrl: 'https://thuvienphapluat.vn/lao-dong-tien-luong/tai-ve-mau-dang-ky-hop-dong-lao-dong-thuc-tap-moi-nhat-hien-nay-o-dau-61611.html',
+    officialSource: 'Thư viện Pháp luật (Mẫu Thực tập sinh)',
     clauses: [
       {
         title: 'Điều 1: Mục tiêu thực tập & Người hướng dẫn',
@@ -58,70 +62,31 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Nên ghi rõ tên hoặc chức danh Mentor cùng lịch đánh giá tiến độ định kỳ.'
       },
       {
-        title: 'Điều 2: Phụ cấp và hỗ trợ chi phí',
-        content: 'Thực tập sinh làm việc 40 giờ/tuần như nhân viên. Phụ cấp thực tập sẽ được xem xét tùy theo kết quả kinh doanh của công ty vào cuối kỳ.',
+        title: 'Điều 2: Cam kết bồi hoàn chi phí đào tạo',
+        content: 'Thực tập sinh phải bồi hoàn 15.000.000 VNĐ chi phí đào tạo nếu không tiếp tục ký hợp đồng lao động chính thức tại công ty sau đợt thực tập.',
         isRisky: true,
-        riskReason: 'Không cam kết mức phụ cấp cụ thể trong khi yêu cầu khối lượng làm việc toàn thời gian.',
-        advice: 'Cần làm rõ phụ cấp cứng hàng tháng (tiền ăn trưa, xăng xe, trợ cấp học tập) và tiêu chí đánh giá cụ thể.',
-        lawReference: 'Bộ luật Dân sự 2015 & Hướng dẫn thực tập sinh'
-      },
-      {
-        title: 'Điều 3: Cam kết đào tạo và phạt bồi thường',
-        content: 'Nếu thực tập sinh không tiếp tục làm việc chính thức tại công ty sau khi tốt nghiệp thì phải bồi thường chi phí đào tạo 15.000.000 VNĐ.',
-        isRisky: true,
-        riskReason: 'Điều khoản gài bẫy chi phí đào tạo không có chứng từ đào tạo chuyên môn thực tế.',
-        advice: 'Theo Điều 62 BLLĐ, chi phí đào tạo chỉ được yêu cầu bồi thường khi công ty chi trả học phí thực tế tại cơ sở đào tạo kèm hóa đơn, chứng chỉ rõ ràng.',
+        riskReason: 'Ép buộc ký hợp đồng lao động bằng cách áp đặt chi phí đào tạo vô căn cứ.',
+        advice: 'Chỉ chấp nhận bồi hoàn khi công ty gửi đi đào tạo tại trung tâm/tổ chức có hóa đơn chứng từ cụ thể.',
         lawReference: 'Điều 62 Bộ luật Lao động 2019'
       },
       {
-        title: 'Điều 4: Xác nhận dấu mộc báo cáo',
-        content: 'Công ty cam kết hỗ trợ xác nhận dấu mộc và cung cấp nhận xét trung thực vào Báo cáo thực tập tốt nghiệp của trường.',
+        title: 'Điều 3: Xác nhận báo cáo thực tập',
+        content: 'Công ty hỗ trợ nhận xét khách quan và đóng dấu mộc đỏ vào Báo cáo thực tập tốt nghiệp khi kết thúc kỳ thực tập.',
         isRisky: false,
-        advice: 'Điều khoản chuẩn giúp bảo đảm sinh viên đủ điều kiện tốt nghiệp.'
-      }
-    ]
-  },
-  {
-    id: 'freelance-contract',
-    title: 'Cộng tác viên / freelance',
-    subtitle: 'Phạm vi việc làm, deadline và thanh toán.',
-    category: 'freelance',
-    description: 'Hợp đồng dịch vụ cộng tác viên thiết kế, lập trình, viết content, dịch thuật với các mốc thanh toán rõ ràng.',
-    tags: ['Mốc nghiệm thu', 'Tạm ứng cọc 30-50%', 'Quyền tác giả', 'Phí trễ hạn'],
-    riskCount: 2,
-    clauses: [
-      {
-        title: 'Điều 1: Phạm vi công việc và số lần chỉnh sửa',
-        content: 'Bên B thực hiện thiết kế bộ nhận diện thương hiệu theo brief. Bên A có quyền yêu cầu chỉnh sửa không giới hạn số lần cho đến khi hoàn toàn hài lòng.',
-        isRisky: true,
-        riskReason: 'Yêu cầu sửa đổi không giới hạn (infinite revisions) dẫn đến nguy cơ bị bóc lột công sức và trễ tiến độ.',
-        advice: 'Quy định tối đa 2 - 3 vòng chỉnh sửa miễn phí theo brief ban đầu; các chỉnh sửa ngoài phạm vi tính phí bổ sung.',
-        lawReference: 'Điều 513 Bộ luật Dân sự 2015'
-      },
-      {
-        title: 'Điều 2: Tiến độ thanh toán',
-        content: 'Bên B bàn giao toàn bộ file gốc và quyền sở hữu trước. Bên A sẽ tiến hành thanh toán 100% thù lao trong vòng 45 ngày làm việc sau khi nghiệm thu.',
-        isRisky: true,
-        riskReason: 'Không có tiền tạm ứng và thời gian thanh toán quá dài (45 ngày) sau khi đã giao file gốc.',
-        advice: 'Áp dụng quy tắc chia đợt: Tạm ứng 30-50% khi ký hợp đồng, 30% khi duyệt bản nháp, và 20-40% còn lại trước khi giao file gốc hoàn chỉnh.',
-        lawReference: 'Điều 519 Bộ luật Dân sự 2015'
-      },
-      {
-        title: 'Điều 3: Bản quyền và quyền tác giả',
-        content: 'Quyền tác giả nhân thân luôn thuộc về bên sáng tạo. Quyền tài sản chỉ được chuyển giao sau khi bên A đã thanh toán đủ 100% thù lao.',
-        isRisky: false,
-        advice: 'Điều khoản bảo vệ quyền lợi sở hữu trí tuệ rất chuẩn mực.'
+        advice: 'Rất cần thiết để nộp về trường đại học/cao đẳng hoàn thành tín chỉ.'
       }
     ]
   },
   {
     id: 'housing-rental',
-    title: 'Hợp đồng thuê nhà trọ',
+    title: 'Hợp đồng thuê nhà trọ / Phòng trọ',
     subtitle: 'Tiền cọc, chi phí phát sinh và bàn giao.',
     category: 'housing',
     description: 'Hợp đồng thuê phòng trọ, căn hộ mini sinh viên bảo đảm quyền lợi tiền cọc, giá điện nước chuẩn nhà nước và điều kiện trả phòng.',
     tags: ['Tiền cọc', 'Điện nước niêm yết', 'Thời gian báo trước', 'Biên bản bàn giao'],
     riskCount: 3,
+    officialUrl: 'https://thuvienphapluat.vn/bieumau/19717/MAU-HOP-DONG-THUE-NHA-O-AP-DUNG-CHO-HO-GIA-DINH-CA-NHAN',
+    officialSource: 'Thư viện Pháp luật (Hợp đồng thuê nhà ở)',
     clauses: [
       {
         title: 'Điều 1: Tiền đặt cọc và hoàn trả',
@@ -152,6 +117,144 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         content: 'Hai bên lập biên bản kiểm kê tình trạng điều hòa, nóng lạnh, giường tủ trước khi nhận phòng. Hao mòn tự nhiên không tính vào chi phí đền bù.',
         isRisky: false,
         advice: 'Giúp tránh tranh chấp trừ tiền cọc vô lý khi trả phòng.'
+      }
+    ]
+  },
+  {
+    id: 'apartment-rental',
+    title: 'Hợp đồng thuê căn hộ / chung cư',
+    subtitle: 'Quy chế ban quản lý, bảo trì và phí dịch vụ.',
+    category: 'housing',
+    description: 'Hợp đồng thuê căn hộ chung cư áp dụng theo mẫu Nghị định 96/2024/NĐ-CP, phân định rõ phí quản lý và nghĩa vụ nội quy tòa nhà.',
+    tags: ['Chung cư', 'Nghị định 96/2024', 'Phí quản lý', 'Hao mòn tự nhiên'],
+    riskCount: 2,
+    officialUrl: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Nghi-dinh-96-2024-ND-CP-huong-dan-Luat-Kinh-doanh-bat-dong-san-592652.aspx',
+    officialSource: 'Thư viện Pháp luật (Nghị định 96/2024/NĐ-CP)',
+    clauses: [
+      {
+        title: 'Điều 1: Phí dịch vụ chung cư và gửi xe',
+        content: 'Bên thuê có trách nhiệm thanh toán phí dịch vụ tòa nhà và phí gửi xe trực tiếp cho Ban quản lý theo biểu giá niêm yết của ban quản trị chung cư.',
+        isRisky: false,
+        advice: 'Cần kiểm tra xem phí này do chủ nhà trả hay người thuê trả trong hợp đồng.'
+      },
+      {
+        title: 'Điều 2: Tự ý thay đổi kết cấu căn hộ',
+        content: 'Bên thuê không được phép khoan tường, sơn sửa hoặc thay đổi kiến trúc nội thất khi chưa có sự chấp thuận bằng văn bản của chủ nhà.',
+        isRisky: false,
+        advice: 'Bảo vệ tài sản đôi bên, hợp lý trong hợp đồng thuê nhà.'
+      },
+      {
+        title: 'Điều 3: Tăng giá thuê nhà theo biến động thị trường',
+        content: 'Bên cho thuê có quyền điều chỉnh tăng giá thuê lên đến 20% sau mỗi 6 tháng tùy theo giá thị trường chung cư trong khu vực.',
+        isRisky: true,
+        riskReason: 'Biên độ tăng giá quá cao và thời hạn 6 tháng quá ngắn gây bất ổn chỗ ở cho sinh viên.',
+        advice: 'Thỏa thuận giá thuê cố định tối thiểu 1 năm hoặc biên độ tăng không vượt quá 5-10%/năm.',
+        lawReference: 'Điều 482 Bộ luật Dân sự 2015'
+      }
+    ]
+  },
+  {
+    id: 'course-training',
+    title: 'Hợp đồng đào tạo & Khóa học kỹ năng',
+    subtitle: 'Chất lượng giảng dạy, cam kết việc làm và hoàn phí.',
+    category: 'course',
+    description: 'Hợp đồng cung cấp dịch vụ đào tạo lập trình, ngoại ngữ, chứng chỉ quốc tế với các điều khoản hoàn học phí và bảo đảm đầu ra.',
+    tags: ['Cam kết đầu ra', 'Chính sách hoàn phí', 'Chất lượng giảng dạy', 'Bảo lưu'],
+    riskCount: 2,
+    officialUrl: 'https://thuvienphapluat.vn/bieumau/23023/MAU-PHUONG-AN-DAO-TAO-BOI-DUONG-NANG-CAO-TRINH-DO-KY-NANG-NGHE-VA-DUY-TRI-VIEC-LAM-CHO-NGUOI-LAO-DONG',
+    officialSource: 'Thư viện Pháp luật (Mẫu HĐ Đào tạo nghề)',
+    clauses: [
+      {
+        title: 'Điều 1: Nội dung đào tạo và lộ trình',
+        content: 'Trung tâm cam kết cung cấp đầy đủ giáo trình, giảng viên đạt chuẩn và phòng thực hành máy tính theo đúng đề cương đã công bố.',
+        isRisky: false,
+        advice: 'Yêu cầu đính kèm đề cương chi tiết vào phụ lục hợp đồng.'
+      },
+      {
+        title: 'Điều 2: Chính sách không hoàn phí trong mọi trường hợp',
+        content: 'Học viên đã nộp học phí sẽ không được hoàn lại dưới bất kỳ lý do gì, kể cả khi trung tâm đơn phương đổi giảng viên hoặc dời lịch học.',
+        isRisky: true,
+        riskReason: 'Vi phạm quyền được hoàn phí khi bên cung cấp dịch vụ không đáp ứng cam kết chất lượng.',
+        advice: 'Yêu cầu điều khoản: Nếu trung tâm hủy lớp hoặc đổi lịch quá 3 lần thì học viên được hoàn 100% học phí.',
+        lawReference: 'Luật Bảo vệ quyền lợi người tiêu dùng 2023 & Điều 513 BLDS 2015'
+      },
+      {
+        title: 'Điều 3: Cam kết giới thiệu việc làm đầu ra',
+        content: 'Trung tâm cam kết 100% học viên tốt nghiệp có việc làm mức lương từ 10 triệu/tháng, với điều kiện học viên đạt 100% điểm chuyên cần và vượt qua bài thi nội bộ.',
+        isRisky: true,
+        riskReason: 'Tiêu chí "bài thi nội bộ" thường rất khó hoặc mơ hồ để từ chối trách nhiệm cam kết.',
+        advice: 'Làm rõ tiêu chí bài test và quy trình giới thiệu phỏng vấn việc làm cụ thể.',
+        lawReference: 'Luật Giáo dục nghề nghiệp & Luật Quảng cáo'
+      }
+    ]
+  },
+  {
+    id: 'installment-purchase',
+    title: 'Hợp đồng mua trả góp thiết bị (Laptop, Xe)',
+    subtitle: 'Lãi suất, phí phạt chậm nợ và bảo hiểm khoản vay.',
+    category: 'installment',
+    description: 'Hợp đồng mua hàng trả góp thiết bị học tập, laptop, xe máy qua công ty tài chính cho học sinh sinh viên.',
+    tags: ['Mua trả góp', 'Phí phạt trễ hạn', 'Bảo hiểm khoản vay', 'Bảng tính lãi'],
+    riskCount: 3,
+    officialUrl: 'https://thuvienphapluat.vn/van-ban/Thuong-mai/Luat-Bao-ve-quyen-loi-nguoi-tieu-dung-2023-so-19-2023-QH15-542617.aspx',
+    officialSource: 'Thư viện Pháp luật (Luật Bảo vệ quyền lợi người tiêu dùng)',
+    clauses: [
+      {
+        title: 'Điều 1: Lãi suất danh nghĩa vs Lãi suất thực tế',
+        content: 'Lãi suất quảng cáo 0% nhưng phát sinh phí quản lý hồ sơ 350.000 VNĐ/tháng và phí duy trì hạn mức định kỳ.',
+        isRisky: true,
+        riskReason: 'Quảng cáo 0% nhưng thực chất lãi suất ẩn qua các loại phí định kỳ rất cao.',
+        advice: 'Yêu cầu nhân viên tài chính cung cấp Bảng tính lãi suất thực tế tổng chi phí (Total Cost of Credit).',
+        lawReference: 'Thông tư 18/2019/TT-NHNN & Điều 468 BLDS 2015'
+      },
+      {
+        title: 'Điều 2: Mức phạt trễ hạn quá mức',
+        content: 'Chậm thanh toán 1 ngày bị phạt cố định 500.000 VNĐ cộng thêm 150% lãi suất quá hạn trên toàn bộ dư nợ còn lại.',
+        isRisky: true,
+        riskReason: 'Phí phạt quá cao so với giá trị kỳ góp hàng tháng của sinh viên.',
+        advice: 'Kiểm tra mức phạt tối đa theo quy định của Ngân hàng Nhà nước.',
+        lawReference: 'Thông tư 39/2016/TT-NHNN'
+      },
+      {
+        title: 'Điều 3: Bảo hiểm khoản vay tự nguyện',
+        content: 'Khách hàng có quyền lựa chọn tham gia hoặc không tham gia bảo hiểm khoản vay. Phí bảo hiểm không phải điều kiện bắt buộc để giải ngân.',
+        isRisky: false,
+        advice: 'Không được ép buộc sinh viên mua bảo hiểm để duyệt hồ sơ vay trả góp.'
+      }
+    ]
+  },
+  {
+    id: 'consumer-loan',
+    title: 'Hợp đồng vay tiêu dùng cá nhân',
+    subtitle: 'Hạn mức vay, phương thức thu nợ và lãi suất.',
+    category: 'loan',
+    description: 'Hợp đồng vay vốn tiêu dùng cá nhân, app vay tiền online; cảnh báo bẫy lãi suất cao và điều khoản thu hồi nợ quấy rối.',
+    tags: ['Vay tiêu dùng', 'Lãi suất trần', 'Thu hồi nợ', 'Thông tư 18/2019'],
+    riskCount: 3,
+    officialUrl: 'https://thuvienphapluat.vn/van-ban/Tien-te-Ngan-hang/Thong-tu-18-2019-TT-NHNN-sua-doi-Thong-tu-43-2016-TT-NHNN-cho-vay-tieu-dung-cua-cong-ty-tai-chinh-427772.aspx',
+    officialSource: 'Thư viện Pháp luật (Thông tư 18/2019/TT-NHNN)',
+    clauses: [
+      {
+        title: 'Điều 1: Trần lãi suất thỏa thuận',
+        content: 'Lãi suất vay tính theo 3.5%/tháng (tương đương 42%/năm), chưa bao gồm các loại phí tư vấn và thẩm định hồ sơ.',
+        isRisky: true,
+        riskReason: 'Vượt quá trần lãi suất 20%/năm theo Điều 468 BLDS 2015.',
+        advice: 'Cảnh giác với các hình thức tín dụng đen hoặc app vay nặng lãi núp bóng công ty tài chính.',
+        lawReference: 'Điều 468 Bộ luật Dân sự 2015'
+      },
+      {
+        title: 'Điều 2: Phương thức đôn đốc và thu hồi nợ',
+        content: 'Bên cho vay có quyền liên hệ gia đình, nhà trường, bạn bè và đăng tải thông tin lên mạng xã hội nếu bên vay chậm thanh toán quá 3 ngày.',
+        isRisky: true,
+        riskReason: 'Hành vi đe dọa, khủng bố tinh thần và gọi điện cho người thân vi phạm nghiêm trọng Thông tư 18/2019/TT-NHNN.',
+        advice: 'Thông tư 18/2019/TT-NHNN cấm các công ty tài chính gọi điện nhắc nợ cho người thân không có nghĩa vụ trả nợ.',
+        lawReference: 'Thông tư 18/2019/TT-NHNN & Nghị định 144/2021/NĐ-CP'
+      },
+      {
+        title: 'Điều 3: Quyền tất toán trước hạn',
+        content: 'Bên vay có quyền tất toán khoản nợ trước hạn bất cứ lúc nào với mức phí trả nợ trước hạn tối đa 1-2% trên số dư nợ còn lại.',
+        isRisky: false,
+        advice: 'Hợp lý theo thông lệ tài chính ngân hàng.'
       }
     ]
   }

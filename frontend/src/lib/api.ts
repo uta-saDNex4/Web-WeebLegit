@@ -4,7 +4,7 @@
  */
 
 export function getBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const envUrl = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL)?.trim();
 
   if (typeof window !== 'undefined') {
     // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, hoặc domain thật), ưu tiên sử dụng
@@ -197,3 +197,133 @@ export async function verifyContract(
 export async function getContract(contractId: string): Promise<ContractResponse> {
   return apiFetch<ContractResponse>(`/api/contracts/${contractId}`);
 }
+
+// ─── AI Chat ──────────────────────────────────────────────────────────────────
+
+export interface AiChatResponse {
+  reply: string;
+  citations: string[];
+  negotiation_script: string | null;
+  source: string;
+  model?: string | null;
+}
+
+export async function chatWithAi(
+  message: string,
+  contractContext?: string,
+  stage?: string,
+  history?: { role: string; content: string }[],
+): Promise<AiChatResponse> {
+  return apiFetch<AiChatResponse>(
+    '/api/ai/chat',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        contract_context: contractContext,
+        stage,
+        history,
+      }),
+    },
+    false,
+  );
+}
+
+// ─── Admin Dashboard ──────────────────────────────────────────────────────────
+
+export interface AdminStats {
+  total_users: number;
+  total_contracts: number;
+  verified_contracts: number;
+  mismatch_contracts: number;
+  total_verifications: number;
+  total_risk_rules: number;
+  total_legal_references: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AdminContract {
+  id: string;
+  uploader_email: string;
+  original_filename: string;
+  file_size_bytes: number;
+  sha256_hash: string;
+  contract_type: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface AdminLog {
+  id: string;
+  contract_id: string;
+  contract_filename: string;
+  requested_by_email: string;
+  expected_sha256: string;
+  actual_sha256: string;
+  result: string;
+  duration_ms: number | null;
+  created_at: string;
+}
+
+export interface RiskRuleItem {
+  id: string;
+  keyword_trigger: string;
+  risk_level: string;
+  default_warning_message: string;
+  target_section: string;
+}
+
+export async function getAdminStats(): Promise<AdminStats> {
+  return apiFetch<AdminStats>('/api/admin/stats');
+}
+
+export async function getAdminUsers(): Promise<AdminUser[]> {
+  return apiFetch<AdminUser[]>('/api/admin/users');
+}
+
+export async function toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/api/admin/users/${userId}/status?is_active=${isActive}`, {
+    method: 'PUT',
+  });
+}
+
+export async function getAdminContracts(): Promise<AdminContract[]> {
+  return apiFetch<AdminContract[]>('/api/admin/contracts');
+}
+
+export async function getAdminLogs(): Promise<AdminLog[]> {
+  return apiFetch<AdminLog[]>('/api/admin/logs');
+}
+
+export async function getAdminRiskRules(): Promise<RiskRuleItem[]> {
+  return apiFetch<RiskRuleItem[]>('/api/admin/risk-rules');
+}
+
+export async function createRiskRule(data: {
+  keyword_trigger: string;
+  risk_level: string;
+  default_warning_message: string;
+  target_section?: string;
+}): Promise<RiskRuleItem> {
+  return apiFetch<RiskRuleItem>('/api/admin/risk-rules', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteRiskRule(ruleId: string): Promise<void> {
+  return apiFetch<void>(`/api/admin/risk-rules/${ruleId}`, {
+    method: 'DELETE',
+  });
+}
+

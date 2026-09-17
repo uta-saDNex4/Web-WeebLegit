@@ -2,10 +2,12 @@ export interface ContractTemplate {
   id: string;
   title: string;
   subtitle: string;
-  category: "work" | "internship" | "freelance" | "housing";
+  category: "work" | "internship" | "freelance" | "housing" | "course" | "installment" | "loan";
   description: string;
   tags: string[];
   riskCount: number;
+  officialUrl?: string;
+  officialSource?: string;
   clauses: {
     title: string;
     content: string;
@@ -31,6 +33,7 @@ export interface ChatMessage {
   tag?: string;
   suggestion?: string;
   lawCitation?: string;
+  negotiationScript?: string;
 }
 
 export interface LegalSource {
@@ -39,5 +42,7 @@ export interface LegalSource {
   description: string;
   articles: string[];
   linkText: string;
-  iconType: "labor" | "housing" | "storage";
+  url: string;
+  iconType: "labor" | "housing" | "storage" | "finance" | "education";
 }
+

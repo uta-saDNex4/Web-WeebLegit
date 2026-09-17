@@ -34,8 +34,13 @@ function AppInner() {
     }
   };
 
+  const [initialCheckerTemplate, setInitialCheckerTemplate] = useState<ContractTemplate | null>(null);
+
   // Mở ContractCheckerModal — nếu chưa login thì mở AuthModal trước
-  const handleOpenChecker = () => setIsCheckerOpen(true);
+  const handleOpenChecker = () => {
+    setInitialCheckerTemplate(null);
+    setIsCheckerOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#f7fafc] text-[#10253f] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#10253f]">
@@ -93,13 +98,25 @@ function AppInner() {
 
       <ContractCheckerModal
         isOpen={isCheckerOpen}
-        onClose={() => setIsCheckerOpen(false)}
-        onNeedAuth={() => { setIsCheckerOpen(false); setIsAuthOpen(true); }}
+        onClose={() => {
+          setIsCheckerOpen(false);
+          setInitialCheckerTemplate(null);
+        }}
+        onNeedAuth={() => {
+          setIsCheckerOpen(false);
+          setIsAuthOpen(true);
+        }}
+        initialTemplate={initialCheckerTemplate}
       />
 
       <TemplateViewerModal
         template={selectedTemplate}
         onClose={() => setSelectedTemplate(null)}
+        onUseTemplate={(tmpl) => {
+          setSelectedTemplate(null);
+          setInitialCheckerTemplate(tmpl);
+          setIsCheckerOpen(true);
+        }}
       />
 
       <LegalDetailsModal

@@ -12,6 +12,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 98: Tiền lương làm thêm giờ, làm việc vào ban đêm (Ít nhất 150% ngày thường, 200% ngày nghỉ tuần, 300% ngày lễ tết).'
     ],
     linkText: 'Tra cứu Bộ luật Lao động 2019 (45/2019/QH14)',
+    url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-so-45-2019-QH14-333670.aspx',
     iconType: 'labor'
   },
   {
@@ -25,7 +26,21 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.'
     ],
     linkText: 'Tra cứu Luật Nhà ở & Bộ luật Dân sự 2015',
+    url: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-so-27-2023-QH15-546059.aspx',
     iconType: 'housing'
+  },
+  {
+    id: 'consumer-finance',
+    title: 'Quy định tài chính tiêu dùng & trả góp',
+    description: 'Quy tắc rà soát lãi suất cho vay, phí phạt trả nợ trước hạn và hợp đồng mua bán trả góp điện thoại, laptop cho sinh viên.',
+    articles: [
+      'Điều 468 BLDS 2015: Giới hạn trần lãi suất thỏa thuận không vượt quá 20%/năm của khoản vay.',
+      'Thông tư 18/2019/TT-NHNN: Quy định về cho vay tiêu dùng của công ty tài chính, bảo vệ quyền lợi người tiêu dùng.',
+      'Luật Bảo vệ quyền lợi người tiêu dùng 2023: Minh bạch biểu phí và điều khoản hợp đồng theo mẫu.'
+    ],
+    linkText: 'Tra cứu Luật Bảo vệ Quyền lợi Người tiêu dùng 2023',
+    url: 'https://thuvienphapluat.vn/van-ban/Thuong-mai/Luat-Bao-ve-quyen-loi-nguoi-tieu-dung-2023-so-19-2023-QH15-542617.aspx',
+    iconType: 'finance'
   },
   {
     id: 'cloud-storage',
@@ -37,6 +52,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Tự động nhận diện chữ in hoa, điều khoản mập mờ và câu chữ gài bẫy pháp lý.'
     ],
     linkText: 'Kết nối tài khoản Drive / Tải lên ngay',
+    url: '#checker',
     iconType: 'storage'
   }
 ];

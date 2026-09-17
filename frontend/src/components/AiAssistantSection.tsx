@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { SAMPLE_AI_QUESTIONS } from "../data/legalReferences";
 import { motion } from "motion/react";
+import * as api from "../lib/api";
 
 export const AiAssistantSection: React.FC = () => {
   const [messages, setMessages] = useState([
@@ -33,9 +34,9 @@ export const AiAssistantSection: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const q = textToSend || inputValue;
-    if (!q.trim()) return;
+    if (!q.trim() || isTyping) return;
 
     const userMsg = {
       id: Date.now().toString(),
@@ -47,14 +48,23 @@ export const AiAssistantSection: React.FC = () => {
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      // Find matching sample answer or generate standard student response
+    try {
+      const res = await api.chatWithAi(q, undefined, "landing_chat");
+      const aiMsg = {
+        id: (Date.now() + 1).toString(),
+        sender: "ai",
+        tag: "TRẢ LỜI CỦA AI",
+        text: res.reply,
+        citation: res.citations.length > 0 ? res.citations.join(" • ") : "Căn cứ pháp luật Việt Nam",
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch {
+      // Fallback to sample logic
       const matched = SAMPLE_AI_QUESTIONS.find(
         (sq) =>
           sq.question.toLowerCase().includes(q.toLowerCase().slice(0, 10)) ||
           (q.toLowerCase().includes("cọc") && sq.question.includes("cọc")) ||
-          (q.toLowerCase().includes("thử việc") &&
-            sq.question.includes("lương")),
+          (q.toLowerCase().includes("thử việc") && sq.question.includes("lương")),
       );
 
       const aiMsg = {
@@ -66,10 +76,10 @@ export const AiAssistantSection: React.FC = () => {
           : `Đối với điều khoản này: Bạn nên yêu cầu bên đối tác làm rõ văn bản về nghĩa vụ, các mốc thời gian hoàn thành và chế tài phạt nếu có phát sinh tranh chấp. Tránh các thỏa thuận miệng hoặc từ ngữ chung chung như "tùy quyết định công ty".`,
         citation: matched?.citation || "Bộ luật Dân sự & Lao động 2019",
       };
-
       setMessages((prev) => [...prev, aiMsg]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   return (

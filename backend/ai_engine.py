@@ -137,3 +137,133 @@ def ai_analyze_contract_context(contract_text: str, metadata: dict[str, Any] | N
         return gemini_report
 
     return local_rule_analysis(contract_text, metadata)
+
+
+def ai_chat_response(
+    message: str,
+    contract_context: str | None = None,
+    stage: str | None = None,
+    history: list[dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """Interactive multi-turn chat response using Gemini LLM with intelligent legal fallback."""
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+
+    system_prompt = (
+        "Bạn là Trợ lý Pháp lý Thông minh của WeebLegit – nền tảng bảo vệ học sinh, sinh viên "
+        "khi ký kết các loại hợp đồng (thuê trọ, thực tập, làm thêm, CTV, khóa học, vay tiêu dùng).\n"
+        "Nhiệm vụ của bạn:\n"
+        "1. Giải thích các điều khoản bằng ngôn ngữ dễ hiểu, thân thiện, không dùng thuật ngữ quá hàn lâm.\n"
+        "2. Luôn trích dẫn rõ ràng các căn cứ pháp luật Việt Nam (Bộ luật Lao động 2019, Bộ luật Dân sự 2015, Luật Nhà ở 2023, Thông tư 25/2018/TT-BCT,...).\n"
+        "3. Khi người dùng cần, hãy soạn giúp một đoạn kịch bản tin nhắn/email đàm phán lịch sự, khéo léo để gửi cho nhà tuyển dụng hoặc chủ nhà.\n"
+    )
+
+    if stage:
+        system_prompt += f"\nNgữ cảnh công đoạn xử lý hiện tại: '{stage}'."
+    if contract_context:
+        system_prompt += f"\nNội dung/Thông tin hợp đồng đang xét:\n{contract_context[:2500]}\n"
+
+    if api_key:
+        models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash", "gemini-flash-latest"]
+        chat_contents = [{"parts": [{"text": system_prompt}]}]
+        if history:
+            for turn in history[-6:]:
+                role = "user" if turn.get("role") == "user" else "model"
+                chat_contents.append({"role": role, "parts": [{"text": turn.get("content", "")}]})
+        chat_contents.append({"role": "user", "parts": [{"text": message}]})
+
+        for model in models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            try:
+                req = urllib.request.Request(
+                    url,
+                    data=json.dumps({"contents": chat_contents}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                )
+                with urllib.request.urlopen(req, timeout=12) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    answer = data["candidates"][0]["content"]["parts"][0]["text"]
+                    return {
+                        "reply": answer,
+                        "source": "gemini-live",
+                        "model": model,
+                    }
+            except Exception:
+                continue
+
+    # Intelligent legal rule-based fallback if no Gemini key or connection failed
+    msg_lower = message.lower()
+    citations = []
+    negotiation_script = None
+
+    if "đào tạo" in msg_lower or "nghỉ sớm" in msg_lower or "bồi thường" in msg_lower:
+        reply = (
+            "Theo **Điều 62 Bộ luật Lao động 2019**, bên tuyển dụng chỉ được quyền yêu cầu bồi hoàn "
+            "chi phí đào tạo nếu có ký 'Hợp đồng đào tạo nghề riêng biệt' và công ty thực tế có chi trả học phí, "
+            "có hóa đơn chứng từ hợp lệ từ cơ sở đào tạo. Việc công ty tự đào tạo nội bộ hoặc 'hướng dẫn công việc' "
+            "rồi bắt bồi thường khoản tiền phạt vô lý (như 10-20 triệu) khi nghỉ sớm là hoàn toàn trái luật."
+        )
+        citations.append("Điều 62 Bộ luật Lao động 2019")
+        negotiation_script = (
+            "\"Dạ em chào anh/chị, em rất hào hứng với cơ hội được học hỏi tại công ty. "
+            "Về điều khoản cam kết bồi hoàn đào tạo, theo quy định của Bộ luật Lao động 2019, "
+            "em xin phép đề xuất điều chỉnh chỉ áp dụng bồi hoàn đối với các khóa đào tạo có chứng chỉ "
+            "và chứng từ chi phí thực tế phát sinh để cả hai bên cùng rõ ràng ạ!\""
+        )
+    elif "cọc" in msg_lower or "thuê" in msg_lower or "chuyển đi" in msg_lower or "phòng" in msg_lower:
+        reply = (
+            "Theo **Điều 328 Bộ luật Dân sự 2015** và **Điều 132 Luật Nhà ở 2023**:\n"
+            "- Tiền cọc là biện pháp bảo đảm thực hiện hợp đồng. Nếu bạn thông báo trước theo đúng thỏa thuận "
+            "(thường là 30 ngày) và thanh toán đầy đủ tiền điện nước, chủ nhà có nghĩa vụ hoàn trả lại tiền cọc.\n"
+            "- Về tiền điện: Theo **Thông tư 25/2018/TT-BCT**, sinh viên thuê nhà trọ được áp dụng giá điện sinh hoạt "
+            "bậc thang theo biểu giá của nhà nước, chủ trọ không được tùy tiện thu giá quá cao trái quy định."
+        )
+        citations.append("Điều 328 BLDS 2015")
+        citations.append("Thông tư 25/2018/TT-BCT")
+        negotiation_script = (
+            "\"Dạ thưa cô/chú chủ nhà, cháu dự kiến sẽ kết thúc hợp đồng thuê vào cuối tháng tới. "
+            "Cháu xin gửi thông báo trước 30 ngày đúng như quy định để cô/chú tiện sắp xếp khách mới. "
+            "Sau khi cháu đối soát và thanh toán hết hóa đơn điện nước tháng cuối, nhờ cô/chú hoàn lại tiền đặt cọc "
+            "cho cháu vào ngày bàn giao phòng ạ!\""
+        )
+    elif "thử việc" in msg_lower or "lương" in msg_lower or "phụ cấp" in msg_lower:
+        reply = (
+            "Theo **Điều 26 Bộ luật Lao động 2019**, tiền lương của người lao động trong thời gian thử việc "
+            "do hai bên thỏa thuận nhưng **ít nhất phải bằng 85% mức lương** của công việc đó.\n"
+            "Ngoài ra, **Điều 17 BLLĐ 2019** nghiêm cấm doanh nghiệp giữ bản chính giấy tờ tùy thân (CCCD) "
+            "hoặc thu bất kỳ khoản tiền đặt cọc giữ chỗ nào của bạn."
+        )
+        citations.append("Điều 26 Bộ luật Lao động 2019")
+        citations.append("Điều 17 Bộ luật Lao động 2019")
+        negotiation_script = (
+            "\"Dạ anh/chị cho em hỏi rõ thêm về mức phụ cấp/lương thử việc hàng tháng. "
+            "Để bảo đảm chi phí sinh hoạt đi lại, em xin phép đề xuất mức lương thử việc tối thiểu 85% "
+            "theo đúng khung quy định của Bộ luật Lao động ạ!\""
+        )
+    elif "sha" in msg_lower or "hash" in msg_lower or "mã băm" in msg_lower or "toàn vẹn" in msg_lower:
+        reply = (
+            "Mã băm **SHA-256** hoạt động như một 'dấu vân tay kỹ thuật số' độc nhất của tệp hợp đồng. "
+            "Chỉ cần 1 ký tự, 1 dấu chấm hoặc 1 con số trong hợp đồng bị thay đổi trái phép sau khi lưu, "
+            "mã SHA-256 tính lại sẽ hoàn toàn khác biệt (Mismatched). Nhờ vậy, WeebLegit giúp bạn "
+            "chứng minh và bảo đảm 100% tài liệu không hề bị ai âm thầm chỉnh sửa."
+        )
+        citations.append("Tiêu chuẩn FIPS 180-4 NIST (Secure Hash Standard)")
+    else:
+        reply = (
+            f"Cảm ơn bạn đã hỏi về: '{message}'. Đối với điều khoản này trong hợp đồng, "
+            "nguyên tắc quan trọng nhất là: **Mọi cam kết đều phải ghi rõ bằng văn bản**, tránh các cụm từ "
+            "mập mờ như 'tùy tình hình', 'theo quyết định công ty'. Hãy yêu cầu ghi rõ số tiền, thời hạn "
+            "và trách nhiệm của các bên trước khi đặt bút ký."
+        )
+        citations.append("Bộ luật Dân sự 2015")
+        negotiation_script = (
+            "\"Em xin phép nhờ bên mình bổ sung cụ thể mốc thời gian và phương thức thực hiện "
+            "của điều khoản này vào phụ lục/văn bản hợp đồng để hai bên cùng thuận tiện theo dõi ạ!\""
+        )
+
+    return {
+        "reply": reply,
+        "citations": citations,
+        "negotiation_script": negotiation_script,
+        "source": "weebforce-legal-rules",
+    }
+
