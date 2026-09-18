@@ -358,18 +358,40 @@ export async function updateMe(payload: {
 
 // ─── AI Chat ───────────────────────────────────────────────────────────────────
 
-export interface AiChatResponse {
-  answer: string;
-  citation: string | null;
+export interface AiChatMessage {
+  role: 'user' | 'model' | 'assistant';
+  content: string;
 }
 
-export async function aiChat(question: string): Promise<AiChatResponse> {
+export interface AiChatResponse {
+  reply: string;
+  answer: string;
+  citations: string[];
+  citation: string | null;
+  negotiation_script?: string | null;
+  source?: string;
+  model?: string | null;
+}
+
+export async function aiChat(
+  question: string,
+  contractContext?: string,
+  history?: AiChatMessage[],
+): Promise<AiChatResponse> {
   return apiFetch<AiChatResponse>(
     '/api/ai/chat',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({
+        message: question,
+        question: question,
+        contract_context: contractContext,
+        history: history?.map((h) => ({
+          role: h.role === 'model' || h.role === 'assistant' ? 'model' : 'user',
+          content: h.content,
+        })),
+      }),
     },
     false, // không cần auth — public endpoint
   );

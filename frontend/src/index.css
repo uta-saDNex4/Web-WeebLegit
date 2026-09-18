@@ -157,9 +157,15 @@ html.dark footer.bg-\[\#10253f\] {
 /* ── AI Chat Section ── */
 html.dark #ai-section .bg-white { background-color: #132037 !important; }
 html.dark #ai-section .bg-\[\#f2f7fc\] {
-  background-color: #182740 !important;
-  border-color: #243a5e !important;
-  color: #e2e8f0 !important;
+  background-color: #1a2d4a !important;
+  border-color: #2a4369 !important;
+  color: #f1f5f9 !important;
+}
+html.dark #ai-section .bg-\[\#f2f7fc\] p {
+  color: #f1f5f9 !important;
+}
+html.dark #ai-section .bg-\[\#f2f7fc\] span {
+  color: #cbd5e1 !important;
 }
 html.dark #ai-section .bg-\[\#FAF5ED\] {
   background-color: #272115 !important;
@@ -167,6 +173,22 @@ html.dark #ai-section .bg-\[\#FAF5ED\] {
   color: #faebd7 !important;
 }
 html.dark #ai-section .bg-\[\#f8fafd\] { background-color: #0d1625 !important; }
+html.dark #ai-section .ai-message-bubble {
+  background-color: #192b45 !important;
+  border-color: #2b446a !important;
+  color: #f8fafc !important;
+}
+html.dark #ai-section .ai-message-bubble p {
+  color: #f8fafc !important;
+}
+html.dark #ai-section .ai-message-bubble span {
+  color: #e2e8f0 !important;
+}
+html.dark #ai-section .user-message-bubble {
+  background-color: #2d2619 !important;
+  border-color: #594424 !important;
+  color: #fef08a !important;
+}
 
 /* ── Scrollbar (dark mode) ── */
 html.dark ::-webkit-scrollbar-track { background: #0a111e; }
