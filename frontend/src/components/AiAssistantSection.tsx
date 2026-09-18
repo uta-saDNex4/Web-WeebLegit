@@ -155,20 +155,30 @@ export const AiAssistantSection: React.FC = () => {
       recognition.interimResults = true;
       recognitionRef.current = recognition;
 
+      const initialInput = inputValue.trim();
+
       recognition.onstart = () => {
         setIsRecording(true);
       };
 
       recognition.onresult = (event: any) => {
-        let transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          transcript += event.results[i][0].transcript;
+        let finalTranscript = "";
+        let interimTranscript = "";
+
+        for (let i = 0; i < event.results.length; ++i) {
+          const res = event.results[i];
+          if (res.isFinal) {
+            finalTranscript += res[0].transcript;
+          } else {
+            interimTranscript += res[0].transcript;
+          }
         }
-        if (transcript.trim()) {
-          setInputValue((prev) => {
-            const trimmed = prev.trim();
-            return trimmed ? `${trimmed} ${transcript}` : transcript;
-          });
+
+        const speechText = (finalTranscript + " " + interimTranscript).trim();
+        if (speechText) {
+          setInputValue(
+            initialInput ? `${initialInput} ${speechText}` : speechText,
+          );
         }
       };
 
