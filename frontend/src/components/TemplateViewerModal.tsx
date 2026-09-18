@@ -10,21 +10,17 @@ import {
   Sparkles,
   BookOpen,
   Download,
-  ExternalLink,
-  ShieldCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
 
 interface TemplateViewerModalProps {
   template: ContractTemplate | null;
   onClose: () => void;
-  onUseTemplate?: (template: ContractTemplate) => void;
 }
 
 export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
   template,
   onClose,
-  onUseTemplate,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -90,29 +86,6 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
             những câu chữ gài bẫy thường gặp.
           </div>
 
-          {/* Official Source Banner */}
-          {template.officialUrl && (
-            <div className="p-3.5 rounded-xl bg-[#FAF5ED] border border-[#EAD7B8] flex items-center justify-between">
-              <div>
-                <span className="text-xs font-bold text-[#10253f] block">
-                  Văn bản gốc nguồn mở:
-                </span>
-                <span className="text-[11px] text-[#8a6834]">
-                  {template.officialSource || "Cổng Thư viện Pháp luật Việt Nam"}
-                </span>
-              </div>
-              <a
-                href={template.officialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-[#8a6834] font-semibold text-xs rounded-lg border border-[#EAD7B8] shadow-sm transition-all"
-              >
-                <span>Mở link gốc</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          )}
-
           <div className="space-y-4">
             {template.clauses.map((clause, idx) => (
               <div
@@ -174,26 +147,12 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
           <span className="text-xs text-[#8297ac]">
             Mẫu hợp đồng sinh viên • WeebLegit
           </span>
-          <div className="flex items-center gap-2">
-            {onUseTemplate && (
-              <button
-                onClick={() => {
-                  onUseTemplate(template);
-                  onClose();
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#EAD7B8] hover:bg-[#dfc59f] text-[#10253f] text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Nạp vào Trình kiểm tra</span>
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-[#10253f] hover:bg-[#173d5a] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
-            >
-              Đóng
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-[#10253f] hover:bg-[#173d5a] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+          >
+            Đóng
+          </button>
         </div>
       </motion.div>
     </div>

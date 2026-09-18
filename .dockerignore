@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.next
+**/.next
+.git
+.vscode
+*.log
+fe-test.*
+next-startup.*
+storage
+secure_storage
+data/sample_contracts
+__pycache__
+*.pyc
+.venv

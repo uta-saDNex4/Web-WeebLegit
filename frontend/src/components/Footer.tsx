@@ -32,12 +32,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenNextjsCode }) => {
           </div>
 
           {/* Quick links & Next.js Action */}
-          <div className="flex flex-wrap items-center gap-5 text-xs text-[#b9cadd]">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-[#b9cadd]">
             <a
               href="#templates-section"
               className="hover:text-white transition-colors"
             >
-              Mẫu hợp đồng
+              Thư viện mẫu
             </a>
             <a
               href="#ai-section"
@@ -51,30 +51,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenNextjsCode }) => {
             >
               Nguồn luật
             </a>
-            <span className="text-[#3b5978]">|</span>
-            <a
-              href="https://thuvienphapluat.vn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#EAD7B8] transition-colors flex items-center gap-1"
-            >
-              Thư viện Pháp luật <ExternalLink className="w-3 h-3" />
-            </a>
-            <a
-              href="https://dichvucong.gov.vn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#EAD7B8] transition-colors flex items-center gap-1"
-            >
-              Cổng Dịch vụ công <ExternalLink className="w-3 h-3" />
-            </a>
           </div>
         </div>
 
         {/* Bottom Disclaimer */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8297ac]">
-          <p>⚠️ WeebLegit hỗ trợ rà soát rủi ro và thông tin tham khảo, không thay thế tư vấn pháp lý có thù lao của luật sư.</p>
-          <p>© 2026 WeebLegit. Bảo vệ quyền lợi học sinh, sinh viên khi ký kết hợp đồng.</p>
+          <p>⚠️ Thông tin hỗ trợ tham khảo, không thay thế tư vấn pháp lý.</p>
         </div>
       </div>
     </footer>

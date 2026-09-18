@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "../index.css";
-import { AuthProvider } from "../lib/auth-context";
 
 export const metadata: Metadata = {
   title: "WeebLegit – Trợ lý hợp đồng thông minh cho sinh viên",
@@ -27,9 +26,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

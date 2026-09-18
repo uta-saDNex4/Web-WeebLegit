@@ -22,6 +22,7 @@ interface AuthState {
     fullName?: string,
   ) => Promise<void>;
   logout: () => void;
+  updateMe: (payload: { full_name?: string | null; password?: string | null }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -74,8 +75,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateMe = useCallback(
+    async (payload: { full_name?: string | null; password?: string | null }) => {
+      const updated = await api.updateMe(payload);
+      setUser(updated);
+    },
+    [],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateMe }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,7 @@
  */
 
 export function getBaseUrl(): string {
-  const envUrl = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL)?.trim();
+  const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
   if (typeof window !== 'undefined') {
     // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, hoặc domain thật), ưu tiên sử dụng
@@ -198,132 +198,180 @@ export async function getContract(contractId: string): Promise<ContractResponse>
   return apiFetch<ContractResponse>(`/api/contracts/${contractId}`);
 }
 
-// ─── AI Chat ──────────────────────────────────────────────────────────────────
+// ─── Contract List ─────────────────────────────────────────────────────────────
 
-export interface AiChatResponse {
-  reply: string;
-  citations: string[];
-  negotiation_script: string | null;
-  source: string;
-  model?: string | null;
+export interface ContractListResponse {
+  items: ContractResponse[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
-export async function chatWithAi(
-  message: string,
-  contractContext?: string,
-  stage?: string,
-  history?: { role: string; content: string }[],
-): Promise<AiChatResponse> {
+export async function listContracts(params?: {
+  status?: string;
+  contract_type?: string;
+  page?: number;
+  limit?: number;
+}): Promise<ContractListResponse> {
+  const q = new URLSearchParams();
+  if (params?.status) q.set('status', params.status);
+  if (params?.contract_type) q.set('contract_type', params.contract_type);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString() ? `?${q.toString()}` : '';
+  return apiFetch<ContractListResponse>(`/api/contracts${qs}`);
+}
+
+// ─── AI Analysis Polling ───────────────────────────────────────────────────────
+
+export interface AiAnalysisResult {
+  status: 'processing' | 'completed';
+  message?: string;
+  risk_score?: number;
+  risk_label?: string;
+  overview?: string;
+  findings?: Array<{
+    severity: string;
+    title: string;
+    clause_text?: string;
+    analysis?: string;
+    law_reference?: string;
+    negotiation_script?: string;
+  }>;
+}
+
+export async function getAiAnalysis(
+  contractId: string,
+  logId: string,
+): Promise<AiAnalysisResult> {
+  return apiFetch<AiAnalysisResult>(
+    `/api/contracts/${contractId}/analysis?log_id=${logId}`,
+  );
+}
+
+// ─── Market Compare ────────────────────────────────────────────────────────────
+
+export interface MarketComparisonResponse {
+  contract_id: string;
+  contract_type: string | null;
+  district: string | null;
+  price_evaluation: string;
+  price_difference_percent: number | null;
+  market_average: number | null;
+  recommendations: string[];
+}
+
+export async function marketCompare(
+  contractId: string,
+  params?: { district?: string; base_rent?: number },
+): Promise<MarketComparisonResponse> {
+  const q = new URLSearchParams();
+  if (params?.district) q.set('district', params.district);
+  if (params?.base_rent != null) q.set('base_rent', String(params.base_rent));
+  const qs = q.toString() ? `?${q.toString()}` : '';
+  return apiFetch<MarketComparisonResponse>(
+    `/api/contracts/${contractId}/market-compare${qs}`,
+    { method: 'POST' },
+  );
+}
+
+// ─── Verification History ──────────────────────────────────────────────────────
+
+export interface VerificationLogResponse {
+  id: string;
+  contract_id: string;
+  requested_by: string;
+  expected_sha256: string;
+  actual_sha256: string;
+  result: string;
+  error_code: string | null;
+  error_message: string | null;
+  duration_ms: number | null;
+  created_at: string;
+}
+
+export async function getVerificationHistory(
+  contractId: string,
+): Promise<VerificationLogResponse[]> {
+  return apiFetch<VerificationLogResponse[]>(
+    `/api/contracts/${contractId}/verifications`,
+  );
+}
+
+// ─── Clauses ───────────────────────────────────────────────────────────────────
+
+export interface ClauseResponse {
+  id: string;
+  contract_id: string;
+  clause_type: string;
+  clause_order: number;
+  title: string | null;
+  content: string | null;
+  dynamic_metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getClauses(contractId: string): Promise<ClauseResponse[]> {
+  return apiFetch<ClauseResponse[]>(`/api/contracts/${contractId}/clauses`);
+}
+
+// ─── Upload Image ──────────────────────────────────────────────────────────────
+
+export interface ContractImageResponse {
+  id: string;
+  uploaded_by: string;
+  contract_id: string | null;
+  original_filename: string;
+  mime_type: string;
+  file_size_bytes: number;
+  sha256_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function uploadContractImage(
+  file: File,
+  contractId?: string,
+): Promise<ContractImageResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const qs = contractId ? `?contract_id=${contractId}` : '';
+  return apiFetch<ContractImageResponse>(`/api/contracts/upload-image${qs}`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// ─── Update User Profile ───────────────────────────────────────────────────────
+
+export async function updateMe(payload: {
+  full_name?: string | null;
+  password?: string | null;
+}): Promise<UserResponse> {
+  return apiFetch<UserResponse>('/api/auth/me', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+// ─── AI Chat ───────────────────────────────────────────────────────────────────
+
+export interface AiChatResponse {
+  answer: string;
+  citation: string | null;
+}
+
+export async function aiChat(question: string): Promise<AiChatResponse> {
   return apiFetch<AiChatResponse>(
     '/api/ai/chat',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        contract_context: contractContext,
-        stage,
-        history,
-      }),
+      body: JSON.stringify({ question }),
     },
-    false,
+    false, // không cần auth — public endpoint
   );
-}
-
-// ─── Admin Dashboard ──────────────────────────────────────────────────────────
-
-export interface AdminStats {
-  total_users: number;
-  total_contracts: number;
-  verified_contracts: number;
-  mismatch_contracts: number;
-  total_verifications: number;
-  total_risk_rules: number;
-  total_legal_references: number;
-}
-
-export interface AdminUser {
-  id: string;
-  email: string;
-  full_name: string | null;
-  role: string;
-  is_active: boolean;
-  created_at: string;
-}
-
-export interface AdminContract {
-  id: string;
-  uploader_email: string;
-  original_filename: string;
-  file_size_bytes: number;
-  sha256_hash: string;
-  contract_type: string | null;
-  status: string;
-  created_at: string;
-}
-
-export interface AdminLog {
-  id: string;
-  contract_id: string;
-  contract_filename: string;
-  requested_by_email: string;
-  expected_sha256: string;
-  actual_sha256: string;
-  result: string;
-  duration_ms: number | null;
-  created_at: string;
-}
-
-export interface RiskRuleItem {
-  id: string;
-  keyword_trigger: string;
-  risk_level: string;
-  default_warning_message: string;
-  target_section: string;
-}
-
-export async function getAdminStats(): Promise<AdminStats> {
-  return apiFetch<AdminStats>('/api/admin/stats');
-}
-
-export async function getAdminUsers(): Promise<AdminUser[]> {
-  return apiFetch<AdminUser[]>('/api/admin/users');
-}
-
-export async function toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>(`/api/admin/users/${userId}/status?is_active=${isActive}`, {
-    method: 'PUT',
-  });
-}
-
-export async function getAdminContracts(): Promise<AdminContract[]> {
-  return apiFetch<AdminContract[]>('/api/admin/contracts');
-}
-
-export async function getAdminLogs(): Promise<AdminLog[]> {
-  return apiFetch<AdminLog[]>('/api/admin/logs');
-}
-
-export async function getAdminRiskRules(): Promise<RiskRuleItem[]> {
-  return apiFetch<RiskRuleItem[]>('/api/admin/risk-rules');
-}
-
-export async function createRiskRule(data: {
-  keyword_trigger: string;
-  risk_level: string;
-  default_warning_message: string;
-  target_section?: string;
-}): Promise<RiskRuleItem> {
-  return apiFetch<RiskRuleItem>('/api/admin/risk-rules', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-}
-
-export async function deleteRiskRule(ruleId: string): Promise<void> {
-  return apiFetch<void>(`/api/admin/risk-rules/${ruleId}`, {
-    method: 'DELETE',
-  });
 }
 

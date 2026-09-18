@@ -61,6 +61,7 @@ postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db
 - **Trên Linux/macOS**: Chạy `./run.sh`
 
 Script sẽ tự động:
+
 1. Phát hiện địa chỉ IP mạng LAN của máy bạn để in ra màn hình.
 2. Kiểm tra Docker: nếu có Docker sẽ tự động bật toàn bộ (PostgreSQL DB + Backend + Frontend).
 3. Nếu Docker chưa bật, sẽ chuyển sang chế độ chạy trực tiếp (Python + Node.js).
@@ -74,6 +75,7 @@ docker compose up --build -d
 ```
 
 Compose sẽ tự động:
+
 - Khởi động container PostgreSQL (`db`) và cấu hình sẵn database `contract_verifier_db`.
 - Khởi động backend FastAPI (`backend`), tự tạo bảng (schema), tự tạo tài khoản Admin mặc định.
 - Khởi động frontend Next.js (`frontend`).
@@ -91,6 +93,7 @@ docker compose --profile seed run --rm import-data
 ## Địa chỉ truy cập
 
 ### 1. Trên chính máy đang chạy:
+
 - **Trang chủ Web**: [http://localhost:3000](http://localhost:3000)
 - **Admin Dashboard**: [http://localhost:3000/admin](http://localhost:3000/admin)
   - Tài khoản Admin: `admin@weeblegit.vn`
@@ -98,7 +101,9 @@ docker compose --profile seed run --rm import-data
 - **Tài liệu API (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 2. Từ các máy khác trong cùng mạng LAN (Điện thoại, Laptop khác):
+
 Chỉ cần thay `localhost` bằng địa chỉ IP LAN của máy đang chạy web (ví dụ `192.168.105.126`):
+
 - **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000` (ví dụ: `http://192.168.105.126:3000`)
 - **Admin Dashboard**: `http://<IP_MÁY_CHẠY>:3000/admin`
 - Frontend đã được cấu hình tự động nhận diện IP của máy chủ để gọi API backend `http://<IP_MÁY_CHẠY>:8000`, kèm header CORS và Private Network Access (PNA) cho các trình duyệt Chrome/Edge trên thiết bị khác.

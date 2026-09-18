@@ -1,7 +1,7 @@
 import React from 'react';
 import { LEGAL_SOURCES } from '../data/legalReferences';
 import { LegalSource } from '../types';
-import { Scale, Home, CloudUpload, ArrowRight, CheckCircle2, ExternalLink, Landmark } from 'lucide-react';
+import { Scale, Home, CloudUpload, ArrowRight, CheckCircle2, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface LegalReferencesProps {
@@ -15,8 +15,6 @@ const getSourceIcon = (type: string) => {
       return <Scale className="w-6 h-6 text-[#8a6834]" />;
     case 'housing':
       return <Home className="w-6 h-6 text-[#159f7b]" />;
-    case 'finance':
-      return <Landmark className="w-6 h-6 text-[#b91c1c]" />;
     case 'storage':
       return <CloudUpload className="w-6 h-6 text-[#7652cc]" />;
     default:
@@ -30,8 +28,6 @@ const getSourceBadgeBg = (type: string) => {
       return 'bg-[#FAF5ED] border-[#EAD7B8]/70';
     case 'housing':
       return 'bg-[#eafbf7] border-[#b7f6e5]';
-    case 'finance':
-      return 'bg-[#fef2f2] border-[#fecaca]';
     case 'storage':
       return 'bg-[#f3eeff] border-[#d8cbf5]';
     default:
@@ -57,8 +53,8 @@ export const LegalReferences: React.FC<LegalReferencesProps> = ({ onSelectSource
           </p>
         </div>
 
-        {/* 4 Source Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 3 Source Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {LEGAL_SOURCES.map((source, idx) => (
             <motion.div
               key={source.id}
