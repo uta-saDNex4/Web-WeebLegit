@@ -18,13 +18,24 @@ echo [*] Đang kiểm tra Docker...
 docker info >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
     echo [OK] Docker daemon đang hoạt động!
-    echo [*] Đang khởi động hệ thống bằng Docker Compose (DB + Backend + Frontend)...
     echo.
-    docker compose up --build -d
+    echo Chọn chế độ khởi động:
+    echo   [1] Chạy Web kết nối tới Database Máy Host (192.168.105.109) [Khuyến nghị khi làm việc nhóm]
+    echo   [2] Chạy Độc lập (Tự tạo Database PostgreSQL riêng trên máy này)
+    set /p DOCKER_MODE="Nhập lựa chọn (mặc định 1): "
+    if "!DOCKER_MODE!"=="2" (
+        echo.
+        echo [*] Đang khởi động Full Stack (DB riêng + Backend + Frontend)...
+        docker compose -f docker-compose.yml up --build -d
+    ) else (
+        echo.
+        echo [*] Đang khởi động Web kết nối tới Database Host 192.168.105.109...
+        docker compose -f docker-compose.app-only.yml up --build -d
+    )
     if %ERRORLEVEL% EQU 0 (
         echo.
         echo ======================================================================
-        echo  [THÀNH CÔNG] Toàn bộ hệ thống Web & Database đã hoạt động!
+        echo  [THÀNH CÔNG] Toàn bộ hệ thống Web đã hoạt động!
         echo ======================================================================
         echo.
         echo  1. TRUY CẬP TRỰC TIẾP TRÊN MÁY NÀY:
