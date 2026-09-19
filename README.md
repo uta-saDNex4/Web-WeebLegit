@@ -1,177 +1,127 @@
-# Web-Weebforce - Contract Verifier
+# WeebLegit – Trợ lý Xác thực & Phân tích Hợp đồng Thông minh
 
-Contract Verifier is a full-stack app for:
+Nền tảng hỗ trợ sinh viên và người đi làm rà soát, phát hiện rủi ro hợp đồng (thuê trọ, việc làm, thực tập, vay tiêu dùng, trả góp, khóa học, freelance) đối chiếu quy chuẩn pháp luật Việt Nam, xác thực tính toàn vẹn SHA-256 và hỗ trợ AI đàm phán hợp đồng.
 
-- uploading contract files
-- verifying SHA-256 integrity
-- managing contract clauses
-- importing legal reference data and risk rules from Excel
+---
 
-This repo is designed to run with:
+## 🏗️ Kiến trúc Hệ thống & Database Tập trung
 
-- PostgreSQL running in Docker on the host machine
-- backend and frontend running in Docker containers
-- optional data import from the `data/` folder
+Hệ thống sử dụng mô hình **Database tập trung** để toàn bộ thành viên trong nhóm làm việc và kiểm thử đều dùng chung một nguồn dữ liệu:
 
-## Project Layout
+* **Máy Host Database (`192.168.105.109:5432`)**: Container PostgreSQL đang mở sẵn trên máy Host, đã chứa đầy đủ dữ liệu thực tế:
+  * 261 hợp đồng mẫu & kiểm thử
+  * 250 căn cứ pháp lý chính thức (Bộ luật Dân sự 2015, Bộ luật Lao động 2019, Luật Căn cước 2023,...)
+  * 250 quy tắc phát hiện rủi ro (Risk Rules)
+  * Tài khoản Quản trị viên (Admin) và Audit Logs xác thực
+* **Các máy khác trong mạng LAN**: Khi tải project về chỉ cần chạy Web (Backend + Frontend), hệ thống sẽ **tự động kết nối tới Database chung trên máy Host**, đảm bảo dữ liệu luôn đồng bộ và không bị phân mảnh.
+* **Không cần chạy lệnh import hay seed lại dữ liệu** vì container Database đã có sẵn đầy đủ dữ liệu chuẩn.
 
-```text
-backend/                  FastAPI backend
-frontend/                 React/Vinext frontend
-data/                     Excel references and sample contracts
-docker-compose.yml        Backend + frontend stack
-.env.example              Environment template
-```
+---
 
-## What Runs Automatically
+## 🚀 Hướng dẫn Khởi động Dự án
 
-- The backend creates the database schema on startup.
-- No users, contracts, or verification logs are seeded automatically.
-- Sample/reference data is imported only when you run the import job manually.
+### Cách 1: Khởi động 1-Click (Khuyến nghị cho mọi máy)
 
-## Prerequisites
-
-- Docker Desktop
-- PostgreSQL container running on the host machine and exposed on port `5432`
-- DBeaver or another DB client if you want to inspect the database
-
-## Database Setup
-
-Use PostgreSQL credentials that match your running container:
-
-```text
-Host: localhost
-Port: 5432
-User: admin
-Password: matkhau_xinfu
-Database: contract_verifier_db
-```
-
-The backend container must connect to the host machine through:
-
-```text
-postgresql://admin:matkhau_xinfu@host.docker.internal:5432/contract_verifier_db
-```
-
-## Quick Start (Bất kỳ máy nào cũng chạy được)
-
-### Cách 1: Dùng script tự động 1-click (Khuyến nghị)
-
-- **Trên Windows**: Nhấp đúp file `run.bat` hoặc mở cmd chạy `.\run.bat`
-- **Trên Linux/macOS**: Chạy `./run.sh`
+- **Trên Windows**: Nhấp đúp chuột vào file `run.bat` (hoặc mở PowerShell/CMD chạy `.\run.bat`)
+- **Trên Linux / macOS**: Mở Terminal chạy `./run.sh`
 
 Script sẽ tự động:
+1. Nhận diện địa chỉ IP mạng LAN của máy bạn.
+2. Kiểm tra Docker:
+   - **Nhấn phím `1` (Mặc định - Khuyến nghị)**: Khởi động Web và kết nối tới Database chung của máy Host (`192.168.105.109:5432`).
+   - **Nhấn phím `2`**: Khởi động Độc lập (tự tạo Database PostgreSQL riêng trên máy này nếu mang máy ra ngoài không có mạng LAN).
+3. Nếu máy chưa bật Docker, script sẽ hỏi và tự động chuyển sang chế độ chạy trực tiếp bằng Python + Node.js.
 
-1. Phát hiện địa chỉ IP mạng LAN của máy bạn để in ra màn hình.
-2. Kiểm tra Docker: nếu có Docker sẽ tự động bật toàn bộ (PostgreSQL DB + Backend + Frontend).
-3. Nếu Docker chưa bật, sẽ chuyển sang chế độ chạy trực tiếp (Python + Node.js).
+---
 
 ### Cách 2: Dùng lệnh Docker Compose chuẩn
 
-Nếu máy đã có Docker Desktop đang chạy, bạn chỉ cần gõ đúng 1 lệnh duy nhất tại thư mục dự án:
+Mở terminal tại thư mục dự án và chạy:
 
+#### ➤ Lựa chọn 1: Chạy Web và dùng chung Database máy Host (Khuyến nghị cho team)
+```bash
+docker compose -f docker-compose.app-only.yml up --build -d
+```
+*(Lệnh này chỉ build Backend + Frontend trên máy bạn và trỏ thẳng vào Database máy Host, không tạo thêm container DB thừa).*
+
+#### ➤ Lựa chọn 2: Chạy độc lập hoàn toàn (kèm container DB riêng)
 ```bash
 docker compose up --build -d
 ```
 
-Compose sẽ tự động:
+---
 
-- Khởi động container PostgreSQL (`db`) và cấu hình sẵn database `contract_verifier_db`.
-- Khởi động backend FastAPI (`backend`), tự tạo bảng (schema), tự tạo tài khoản Admin mặc định.
-- Khởi động frontend Next.js (`frontend`).
+### Cách 3: Truy cập trực tiếp qua Trình duyệt (Dành cho điện thoại / laptop khác)
 
-### Cách 3: Nạp dữ liệu mẫu từ Excel (Tùy chọn)
+Nếu máy Host (`192.168.105.109`) hoặc một máy bất kỳ trong nhóm đã bật Web:
+* Các thiết bị khác (điện thoại, tablet, laptop khác) trong cùng mạng Wi-Fi **KHÔNG CẦN cài đặt gì cả, KHÔNG CẦN Docker hay Git**.
+* Chỉ cần mở trình duyệt và truy cập theo địa chỉ IP của máy đang bật web:
+  * **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000` (Ví dụ: `http://192.168.105.109:3000` hoặc `http://192.168.105.126:3000`)
+  * **Admin Dashboard**: `http://<IP_MÁY_CHẠY>:3000/admin`
+  * **Tài liệu API (Swagger UI)**: `http://<IP_MÁY_CHẠY>:8000/docs`
 
-Nếu bạn muốn nạp 250 quy tắc pháp lý, 250 điều khoản rủi ro và các hợp đồng mẫu từ thư mục `data/`:
+> **Lưu ý mạng LAN**: Hệ thống đã được tích hợp sẵn cấu hình `0.0.0.0`, CORS (`Access-Control-Allow-Origin: *`) và **Private Network Access (PNA)** (`Access-Control-Allow-Private-Network: true`) cùng cơ chế phát hiện hostname động trong `frontend/src/lib/api.ts`. Bất kỳ thiết bị nào truy cập từ xa qua mạng LAN đều gọi API mượt mà, không bị lỗi CORS hay dính `localhost`.
 
-```bash
-docker compose --profile seed run --rm import-data
+---
+
+## 🔑 Thông tin Đăng nhập & Quản trị
+
+| Vai trò | Email đăng nhập | Mật khẩu mặc định | Ghi chú |
+|---|---|---|---|
+| **Quản trị viên (Admin)** | `admin@weeblegit.vn` | `Admin@123456` | Toàn quyền xem thống kê, quản lý hợp đồng, người dùng, quy tắc rủi ro và audit log tại `/admin` |
+| **Người dùng thường** | Có thể bấm **Đăng ký** trực tiếp trên giao diện Web | Tự tạo (tối thiểu 8 ký tự) | Tải lên hợp đồng, đối chiếu mã SHA-256, tra cứu điều khoản, chat với AI |
+
+---
+
+## 📋 Danh mục API Chính (Backend FastAPI)
+
+Tài liệu Swagger UI tương tác trực tiếp tại: `http://localhost:8000/docs`
+
+| Phương thức | Endpoint | Chức năng | Quyền hạn |
+|---|---|---|---|
+| **GET** | `/health` | Kiểm tra trạng thái hoạt động backend | Public |
+| **POST** | `/api/auth/register` | Đăng ký tài khoản người dùng mới | Public |
+| **POST** | `/api/auth/login` | Đăng nhập lấy Bearer JWT Token | Public |
+| **GET** | `/api/auth/me` | Lấy thông tin tài khoản hiện tại | Đã đăng nhập |
+| **POST** | `/api/contracts` | Upload file hợp đồng và tính SHA-256 | Đã đăng nhập |
+| **GET** | `/api/contracts` | Lấy danh sách hợp đồng đã tải lên | Đã đăng nhập |
+| **POST** | `/api/contracts/{id}/verify` | Xác thực tính toàn vẹn SHA-256 constant-time | Đã đăng nhập |
+| **POST** | `/api/ai/chat` | Tương tác AI đa lượt & tạo kịch bản đàm phán hợp đồng | Đã đăng nhập |
+| **GET** | `/api/admin/stats` | Thống kê tổng quan số liệu hệ thống | Admin |
+| **GET** | `/api/admin/contracts` | Xem tất cả hợp đồng của mọi người dùng | Admin |
+| **GET** | `/api/admin/users` | Quản lý danh sách tài khoản & trạng thái active | Admin |
+| **GET** | `/api/admin/risk-rules` | Xem danh mục 250 quy tắc rủi ro hợp đồng | Admin |
+| **POST** | `/api/admin/risk-rules` | Tạo thêm quy tắc rủi ro mới | Admin |
+| **GET** | `/api/admin/logs` | Xem audit log lịch sử xác thực bất biến | Admin |
+
+---
+
+## 📁 Cấu trúc Thư mục
+
+```text
+Web-WeebLegit/
+├── backend/                         # Backend FastAPI
+│   ├── routers/                     # API routers (auth, contract, ai, admin)
+│   ├── ai_engine.py                 # AI Engine (Gemini LLM + Vietnamese Legal Rules)
+│   ├── database.py                  # Cấu hình SQLAlchemy + Retry + Admin init
+│   ├── models.py                    # Database models (User, Contract, Clause, Rule, Log)
+│   └── main.py                      # FastAPI entrypoint + PNA & CORS middleware
+├── frontend/                        # Frontend Next.js 16 + React 19 + Tailwind
+│   ├── src/app/                     # Next.js App Router (trang chủ & /admin)
+│   ├── src/components/              # Components (Chatbox AI, Checker, Templates, Navbar)
+│   ├── src/lib/api.ts               # Dynamic API client layer (tự nhận diện LAN IP)
+│   └── src/data/                    # Dữ liệu 7 mẫu hợp đồng chuẩn & luật tham chiếu
+├── data/                            # Thư mục dữ liệu tham chiếu gốc (Excel + mẫu)
+├── docker-compose.yml               # Compose chạy độc lập (Full Stack gồm DB)
+├── docker-compose.app-only.yml      # Compose chạy Web kết nối tới DB máy Host chung
+├── run.bat                          # Script 1-click khởi động cho Windows
+├── run.sh                           # Script 1-click khởi động cho Linux/macOS
+└── README.md                        # Hướng dẫn chi tiết dự án
 ```
 
 ---
 
-## Địa chỉ truy cập
-
-### 1. Trên chính máy đang chạy:
-
-- **Trang chủ Web**: [http://localhost:3000](http://localhost:3000)
-- **Admin Dashboard**: [http://localhost:3000/admin](http://localhost:3000/admin)
-  - Tài khoản Admin: `admin@weeblegit.vn`
-  - Mật khẩu: `Admin@123456`
-- **Tài liệu API (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-### 2. Từ các máy khác trong cùng mạng LAN (Điện thoại, Laptop khác):
-
-Chỉ cần thay `localhost` bằng địa chỉ IP LAN của máy đang chạy web (ví dụ `192.168.105.126`):
-
-- **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000` (ví dụ: `http://192.168.105.126:3000`)
-- **Admin Dashboard**: `http://<IP_MÁY_CHẠY>:3000/admin`
-- Frontend đã được cấu hình tự động nhận diện IP của máy chủ để gọi API backend `http://<IP_MÁY_CHẠY>:8000`, kèm header CORS và Private Network Access (PNA) cho các trình duyệt Chrome/Edge trên thiết bị khác.
-
-The backend and importer both use `DATABASE_URL` from the environment, so they can connect to the PostgreSQL container already running on your host.
-
-## Frontend Behavior
-
-The frontend proxies API requests to the backend container, so you can use the app from a single origin in Docker.
-
-If you run frontend and backend separately, set:
-
-```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
-```
-
-If you run through Docker Compose, you can leave `NEXT_PUBLIC_API_BASE_URL` empty.
-
-## Local Dev Without Docker
-
-If you want to run only the backend locally:
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install fastapi uvicorn sqlalchemy psycopg2-binary pandas openpyxl bcrypt python-multipart
-uvicorn backend.main:app --reload
-```
-
-If you want to run only the frontend locally:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## API Endpoints
-
-| Method | Endpoint                                  | Purpose               |
-| ------ | ----------------------------------------- | --------------------- |
-| GET    | `/health`                                 | Health check          |
-| POST   | `/api/users/register`                     | Register              |
-| POST   | `/api/users/login`                        | Login                 |
-| GET    | `/api/auth/me`                            | Current user          |
-| POST   | `/api/contracts`                          | Upload contract       |
-| GET    | `/api/contracts/{id}`                     | Get contract metadata |
-| POST   | `/api/contracts/{id}/verify`              | Verify SHA-256        |
-| POST   | `/api/contracts/{id}/clauses`             | Add clause            |
-| PUT    | `/api/contracts/{id}/clauses/{clause_id}` | Update clause         |
-| DELETE | `/api/contracts/{id}/clauses/{clause_id}` | Delete clause         |
-| GET    | `/api/contracts/{id}/verifications`       | Verification history  |
-
-## Data Files
-
-The `data/` folder contains:
-
-- `legal_references.xlsx`
-- `risk_rules_master.xlsx`
-- `test_set_labeled.xlsx`
-- `sample_contracts/`
-
-These files are reference/import data. They are not loaded automatically at startup.
-
-## Notes
-
-- Use `host.docker.internal` for backend container access to the host PostgreSQL container.
-- DBeaver should still connect to `localhost:5432` because the database is published on the host.
-- Keep `SECRET_KEY`, `DATABASE_URL`, and `CORS_ORIGINS` in `.env` for real deployments.
-- Set `CORS_ORIGINS=*` if you want the API reachable from any browser origin on your LAN.
-- The repo intentionally starts from an empty schema, not a preseeded database.
+## 🛡️ Nguyên tắc Bảo mật & Dữ liệu
+* Toàn bộ mã băm SHA-256 được tính toán theo luồng nhị phân trực tiếp từ byte file và so sánh theo cơ chế `constant-time`.
+* Mật khẩu được mã hóa an toàn bằng thuật toán băm chuẩn (Argon2id / bcrypt).
+* Bảng `verification_logs` hoạt động theo nguyên tắc audit log append-only để phục vụ giám sát và kiểm tra an toàn.
