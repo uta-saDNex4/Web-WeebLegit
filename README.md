@@ -38,7 +38,7 @@ Script sẽ tự động:
 
 Mở terminal tại thư mục dự án và chạy:
 
-#### ➤ Lựa chọn 1: Chạy Web và dùng chung Database máy Host (Khuyến nghị cho team)
+#### ➤ Lựa chọn 1: Chạy Web và dùng chung Database máy Host
 ```bash
 docker compose -f docker-compose.app-only.yml up --build -d
 ```
