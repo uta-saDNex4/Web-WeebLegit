@@ -223,16 +223,30 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     ...(uploadedContract ? [{ key: "market" as ActiveTab, label: "Thị trường", icon: <BarChart2 className="w-4 h-4" /> }] : []),
   ];
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+    <div 
+      onClick={handleClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto cursor-pointer"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-white rounded-2xl border border-[#d8e3ef] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-6"
+        onClick={(e) => e.stopPropagation()}
+        className="cursor-default bg-white dark:bg-[#0b1424] rounded-2xl border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-6"
       >
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
@@ -334,14 +348,14 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                     </div>
                     <div>
                       <p className={`font-bold text-sm ${verifyResult.result === "matched" ? "text-[#0d7a5f]" : verifyResult.result === "mismatched" ? "text-[#b91c1c]" : "text-[#7d480e]"}`}>
-                        {verifyResult.result === "matched" && "✅ File hợp lệ — SHA-256 khớp"}
-                        {verifyResult.result === "mismatched" && "⚠️ Cảnh báo — File đã bị thay đổi"}
-                        {verifyResult.result === "failed" && "❌ Xác thực thất bại"}
+                        {verifyResult.result === "matched" && "✅ File nguyên vẹn — Giữ đúng bản gốc"}
+                        {verifyResult.result === "mismatched" && "⚠️ Cảnh báo — File đã bị chỉnh sửa"}
+                        {verifyResult.result === "failed" && "❌ Chưa thể xác thực file"}
                       </p>
                       <p className="text-xs text-[#49627d] mt-0.5">
-                        {verifyResult.result === "matched" && "File chưa bị chỉnh sửa kể từ khi upload lên hệ thống."}
-                        {verifyResult.result === "mismatched" && "Hash không khớp — nội dung file khác với bản đã lưu."}
-                        {verifyResult.result === "failed" && "Không thể đọc file từ storage để xác thực."}
+                        {verifyResult.result === "matched" && "File hoàn toàn nguyên bản, không bị ai sửa đổi hay tráo trang."}
+                        {verifyResult.result === "mismatched" && "Mã kiểm tra không trùng — nội dung file đã bị thay đổi so với bản ban đầu."}
+                        {verifyResult.result === "failed" && "Không thể đọc file từ hệ thống để kiểm tra."}
                       </p>
                       {verifyResult.duration_ms != null && <p className="text-xs text-[#8297ac] mt-1">Thời gian xử lý: {verifyResult.duration_ms}ms</p>}
                     </div>
@@ -349,18 +363,18 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
 
                   {/* Hash details */}
                   <div className="p-4 rounded-xl bg-[#f8fafd] border border-[#d8e3ef] space-y-3">
-                    <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Chi tiết SHA-256</h4>
+                    <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Mã Kiểm Tra Toàn Vẹn (Dấu Vân Tay SHA-256)</h4>
                     <div className="space-y-2">
                       <div>
                         <p className="text-[11px] font-semibold text-[#49627d] mb-1">📁 File: {uploadedContract.filename}</p>
-                        <p className="text-[11px] text-[#8297ac]">Kích thước: {formatBytes(uploadedContract.file_size_bytes)}</p>
+                        <p className="text-[11px] text-[#8297ac]">Dung lượng: {formatBytes(uploadedContract.file_size_bytes)}</p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Hash lưu trữ (expected):</p>
+                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file ban đầu (lúc tải lên):</p>
                         <code className="text-[10px] font-mono text-[#10253f] bg-white px-2 py-1 rounded-lg border border-[#d8e3ef] break-all block">{verifyResult.expected_sha256}</code>
                       </div>
                       <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Hash xác thực (actual):</p>
+                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file kiểm tra lại thực tế:</p>
                         <code className={`text-[10px] font-mono px-2 py-1 rounded-lg border break-all block ${verifyResult.result === "matched" ? "text-[#159f7b] bg-[#eafbf7] border-[#b7f6e5]" : "text-[#e4534b] bg-[#fff1f0] border-[#ffd1cc]"}`}>{verifyResult.actual_sha256}</code>
                       </div>
                     </div>

@@ -3,103 +3,115 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { AuthProvider } from './lib/auth-context';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { TemplateLibrary } from './components/TemplateLibrary';
-import { VerificationProcess } from './components/VerificationProcess';
-import { AiAssistantSection } from './components/AiAssistantSection';
-import { LegalReferences } from './components/LegalReferences';
-import { CallToAction } from './components/CallToAction';
-import { Footer } from './components/Footer';
-import { ContractCheckerModal } from './components/ContractCheckerModal';
-import { TemplateViewerModal } from './components/TemplateViewerModal';
-import { LegalDetailsModal } from './components/LegalDetailsModal';
-import { NextjsExportModal } from './components/NextjsExportModal';
-import { AuthModal } from './components/AuthModal';
-import { ContractTemplate, LegalSource } from './types';
+import React, { useState } from "react";
+import { AuthProvider } from "./lib/auth-context";
+import { LanguageProvider } from "./lib/language-context";
+
+// New Legal Components
+import { NavbarLegal } from "./components/NavbarLegal";
+import { HeroLegal } from "./components/HeroLegal";
+import { QuickDropzone } from "./components/QuickDropzone";
+import { LegalMetricsBar } from "./components/LegalMetricsBar";
+import { LegalProcess } from "./components/LegalProcess";
+import { ContractPitfallsSection } from "./components/ContractPitfallsSection";
+import { StatuteReferenceSection } from "./components/StatuteReferenceSection";
+import { CtaLegalBanner } from "./components/CtaLegalBanner";
+import { Footer } from "./components/Footer";
+
+// AI Assistant & Modals
+import { FloatingAiWidget } from "./components/FloatingAiWidget";
+import { ContractCheckerModal } from "./components/ContractCheckerModal";
+import { LegalDetailsModal } from "./components/LegalDetailsModal";
+import { NextjsExportModal } from "./components/NextjsExportModal";
+import { AuthModal } from "./components/AuthModal";
+import { LegalSource } from "./types";
 
 function AppInner() {
   const [isCheckerOpen, setIsCheckerOpen] = useState(false);
   const [isNextjsOpen, setIsNextjsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<ContractTemplate | null>(null);
+  const [authInitialTab, setAuthInitialTab] = useState<"login" | "register">("login");
   const [selectedSource, setSelectedSource] = useState<LegalSource | null>(null);
 
   const handleScrollTo = (elementId: string) => {
     const el = document.getElementById(elementId);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  // Mở ContractCheckerModal — nếu chưa login thì mở AuthModal trước
   const handleOpenChecker = () => setIsCheckerOpen(true);
+  const handleOpenAuth = (tab: "login" | "register" = "login") => {
+    setAuthInitialTab(tab);
+    setIsAuthOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-[#f7fafc] text-[#10253f] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#10253f]">
-      {/* Top sticky Navbar */}
-      <Navbar
+    <div className="min-h-screen bg-[#FAF9F5] dark:bg-[#09111E] text-[#0F1E36] dark:text-[#E2E8F0] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#0F1E36] transition-colors duration-250">
+      {/* 1. Header / Navbar with High-Contrast Action Buttons */}
+      <NavbarLegal
         onOpenChecker={handleOpenChecker}
-        onOpenTemplates={() => handleScrollTo('templates-section')}
-        onOpenNextjsCode={() => setIsNextjsOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={handleOpenAuth}
+        onScrollToSection={handleScrollTo}
       />
 
-      {/* Main Content Sections matching Framer layout */}
+      {/* Main Content Sections */}
       <main className="flex-1">
-        {/* 1. Hero Section & Interactive Preview Document */}
-        <Hero
+        {/* 2. Hero Section & Live Interactive Contract Document Scanner Mockup */}
+        <HeroLegal
           onOpenChecker={handleOpenChecker}
-          onOpenTemplates={() => handleScrollTo('templates-section')}
+          onOpenPitfalls={() => handleScrollTo("pitfalls-section")}
         />
 
-        {/* 2. Thư viện bắt đầu (4 Student Contract Templates) */}
-        <TemplateLibrary
-          onSelectTemplate={(tmpl) => setSelectedTemplate(tmpl)}
+        {/* 3. Quick Dropzone — Interactive Upload directly on Homepage */}
+        <QuickDropzone
+          onOpenChecker={handleOpenChecker}
         />
 
-        {/* 3. Từ bản nháp đến tự tin ký (3-Step Process) */}
-        <VerificationProcess
+        {/* 4. 3-Step Verification Pipeline */}
+        <LegalProcess
           onStartProcess={handleOpenChecker}
         />
 
-        {/* 4. Trợ lý bên cạnh bạn (Interactive AI Assistant Chat) */}
-        <AiAssistantSection />
+        {/* 5. Legal Pitfall Radar & Quick FAQ Accordion */}
+        <ContractPitfallsSection
+          onOpenChecker={handleOpenChecker}
+        />
 
-        {/* 5. Dẫn chứng minh bạch (Legal References & Storage) */}
-        <LegalReferences
+        {/* 6. Official Statutory Legal References */}
+        <StatuteReferenceSection
           onSelectSource={(source) => setSelectedSource(source)}
           onOpenChecker={handleOpenChecker}
         />
 
-        {/* 6. Bản demo cho sinh viên (Bottom CTA) */}
-        <CallToAction
+        {/* 7. Bottom Call to Action Banner */}
+        <CtaLegalBanner
           onStart={handleOpenChecker}
         />
+
+        {/* 8. Trust & Legal Speed Metrics */}
+        <LegalMetricsBar />
       </main>
 
-      {/* Footer */}
+      {/* Floating Interactive AI Assistant Chat Bubble (bottom-right) */}
+      <FloatingAiWidget />
+
+      {/* 9. Footer */}
       <Footer
         onOpenNextjsCode={() => setIsNextjsOpen(true)}
       />
 
-      {/* ─── Modals ─── */}
+      {/* ─── Modals (Esc & Backdrop Click Dismissable) ─── */}
       <AuthModal
         isOpen={isAuthOpen}
+        initialTab={authInitialTab}
         onClose={() => setIsAuthOpen(false)}
       />
 
       <ContractCheckerModal
         isOpen={isCheckerOpen}
         onClose={() => setIsCheckerOpen(false)}
-        onNeedAuth={() => { setIsCheckerOpen(false); setIsAuthOpen(true); }}
-      />
-
-      <TemplateViewerModal
-        template={selectedTemplate}
-        onClose={() => setSelectedTemplate(null)}
+        onNeedAuth={() => handleOpenAuth("login")}
       />
 
       <LegalDetailsModal
@@ -118,7 +130,9 @@ function AppInner() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppInner />
+      <LanguageProvider>
+        <AppInner />
+      </LanguageProvider>
     </AuthProvider>
   );
 }
