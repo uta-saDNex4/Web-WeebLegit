@@ -1,0 +1,39 @@
+# File docker-compose dành cho máy chạy Web (Backend + Frontend)
+# nhưng kết nối tới Database PostgreSQL đang chạy sẵn ở một máy Host khác trong LAN.
+# Sử dụng: docker compose -f docker-compose.app-only.yml up --build -d
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: contract-verifier-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@192.168.105.109:5432/contract_verifier_db}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      STORAGE_ROOT: /data/storage
+      SECURE_STORAGE_ROOT: /data/secure_storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend-storage:/data/storage
+      - backend-secure-storage:/data/secure_storage
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: contract-verifier-frontend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  backend-storage:
+  backend-secure-storage:

@@ -25,6 +25,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@db:5432/contract_verifier_db}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       STORAGE_ROOT: /data/storage
       SECURE_STORAGE_ROOT: /data/secure_storage
     extra_hosts:

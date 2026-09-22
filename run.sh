@@ -13,11 +13,21 @@ echo ""
 # 2. Khởi động Docker Compose
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     echo "[OK] Docker daemon đang hoạt động!"
-    echo "[*] Đang khởi động hệ thống bằng Docker Compose..."
-    docker compose up --build -d
+    echo ""
+    echo "Chọn chế độ khởi động:"
+    echo "  [1] Chạy Web kết nối tới Database Máy Host (192.168.105.109) [Khuyến nghị]"
+    echo "  [2] Chạy Độc lập (Tự tạo Database PostgreSQL riêng trên máy này)"
+    read -p "Nhập lựa chọn (mặc định 1): " DOCKER_MODE
+    if [ "$DOCKER_MODE" = "2" ]; then
+        echo "[*] Đang khởi động Full Stack (DB riêng + Backend + Frontend)..."
+        docker compose -f docker-compose.yml up --build -d
+    else
+        echo "[*] Đang khởi động Web kết nối tới Database Host 192.168.105.109..."
+        docker compose -f docker-compose.app-only.yml up --build -d
+    fi
     echo ""
     echo "======================================================================"
-    echo " [THÀNH CÔNG] Toàn bộ hệ thống Web & Database đã hoạt động!"
+    echo " [THÀNH CÔNG] Toàn bộ hệ thống Web đã hoạt động!"
     echo "======================================================================"
     echo " 1. Truy cập trên máy này: http://localhost:3000"
     echo " 2. Truy cập từ máy khác trong LAN: http://$LAN_IP:3000"
