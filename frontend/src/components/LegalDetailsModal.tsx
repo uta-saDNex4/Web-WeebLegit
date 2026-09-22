@@ -73,16 +73,29 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
             ))}
           </div>
 
-          <div className="p-3 rounded-xl bg-[#FAF5ED] dark:bg-[#12223c] border border-[#EAD7B8]/70 dark:border-[#1f3557] text-xs text-[#8a6834] dark:text-[#EAD7B8] flex items-center justify-between mt-4">
-            <span className="font-semibold">{source.linkText}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </div>
+          {source.url ? (
+            <a
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="p-3 rounded-xl bg-[#FAF5ED] dark:bg-[#12223c] border border-[#EAD7B8]/70 dark:border-[#1f3557] hover:border-[#8a6834] dark:hover:border-[#EAD7B8] hover:bg-[#EAD7B8]/20 dark:hover:bg-[#1a2f50] text-xs text-[#8a6834] dark:text-[#EAD7B8] flex items-center justify-between mt-4 transition-all group cursor-pointer shadow-2xs"
+            >
+              <span className="font-bold group-hover:underline">{source.linkText}</span>
+              <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+          ) : (
+            <div className="p-3 rounded-xl bg-[#FAF5ED] dark:bg-[#12223c] border border-[#EAD7B8]/70 dark:border-[#1f3557] text-xs text-[#8a6834] dark:text-[#EAD7B8] flex items-center justify-between mt-4">
+              <span className="font-semibold">{source.linkText}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </div>
+          )}
         </div>
 
-        {/* Footer — Xóa nút Đóng */}
+        {/* Footer */}
         <div className="px-6 py-3.5 bg-[#f8fafd] dark:bg-[#0f1b2f] border-t border-[#e6edf4] dark:border-[#1a2d4b] flex items-center justify-between">
           <span className="text-xs text-[#8297ac] dark:text-[#8fa3bf]">
-            Dẫn chứng chuẩn hóa • WeebLegit (Bấm Esc hoặc nhấp ra ngoài để thoát)
+            Dẫn chứng chuẩn hóa • WeebLegit
           </span>
         </div>
       </motion.div>

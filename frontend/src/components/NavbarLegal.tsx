@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   ShieldCheck,
   Globe,
   Sun,
   Moon,
+  Monitor,
+  Check,
   LogIn,
   UserPlus,
   FileSearch,
@@ -17,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLanguage } from "../lib/language-context";
+import { useTheme } from "../lib/theme-context";
 
 interface NavbarLegalProps {
   onOpenChecker: () => void;
@@ -31,30 +34,50 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const { lang, toggleLang, t } = useLanguage();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
-  React.useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+  const themeDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        themeDropdownRef.current &&
+        !themeDropdownRef.current.contains(event.target as Node)
+      ) {
+        setThemeDropdownOpen(false);
+      }
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-    setIsDark(nextDark);
-  };
+  // Close dropdowns on Esc key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setThemeDropdownOpen(false);
+        setUserDropdownOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#FAF9F5]/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        {/* Brand Logo - Co giãn mượt mà khi ở cửa sổ nhỏ (không che các thành phần khác) */}
+        {/* Brand Logo */}
         <div className="flex items-center shrink-0">
           <a
             href="#"
@@ -75,7 +98,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           </a>
         </div>
 
-        {/* Desktop Navigation Links (Từ ngữ toàn dân, dễ hiểu) */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-2 text-sm font-bold text-[#1E324F] dark:text-[#A9BCD6]">
           <button
             onClick={() => onScrollToSection("check-section")}
@@ -108,30 +131,98 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           {/* Language Switcher */}
           <button
             onClick={toggleLang}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-xs font-extrabold text-[#0F1E36] dark:text-[#CAD8ED] transition-all cursor-pointer shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-2.5 h-9 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-xs font-extrabold text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer shadow-2xs shrink-0"
             title={lang === "EN" ? "Switch to Vietnamese" : "Chuyển sang Tiếng Anh"}
           >
             <Globe className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />
             <span>{lang}</span>
           </button>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-[#0F1E36] dark:text-[#CAD8ED] transition-all cursor-pointer shadow-2xs"
-            title={isDark ? "Giao diện Sáng" : "Giao diện Tối"}
-            aria-label="Toggle theme"
-          >
-            {isDark ? (
-              <Sun className="w-4 h-4 text-[#EAD7B8]" />
-            ) : (
-              <Moon className="w-4 h-4 text-[#0F1E36]" />
+          {/* Theme Dropdown (Icon Only - Sáng / Tối / Hệ thống) */}
+          <div className="relative" ref={themeDropdownRef}>
+            <button
+              onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer shadow-2xs shrink-0"
+              title={
+                theme === "light"
+                  ? (lang === "EN" ? "Light theme" : "Giao diện: Sáng")
+                  : theme === "dark"
+                  ? (lang === "EN" ? "Dark theme" : "Giao diện: Tối")
+                  : (lang === "EN" ? "System theme" : "Giao diện: Hệ thống")
+              }
+              aria-label="Toggle theme dropdown"
+            >
+              {theme === "light" ? (
+                <Sun className="w-4 h-4 text-[#E5A93C]" />
+              ) : theme === "dark" ? (
+                <Moon className="w-4 h-4 text-[#8FA3BF]" />
+              ) : (
+                <Monitor className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+              )}
+            </button>
+
+            {themeDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-[#0D1829] border border-[#E6DEC8] dark:border-[#1F3557] rounded-xl shadow-xl py-1 z-50">
+                <button
+                  onClick={() => {
+                    setTheme("light");
+                    setThemeDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                    theme === "light"
+                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
+                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sun className="w-3.5 h-3.5 text-[#E5A93C]" />
+                    <span>{lang === "EN" ? "Light" : "Sáng"}</span>
+                  </span>
+                  {theme === "light" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTheme("dark");
+                    setThemeDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                    theme === "dark"
+                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
+                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Moon className="w-3.5 h-3.5 text-[#8FA3BF]" />
+                    <span>{lang === "EN" ? "Dark" : "Tối"}</span>
+                  </span>
+                  {theme === "dark" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTheme("system");
+                    setThemeDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                    theme === "system"
+                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
+                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Monitor className="w-3.5 h-3.5 text-[#49627D] dark:text-[#8FA3BF]" />
+                    <span>{lang === "EN" ? "System" : "Hệ thống"}</span>
+                  </span>
+                  {theme === "system" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
+                </button>
+              </div>
             )}
-          </button>
+          </div>
 
           {/* User Auth Controls */}
           {user ? (
-            <div className="relative">
+            <div className="relative" ref={userDropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-[#11213A] border border-[#DCD3BE] dark:border-[#22395D] text-xs font-bold text-[#0F1E36] dark:text-white shadow-xs cursor-pointer hover:border-[#8A6731]"
@@ -153,6 +244,15 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                       {user.email}
                     </p>
                   </div>
+                  {user.role === "admin" && (
+                    <a
+                      href="/admin"
+                      className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                      <span>{lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị Admin"}</span>
+                    </a>
+                  )}
                   <button
                     onClick={() => {
                       setUserDropdownOpen(false);
@@ -180,32 +280,31 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onOpenAuth("login")}
-                className="text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:text-[#0F1E36] dark:hover:text-white px-2.5 py-2 cursor-pointer transition-colors"
+                className="inline-flex items-center px-3.5 h-9 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] bg-white/70 dark:bg-[#0F1B2E]/70 hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#142642] text-xs font-bold text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer shadow-2xs shrink-0"
               >
                 {lang === "EN" ? "Sign In" : "Đăng nhập"}
               </button>
-
               <button
                 onClick={() => onOpenAuth("register")}
-                className="px-3 py-1.5 rounded-xl border border-[#D4C8AE] dark:border-[#22395D] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-xs font-bold text-[#0F1E36] dark:text-[#EAD7B8] transition-all cursor-pointer"
+                className="inline-flex items-center px-4 h-9 rounded-xl border border-[#8A6731] bg-[#FAF5ED] dark:bg-[#12223C] text-xs font-extrabold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#8A6731] hover:text-white dark:hover:bg-[#EAD7B8] dark:hover:text-[#09111E] transition-colors cursor-pointer shadow-xs shrink-0"
               >
                 {lang === "EN" ? "Register" : "Đăng ký"}
               </button>
             </div>
           )}
 
-          {/* HIGH-CONTRAST PRIMARY CTA BUTTON */}
+          {/* High-Contrast Main Action Button */}
           <button
             onClick={onOpenChecker}
-            className="group relative inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[#0F223D] hover:bg-[#162D4F] text-[#EAD7B8] border border-[#EAD7B8]/80 text-xs font-black shadow-md shadow-[#0F223D]/25 transition-all duration-200 hover:scale-103 active:scale-97 cursor-pointer"
+            className="flex items-center gap-2 px-4.5 h-9 rounded-xl bg-[#0F223D] hover:bg-[#152e50] text-[#EAD7B8] border border-[#EAD7B8] hover:border-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg active:scale-98 shrink-0"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#EAD7B8] group-hover:rotate-12 transition-transform" />
-            <span>{lang === "EN" ? "Check Contract Free" : "Kiểm Tra Miễn Phí"}</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#EAD7B8] animate-pulse" />
+            <span>{lang === "EN" ? "Check Contract" : "Kiểm Tra Ngay"}</span>
           </button>
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="flex items-center gap-2 lg:hidden">
+        {/* Mobile Hamburger Toggle Button */}
+        <div className="lg:hidden flex items-center gap-2">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 text-[#0F1E36] dark:text-white rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] transition-colors"
@@ -219,21 +318,56 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-[#E6DEC8] dark:border-[#1A2D49] bg-[#FAF9F5] dark:bg-[#09111E] px-4 py-4 space-y-3 shadow-2xl">
-          <div className="grid grid-cols-2 gap-2 pb-3 border-b border-[#EFE8D8] dark:border-[#162744]">
-            <button
-              onClick={toggleLang}
-              className="flex items-center justify-center gap-1.5 py-2 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] text-xs font-bold text-[#0F1E36] dark:text-white"
-            >
-              <Globe className="w-3.5 h-3.5 text-[#8A6731]" />
-              <span>Ngôn ngữ: {lang}</span>
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center gap-1.5 py-2 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] text-xs font-bold text-[#0F1E36] dark:text-white"
-            >
-              {isDark ? <Sun className="w-3.5 h-3.5 text-[#EAD7B8]" /> : <Moon className="w-3.5 h-3.5" />}
-              <span>{isDark ? "Chế độ Tối" : "Chế độ Sáng"}</span>
-            </button>
+          {/* Mobile Lang & 3-segment Theme Selector */}
+          <div className="pb-3 border-b border-[#EFE8D8] dark:border-[#162744] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#65778F] dark:text-[#8FA3BF]">
+                {lang === "EN" ? "Interface theme" : "Chế độ giao diện"}:
+              </span>
+              <button
+                onClick={toggleLang}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[#DCD3BE] dark:border-[#1F3354] text-xs font-bold text-[#0F1E36] dark:text-white"
+              >
+                <Globe className="w-3.5 h-3.5 text-[#8A6731]" />
+                <span>{lang}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1 p-1 bg-[#F0EAE0] dark:bg-[#0D1829] rounded-xl border border-[#DCD3BE] dark:border-[#1F3354]">
+              <button
+                onClick={() => setTheme("light")}
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  theme === "light"
+                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
+                    : "text-[#49627D] dark:text-[#8FA3BF]"
+                }`}
+              >
+                <Sun className="w-3.5 h-3.5 text-[#E5A93C]" />
+                <span>{lang === "EN" ? "Light" : "Sáng"}</span>
+              </button>
+              <button
+                onClick={() => setTheme("dark")}
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  theme === "dark"
+                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
+                    : "text-[#49627D] dark:text-[#8FA3BF]"
+                }`}
+              >
+                <Moon className="w-3.5 h-3.5 text-[#8FA3BF]" />
+                <span>{lang === "EN" ? "Dark" : "Tối"}</span>
+              </button>
+              <button
+                onClick={() => setTheme("system")}
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  theme === "system"
+                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
+                    : "text-[#49627D] dark:text-[#8FA3BF]"
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5 text-[#49627D] dark:text-[#8FA3BF]" />
+                <span>{lang === "EN" ? "System" : "Hệ thống"}</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2 text-sm font-bold text-[#1E324F] dark:text-[#CAD8ED]">

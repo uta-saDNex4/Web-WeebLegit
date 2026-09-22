@@ -18,6 +18,10 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.logout': 'Đăng xuất',
     'nav.theme_light': 'Chuyển sang chế độ Sáng',
     'nav.theme_dark': 'Chuyển sang chế độ Tối',
+    'theme.title': 'Giao diện',
+    'theme.light': 'Sáng',
+    'theme.dark': 'Tối',
+    'theme.system': 'Hệ thống',
 
     // Floating Nav
     'dock.home': 'Trang chủ',
@@ -103,10 +107,10 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.badge': 'CĂN CỨ PHÁP LÝ & BẢO MẬT ĐÃ CHỨNG THỰC',
     'cta.title': 'Xác Thực Tính Pháp Lý & Toàn Vẹn Của Hợp Đồng',
     'cta.subtitle':
-      'Hệ thống đối chiếu trực tiếp theo Bộ luật Lao động (Luật số 45/2019/QH14), Bộ luật Dân sự (Luật số 91/2015/QH13) và Luật Nhà ở (Luật số 27/2023/QH15). Xác thực tính toàn vẹn độc lập bằng thuật toán mã băm SHA-256.',
+      'Hệ thống đối chiếu trực tiếp theo Bộ luật Lao động (Luật số 45/2019/QH14), Bộ luật Dân sự (Luật số 91/2015/QH13) và Luật Nhà ở (Luật số 27/2023/QH15), giúp bạn phát hiện rủi ro và an tâm bảo vệ quyền lợi của mình.',
     'cta.c1': 'Căn cứ Bộ luật Lao động 2019, Bộ luật Dân sự 2015 & Luật Nhà ở 2023',
-    'cta.c2': 'Mã băm SHA-256 kiểm tra toàn vẹn byte gốc (FIPS 180-4)',
-    'cta.c3': 'Tự hủy dữ liệu tạm sau phiên quét, không lưu trữ tệp',
+    'cta.c2': 'Mã băm SHA-256 kiểm tra toàn vẹn (FIPS 180-4)',
+    'cta.c3': 'Quản lý phân quyền nghiêm ngặt, không chia sẻ cho bên thứ ba',
     'cta.btn': 'Tải lên đối chiếu hợp đồng — Miễn phí',
 
     // Floating AI
@@ -134,6 +138,10 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.logout': 'Log Out',
     'nav.theme_light': 'Switch to Light Mode',
     'nav.theme_dark': 'Switch to Dark Mode',
+    'theme.title': 'Theme',
+    'theme.light': 'Light',
+    'theme.dark': 'Dark',
+    'theme.system': 'System',
 
     // Floating Nav
     'dock.home': 'Home',
@@ -219,10 +227,10 @@ const translations: Record<Language, Record<string, string>> = {
     'cta.badge': 'AUTHENTICATED LEGAL & INTEGRITY STANDARDS',
     'cta.title': 'Verify Contract Legality & Integrity Before Signing',
     'cta.subtitle':
-      'Referenced directly against the Labor Code (Law 45/2019/QH14), Civil Code (Law 91/2015/QH13), and Housing Law (Law 27/2023/QH15). File integrity verified via independent SHA-256 byte-stream checksums.',
+      'Referenced directly against the Labor Code (Law 45/2019/QH14), Civil Code (Law 91/2015/QH13), and Housing Law (Law 27/2023/QH15) to help you spot hidden risks and protect your lawful rights.',
     'cta.c1': 'Labor Code 2019, Civil Code 2015 & Housing Law 2023 statutory compliance',
-    'cta.c2': 'SHA-256 byte-stream cryptographic integrity (FIPS 180-4)',
-    'cta.c3': 'Zero file retention policy with automatic temporary buffer wipe',
+    'cta.c2': 'SHA-256 cryptographic integrity (FIPS 180-4)',
+    'cta.c3': 'Strict account-level access control, zero third-party sharing',
     'cta.btn': 'Upload & Verify Contract — Free',
 
     // Floating AI

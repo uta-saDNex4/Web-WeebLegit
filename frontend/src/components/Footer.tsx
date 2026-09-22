@@ -52,17 +52,25 @@ export const Footer: React.FC<FooterProps> = ({ onOpenNextjsCode }) => {
             </h4>
             <p className="text-xs text-[#879DBB] leading-relaxed">
               {lang === "EN"
-                ? "Your contracts and personal data are strictly isolated under your authorized account. We never sell, share, or monetize your documents; file integrity is preserved via immutable SHA-256 cryptographic hashes."
-                : "Hợp đồng và thông tin tài khoản được quản lý phân quyền nghiêm ngặt, chỉ thuộc về bạn. WeebLegit cam kết không bán, không chia sẻ dữ liệu cho bên thứ ba; tính toàn vẹn của tệp được bảo toàn bằng mã băm SHA-256 bất biến."}
+                ? "Your contracts and personal data are strictly isolated under your authorized account. We never sell, share, or monetize your documents, and file integrity is preserved."
+                : "Hợp đồng và thông tin tài khoản được quản lý phân quyền nghiêm ngặt, chỉ thuộc về bạn. WeebLegit cam kết không bán, không chia sẻ dữ liệu cho bên thứ ba, tính toàn vẹn của tệp được bảo toàn."}
             </p>
           </div>
         </div>
 
         {/* Bottom Legal Disclaimer */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#65778F]">
-          <p>© 2026 WeebLegit. Nền tảng công nghệ pháp lý hỗ trợ người trẻ.</p>
+          <p>
+            {lang === "EN"
+              ? "© 2026 WeebLegit. LegalTech platform empowering young people."
+              : "© 2026 WeebLegit. Nền tảng công nghệ pháp lý hỗ trợ người trẻ."}
+          </p>
           <p className="text-center sm:text-right">
-            ⚠️ <em>Thông tin hỗ trợ tham khảo & đối chiếu luật, không thay thế dịch vụ tranh tụng của Luật sư.</em>
+            ⚠️ <em>
+              {lang === "EN"
+                ? "Statutory reference and informational assistance; not a substitute for formal legal representation."
+                : "Thông tin hỗ trợ tham khảo & đối chiếu luật, không thay thế dịch vụ tranh tụng của Luật sư."}
+            </em>
           </p>
         </div>
       </div>

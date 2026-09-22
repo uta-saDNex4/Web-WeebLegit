@@ -13,6 +13,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 513 BLDS 2015: Hợp đồng dịch vụ và giới hạn quyền yêu cầu sửa đổi.'
     ],
     linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx',
     iconType: 'civil',
     actionType: 'modal'
   },
@@ -28,6 +29,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 98 & 107 BLLĐ 2019: Tiền lương làm thêm giờ, thời giờ làm thêm và sự đồng ý của người lao động.'
     ],
     linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
     iconType: 'labor',
     actionType: 'modal'
   },
@@ -43,23 +45,9 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Quy chế quản lý cư trú: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.'
     ],
     linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-27-2023-QH15-538466.aspx',
     iconType: 'housing',
     actionType: 'modal'
-  },
-  {
-    id: 'security-standard',
-    title: 'Chuẩn Toàn Vẹn Dữ Liệu SHA-256',
-    codeBadge: 'FIPS 180-4',
-    description: 'Thuật toán băm mật mã FIPS PUB 180-4 tạo mã kiểm tra 256-bit chống can thiệp hoặc sửa đổi nội dung hợp đồng.',
-    articles: [
-      'Tiêu chuẩn FIPS PUB 180-4: Secure Hash Standard (SHS) do Viện Tiêu chuẩn và Công nghệ Quốc gia Hoa Kỳ (NIST) ban hành.',
-      'Tính chất mật mã học một chiều: Không thể giải mã ngược nội dung file gốc từ chuỗi hash 64 ký tự hex.',
-      'Hiệu ứng tuyết lở (Avalanche Effect): Thay đổi dù chỉ 1 bit nhị phân trong hợp đồng sẽ làm thay đổi hoàn toàn giá trị băm.',
-      'Audit log bất biến: Lưu vết bằng chứng số phục vụ đối chiếu và kiểm định pháp lý minh bạch.'
-    ],
-    linkText: 'Quét hợp đồng',
-    iconType: 'security',
-    actionType: 'checker'
   }
 ];
 

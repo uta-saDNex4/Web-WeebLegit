@@ -9,17 +9,20 @@ export const LegalMetricsBar: React.FC = () => {
     {
       icon: Zap,
       val: "< 1s",
-      title: lang === "EN" ? "Verification Speed" : "Tốc Độ Xác Thực",
+      title: lang === "EN" ? "Analysis Speed" : "Tốc Độ Phân Tích",
       desc:
         lang === "EN"
-          ? "Instant SHA-256 calculation ensuring original, untampered files"
-          : "Tính toán mã SHA-256 tức thì để bảo đảm tệp nguyên bản, không bị chỉnh sửa",
+          ? "Instant AI scan detecting risk traps and unfair clauses in seconds"
+          : "Quét và phát hiện rủi ro, điều khoản bất lợi trong tích tắc",
     },
     {
       icon: Scale,
-      val: "3 Bộ Luật",
+      val: lang === "EN" ? "3 Laws" : "3 Bộ Luật",
       title: lang === "EN" ? "Statutory Database" : "Cơ Sở Đối Chiếu",
-      desc: lang === "EN" ? "Labor Code 2019, Civil Code 2015 & Housing Law" : "Bộ luật Lao động 2019, Dân sự 2015 & Luật Nhà ở 2023",
+      desc:
+        lang === "EN"
+          ? "Labor Code 2019, Civil Code 2015 & Housing Law 2023"
+          : "Bộ luật Lao động 2019, Dân sự 2015 & Luật Nhà ở 2023",
     },
     {
       icon: Lock,
@@ -30,8 +33,11 @@ export const LegalMetricsBar: React.FC = () => {
     {
       icon: ShieldCheck,
       val: "100%",
-      title: lang === "EN" ? "In-Memory Privacy" : "Bảo Mật Bộ Nhớ Tạm",
-      desc: lang === "EN" ? "Automatic temporary buffer wipe, no file retention" : "Tự động hủy vùng nhớ tạm, không lưu trữ tệp trên máy chủ",
+      title: lang === "EN" ? "Account Privacy" : "Phân Quyền Bảo Mật",
+      desc:
+        lang === "EN"
+          ? "Strict account-level access control, zero third-party sharing"
+          : "Quản lý phân quyền nghiêm ngặt, cam kết không chia sẻ dữ liệu cho bên thứ ba",
     },
   ];
 
@@ -50,7 +56,7 @@ export const LegalMetricsBar: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] flex items-center justify-center text-[#8A6731] dark:text-[#EAD7B8]">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-2xl sm:text-3xl font-black text-[#0F1E36] dark:text-white tracking-tight">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0F1E36] dark:text-white tracking-tight whitespace-nowrap">
                     {m.val}
                   </span>
                 </div>

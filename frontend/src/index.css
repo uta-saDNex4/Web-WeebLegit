@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 @layer base {
   body {
@@ -32,7 +32,8 @@
 }
 
 /* ── Dark Mode Base ── */
-html.dark body {
+html.dark body,
+html[data-theme="dark"] body {
   background-color: #060d19;
   color: #e2e8f0;
 }

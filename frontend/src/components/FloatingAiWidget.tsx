@@ -8,6 +8,8 @@ import {
   MicOff,
   Loader2,
   Minimize2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import * as api from "../lib/api";
@@ -18,6 +20,7 @@ interface Message {
   sender: "user" | "ai";
   text: string;
   citation?: string | null;
+  negotiationScript?: string | null;
   timestamp: string;
 }
 
@@ -27,11 +30,18 @@ export const FloatingAiWidget: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  const handleCopy = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // Initialize initial message with translated string
   useEffect(() => {
@@ -75,8 +85,13 @@ export const FloatingAiWidget: React.FC = () => {
     setInputValue("");
     setIsTyping(true);
 
+    const historyForAi: api.AiChatMessage[] = messages.slice(-6).map((m) => ({
+      role: m.sender === "ai" ? "model" : "user",
+      content: m.text,
+    }));
+
     try {
-      const res = await api.aiChat(text);
+      const res = await api.aiChat(text, undefined, historyForAi);
       const aiReply =
         res?.reply ??
         res?.answer ??
@@ -95,6 +110,7 @@ export const FloatingAiWidget: React.FC = () => {
         sender: "ai",
         text: aiReply,
         citation,
+        negotiationScript: res?.negotiation_script,
         timestamp: new Date().toLocaleTimeString("vi-VN", {
           hour: "2-digit",
           minute: "2-digit",
@@ -268,6 +284,32 @@ export const FloatingAiWidget: React.FC = () => {
                     }`}
                   >
                     <p>{msg.text}</p>
+                    {msg.negotiationScript && (
+                      <div className="mt-2 pt-2 border-t border-[#e2e8f0] dark:border-[#22395d]">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-[#159f7b] mb-1">
+                          <span>💬 Gợi ý câu trao đổi:</span>
+                          <button
+                            onClick={() => handleCopy(msg.id, msg.negotiationScript ?? "")}
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#eafbf7] hover:bg-[#d0f5ec] text-[#159f7b] border border-[#b7f6e5] transition-colors cursor-pointer"
+                          >
+                            {copiedId === msg.id ? (
+                              <>
+                                <Check className="w-2.5 h-2.5" />
+                                <span>Đã chép</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-2.5 h-2.5" />
+                                <span>Sao chép</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-[11px] italic text-[#26435e] dark:text-[#cad8ed] bg-slate-50 dark:bg-[#0c182c] p-2 rounded-lg border border-[#e2e8f0] dark:border-[#1d3356]">
+                          &quot;{msg.negotiationScript}&quot;
+                        </p>
+                      </div>
+                    )}
                     {msg.citation && (
                       <div className="mt-2 pt-1.5 border-t border-[#e2e8f0] dark:border-[#22395d] text-[11px] font-bold text-[#8a6834] dark:text-[#EAD7B8] flex items-center gap-1">
                         <span>⚖️ {msg.citation}</span>

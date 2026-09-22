@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLanguage } from "../lib/language-context";
+import { useTheme } from "../lib/theme-context";
 
 interface NavbarProps {
   onOpenChecker: () => void;
@@ -29,39 +30,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { lang, toggleLang, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        setIsDark(false);
-        document.documentElement.classList.remove("dark");
-      } else {
-        setIsDark(true);
-        document.documentElement.classList.add("dark");
-      }
-    } catch {
-      // ignore in SSR
-    }
-  }, []);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const toggleTheme = () => {
-    setIsDark((prev) => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.add("dark");
-        try {
-          localStorage.setItem("theme", "dark");
-        } catch {}
-      } else {
-        document.documentElement.classList.remove("dark");
-        try {
-          localStorage.setItem("theme", "light");
-        } catch {}
-      }
-      return next;
-    });
+    setTheme(isDark ? "light" : "dark");
   };
 
   const scrollToSection = (id: string) => {

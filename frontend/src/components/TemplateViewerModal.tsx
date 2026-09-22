@@ -127,10 +127,10 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
           </div>
         </div>
 
-        {/* Footer — Xóa nút Đóng */}
+        {/* Footer */}
         <div className="px-6 py-3.5 bg-[#f8fafd] dark:bg-[#0f1b2f] border-t border-[#e6edf4] dark:border-[#1a2d4b] flex items-center justify-between">
           <span className="text-xs text-[#8297ac] dark:text-[#8fa3bf]">
-            Mẫu hợp đồng sinh viên • WeebLegit (Bấm phím Esc hoặc nhấp ra ngoài để thoát)
+            Mẫu hợp đồng sinh viên • WeebLegit
           </span>
         </div>
       </motion.div>

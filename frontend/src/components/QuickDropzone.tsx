@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   UploadCloud,
   FileText,
-  Sparkles,
   ArrowRight,
-  Shield,
   Zap,
-  CheckCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { useLanguage } from "../lib/language-context";
 
@@ -16,19 +14,6 @@ interface QuickDropzoneProps {
 
 export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) => {
   const { lang } = useLanguage();
-  const [sampleQuery, setSampleQuery] = useState("");
-
-  const sampleClauses = [
-    lang === "EN"
-      ? "Retaining 50% first-month salary into a 12-month 'Onboarding Training Fund'"
-      : "Trích 50% thù lao tháng đầu vào 'Quỹ cam kết đào tạo hội nhập' 12 tháng",
-    lang === "EN"
-      ? "Automatic lease rollover forfeiting 100% deposit if no notice 45 days prior"
-      : "Mặc nhiên gia hạn hợp đồng thuê nếu không báo trước 45 ngày kèm mất 100% cọc",
-    lang === "EN"
-      ? "Surrendering original diploma / ID card as 'confidentiality guarantee deposit'"
-      : "Nộp bản chính bằng tốt nghiệp / CCCD để 'đảm bảo trách nhiệm bảo mật'",
-  ];
 
   return (
     <section id="check-section" className="py-8 scroll-mt-24">
@@ -36,7 +21,7 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
         <div className="bg-gradient-to-r from-[#FAF6EE] via-white to-[#FAF6EE] dark:from-[#0E1A2D] dark:via-[#0A1424] dark:to-[#0E1A2D] rounded-3xl border-2 border-[#E5DBCA] dark:border-[#1E3558] p-6 sm:p-9 shadow-lg">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Description */}
-            <div className="lg:col-span-5 space-y-3 text-left">
+            <div className="lg:col-span-5 space-y-4 text-left">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAD7B8]/30 dark:bg-[#EAD7B8]/10 text-[#8A6731] dark:text-[#EAD7B8] text-xs font-black uppercase tracking-wider">
                 <Zap className="w-3.5 h-3.5" />
                 <span>{lang === "EN" ? "Quick Check" : "Kiểm Tra Nhanh"}</span>
@@ -44,31 +29,29 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
 
               <h2 className="text-xl sm:text-2xl font-black text-[#0F1E36] dark:text-white tracking-tight">
                 {lang === "EN"
-                  ? "Drop your contract or test a sample trap"
-                  : "Thử Kiểm Tra Hợp Đồng Ngay Tại Đây"}
+                  ? "Check Your Contract Right Here"
+                  : "Kiểm Tra Hợp Đồng Ngay Tại Đây"}
               </h2>
 
               <p className="text-xs sm:text-sm text-[#465A75] dark:text-[#9FB3CF] leading-relaxed font-medium">
                 {lang === "EN"
-                  ? "Upload your contract or click any sample trap below to see how the system spots unfair terms."
-                  : "Tải file hợp đồng của bạn lên hoặc bấm vào các câu bẫy mẫu bên dưới để xem hệ thống chỉ ra điểm vô lý theo luật."}
+                  ? "Upload your contract file to see how the system identifies potential risks and unfair terms under Vietnamese law."
+                  : "Tải file hợp đồng của bạn lên để xem hệ thống chỉ ra các điểm bất lợi và tiềm ẩn rủi ro theo luật."}
               </p>
 
-              {/* Sample Clause Badges */}
-              <div className="pt-1">
-                <p className="text-[11px] font-bold text-[#65778F] dark:text-[#8FA3BF] uppercase tracking-wider mb-2">
-                  {lang === "EN" ? "Or try clicking these common traps:" : "Hoặc thử bấm vào các câu bẫy hay gặp:"}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {sampleClauses.map((clause, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => onOpenChecker()}
-                      className="text-left text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#12223C] border border-[#DDD2BC] dark:border-[#22395D] hover:border-[#8A6731] dark:hover:border-[#EAD7B8] text-[#1E324F] dark:text-[#CAD8ED] transition-all cursor-pointer shadow-2xs hover:scale-101"
-                    >
-                      ⚠️ "{clause}"
-                    </button>
-                  ))}
+              {/* Highlights */}
+              <div className="pt-2 space-y-2.5 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED]">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8] shrink-0" />
+                  <span>{lang === "EN" ? "Automated risk radar & clause analysis" : "Tự động rà soát bẫy phạt và điều khoản bất lợi"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8] shrink-0" />
+                  <span>{lang === "EN" ? "Direct benchmark against 3 official statutory codes" : "Đối chiếu trực tiếp với 3 bộ luật hiện hành"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8] shrink-0" />
+                  <span>{lang === "EN" ? "Instant explanation in simple, student-friendly terms" : "Giải thích chi tiết, dễ hiểu dành riêng cho sinh viên"}</span>
                 </div>
               </div>
             </div>
@@ -89,8 +72,8 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
 
                 <p className="text-xs text-[#65778F] dark:text-[#8FA3BF] mb-4 font-medium">
                   {lang === "EN"
-                    ? "File up to 25MB • SHA-256 Verified • Account-Bound Privacy"
-                    : "File tối đa 25MB • Kiểm tra toàn vẹn SHA-256 • Bảo mật dữ liệu cá nhân"}
+                    ? "File up to 20MB • SHA-256 Verified • Account-Bound Privacy"
+                    : "File tối đa 20MB • Kiểm tra toàn vẹn SHA-256 • Bảo mật dữ liệu cá nhân"}
                 </p>
 
                 {/* HIGH-CONTRAST PRIMARY ACTION BUTTON */}

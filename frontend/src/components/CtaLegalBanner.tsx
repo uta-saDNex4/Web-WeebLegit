@@ -33,8 +33,8 @@ export const CtaLegalBanner: React.FC<CtaLegalBannerProps> = ({ onStart }) => {
           {/* Subtitle with Certified Information */}
           <p className="relative text-sm sm:text-base text-[#D0DDF0] font-medium max-w-3xl mx-auto mb-8 leading-relaxed">
             {lang === "EN"
-              ? "Referenced directly against the Labor Code (Law 45/2019/QH14), Civil Code (Law 91/2015/QH13), and Housing Law (Law 27/2023/QH15). File integrity verified via independent SHA-256 byte-stream checksums."
-              : "Hệ thống đối chiếu trực tiếp theo Bộ luật Lao động (Luật số 45/2019/QH14), Bộ luật Dân sự (Luật số 91/2015/QH13) và Luật Nhà ở (Luật số 27/2023/QH15). Xác thực tính toàn vẹn độc lập bằng thuật toán mã băm SHA-256."}
+              ? "Referenced directly against the Labor Code (Law 45/2019/QH14), Civil Code (Law 91/2015/QH13), and Housing Law (Law 27/2023/QH15) to help you spot hidden risks and protect your lawful rights."
+              : "Hệ thống đối chiếu trực tiếp theo Bộ luật Lao động (Luật số 45/2019/QH14), Bộ luật Dân sự (Luật số 91/2015/QH13) và Luật Nhà ở (Luật số 27/2023/QH15), giúp bạn phát hiện rủi ro và an tâm bảo vệ quyền lợi của mình."}
           </p>
 
           {/* Certified Technical & Statutory Points */}
@@ -49,11 +49,19 @@ export const CtaLegalBanner: React.FC<CtaLegalBannerProps> = ({ onStart }) => {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#EAD7B8]" />
-              <span>Mã băm SHA-256 kiểm tra toàn vẹn byte gốc (FIPS 180-4)</span>
+              <span>
+                {lang === "EN"
+                  ? "SHA-256 cryptographic integrity (FIPS 180-4)"
+                  : "Mã băm SHA-256 kiểm tra toàn vẹn (FIPS 180-4)"}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#EAD7B8]" />
-              <span>Tự hủy dữ liệu tạm sau phiên quét, không lưu trữ tệp</span>
+              <span>
+                {lang === "EN"
+                  ? "Strict account-level access control, zero third-party sharing"
+                  : "Quản lý phân quyền nghiêm ngặt, không chia sẻ cho bên thứ ba"}
+              </span>
             </div>
           </div>
 

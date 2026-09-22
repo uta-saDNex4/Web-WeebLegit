@@ -69,6 +69,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [contractType, setContractType] = useState<string>("thuê trọ");
 
   // AI Analysis state
   const [aiResult, setAiResult] = useState<api.AiAnalysisResult | null>(null);
@@ -123,11 +124,11 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     if (file) handleFileSelect(file);
   };
 
-  // Poll AI analysis result every 3s up to 10 tries
+  // Poll AI analysis result every 2.5s up to 15 tries (~37s)
   const pollAiAnalysis = (contractId: string, logId: string) => {
     setAiPolling(true);
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 15;
     const poll = async () => {
       if (attempts >= maxAttempts) { setAiPolling(false); return; }
       attempts++;
@@ -137,11 +138,11 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           setAiResult(result);
           setAiPolling(false);
         } else {
-          setTimeout(poll, 3000);
+          setTimeout(poll, 2500);
         }
       } catch { setAiPolling(false); }
     };
-    setTimeout(poll, 2000);
+    setTimeout(poll, 1500);
   };
 
   const handleUploadAndVerify = async () => {
@@ -150,7 +151,8 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     setError(null);
     try {
       setStage("uploading");
-      const contract = await api.uploadContract(selectedFile);
+      const chosenType = contractType && contractType !== "other" ? contractType : undefined;
+      const contract = await api.uploadContract(selectedFile, chosenType);
       setUploadedContract({
         id: contract.id,
         filename: contract.original_filename,
@@ -182,7 +184,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
       setHistoryLoading(true);
       setHistoryError(null);
       api.listContracts({ limit: 20 })
-        .then((res) => setContracts(res.items))
+        .then((res) => setContracts(res?.items || []))
         .catch((err) => setHistoryError(err instanceof Error ? err.message : "Không tải được lịch sử"))
         .finally(() => setHistoryLoading(false));
     }
@@ -193,9 +195,12 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     setMarketLoading(true);
     setMarketError(null);
     try {
+      const cleanRent = marketRent
+        ? parseFloat(marketRent.replace(/[^0-9.]/g, ""))
+        : undefined;
       const res = await api.marketCompare(uploadedContract.id, {
         district: marketDistrict || undefined,
-        base_rent: marketRent ? parseFloat(marketRent) : undefined,
+        base_rent: cleanRent && !isNaN(cleanRent) ? cleanRent : undefined,
       });
       setMarketResult(res);
     } catch (err: unknown) {
@@ -316,6 +321,26 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                   </div>
                   {error && <div className="px-3 py-2 bg-[#fff1f0] border border-[#ffd1cc] rounded-lg text-xs text-[#e4534b] font-medium flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /> {error}</div>}
                   {selectedFile && user && (
+                    <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#d8e3ef] space-y-1.5">
+                      <label className="block text-xs font-semibold text-[#49627d]">
+                        Loại hợp đồng (định tuyến quy tắc rủi ro & giá thị trường):
+                      </label>
+                      <select
+                        value={contractType}
+                        onChange={(e) => setContractType(e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-semibold border border-[#d8e3ef] rounded-lg bg-white text-[#10253f] focus:outline-none focus:border-[#EAD7B8] cursor-pointer"
+                      >
+                        <option value="thuê trọ">Thuê phòng trọ / Căn hộ</option>
+                        <option value="ctv">Cộng tác viên (CTV)</option>
+                        <option value="intern">Thực tập sinh (Intern)</option>
+                        <option value="khóa học">Khóa học đào tạo / Học nghề</option>
+                        <option value="vay tiêu dùng">Vay tiêu dùng</option>
+                        <option value="trả góp">Mua hàng trả góp</option>
+                        <option value="other">Hợp đồng khác</option>
+                      </select>
+                    </div>
+                  )}
+                  {selectedFile && user && (
                     <button onClick={handleUploadAndVerify} className="w-full py-3 bg-[#EAD7B8] hover:bg-[#dfc59f] text-[#10253f] text-sm font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer">
                       <ShieldCheck className="w-4 h-4" /> Upload & Xác thực SHA-256 <ArrowRight className="w-4 h-4" />
                     </button>
@@ -404,69 +429,200 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
 
                     {aiResult && aiResult.status === "completed" && (
                       <>
-                        {aiResult.risk_score != null && (
-                          <div className="p-3 rounded-xl bg-[#fff8e6] border border-[#ffe3a3] flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-9 h-9 rounded-full text-white flex items-center justify-center font-extrabold text-xs ${(aiResult.risk_score ?? 0) >= 70 ? "bg-[#159f7b]" : (aiResult.risk_score ?? 0) >= 40 ? "bg-[#d77714]" : "bg-[#e4534b]"}`}>
-                                {Math.round(aiResult.risk_score ?? 0)}%
-                              </div>
-                              <div>
-                                <div className="text-sm font-bold text-[#7d480e]">Điểm an toàn: {aiResult.risk_label ?? "—"}</div>
-                                <div className="text-xs text-[#996324]">{aiResult.overview ?? ""}</div>
-                              </div>
-                            </div>
-                            {aiResult.findings && <div className="text-xs font-bold text-[#d77714] bg-white px-2.5 py-1 rounded-lg border border-[#ffe3a3]">{aiResult.findings.length} Lưu ý</div>}
-                          </div>
-                        )}
+                        {aiResult.risk_score != null && (() => {
+                          const score = Math.round(aiResult.risk_score ?? 0);
+                          const isHigh = score >= 70;
+                          const isMedHigh = score >= 35 && score < 70;
+                          const isLow = score > 0 && score < 35;
+                          const isSafe = score === 0;
 
-                        {aiResult.findings && aiResult.findings.length > 0 && (
-                          <div className="space-y-3">
-                            <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Chi tiết điều khoản rủi ro</h4>
-                            {aiResult.findings.map((risk, idx) => (
-                              <div key={idx} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm">
-                                <div className="flex items-center justify-between cursor-pointer" onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}>
-                                  <div className="flex items-center gap-2">
-                                    {risk.severity === "high" ? <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff1f0] text-[#e4534b] border border-[#ffd1cc]">Mức rủi ro cao</span>
-                                      : risk.severity === "medium" ? <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff4e6] text-[#d77714] border border-[#ffd8a8]">Cần làm rõ</span>
-                                        : <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#f2f7fc] text-[#49627d] border border-[#d8e3ef]">Lưu ý nhẹ</span>}
-                                    <h5 className="text-sm font-bold text-[#10253f]">{risk.title}</h5>
-                                  </div>
-                                  {expandedRisk === idx ? <ChevronUp className="w-4 h-4 text-[#8297ac]" /> : <ChevronDown className="w-4 h-4 text-[#8297ac]" />}
+                          const badgeBg = isHigh
+                            ? "bg-[#e4534b]"
+                            : isMedHigh
+                            ? "bg-[#d77714]"
+                            : isLow
+                            ? "bg-[#eab308]"
+                            : "bg-[#159f7b]";
+
+                          const boxStyle = isHigh
+                            ? "bg-[#fff1f0] border-[#ffd1cc]"
+                            : isMedHigh
+                            ? "bg-[#fff8e6] border-[#ffe3a3]"
+                            : isLow
+                            ? "bg-[#fefce8] border-[#fef08a]"
+                            : "bg-[#eafbf7] border-[#b7f6e5]";
+
+                          const titleColor = isHigh
+                            ? "text-[#b91c1c]"
+                            : isMedHigh
+                            ? "text-[#7d480e]"
+                            : isLow
+                            ? "text-[#854d0e]"
+                            : "text-[#0d7a5f]";
+
+                          const descColor = isHigh
+                            ? "text-[#991b1b]"
+                            : isMedHigh
+                            ? "text-[#996324]"
+                            : isLow
+                            ? "text-[#a16207]"
+                            : "text-[#047857]";
+
+                          const findingsCount =
+                            (aiResult.findings?.length ?? aiResult.ai_findings?.length ?? 0);
+
+                          return (
+                            <div className={`p-3.5 rounded-xl border flex items-center justify-between ${boxStyle}`}>
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm ${badgeBg}`}>
+                                  {score}%
                                 </div>
-                                <AnimatePresence>
-                                  {expandedRisk === idx && (
-                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                      <div className="pt-3 space-y-3">
-                                        {risk.clause_text && <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#EAD7B8]">&quot;{risk.clause_text}&quot;</div>}
-                                        {risk.analysis && <div className="text-xs text-[#49627d] leading-relaxed"><strong>Phân tích:</strong> {risk.analysis}</div>}
-                                        {risk.law_reference && <div className="text-xs text-[#8a6834] font-medium flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5" /><span>{risk.law_reference}</span></div>}
-                                        {risk.negotiation_script && (
-                                          <div className="pt-2 border-t border-[#e6edf4]">
-                                            <div className="flex items-center justify-between text-[11px] font-bold text-[#159f7b] mb-1.5">
-                                              <span className="flex items-center gap-1"><MessageCircle className="w-3 h-3" />Gợi ý câu trao đổi:</span>
-                                              <button onClick={() => handleCopy(`risk-${idx}`, risk.negotiation_script ?? "")}
-                                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#eafbf7] hover:bg-[#d0f5ec] text-[#159f7b] border border-[#b7f6e5] transition-colors cursor-pointer">
-                                                {copiedId === `risk-${idx}` ? <><Check className="w-3 h-3" /><span>Đã sao chép</span></> : <><Copy className="w-3 h-3" /><span>Sao chép</span></>}
-                                              </button>
-                                            </div>
-                                            <p className="text-xs text-[#26435e] bg-[#f7fafc] p-2.5 rounded-lg border border-[#e6edf4]">&quot;{risk.negotiation_script}&quot;</p>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
+                                <div>
+                                  <div className={`text-sm font-bold ${titleColor}`}>
+                                    Đánh giá rủi ro: {aiResult.risk_label || (isSafe ? "An toàn" : "Cần lưu ý")}
+                                  </div>
+                                  <div className={`text-xs mt-0.5 ${descColor}`}>
+                                    {aiResult.ai_overview || aiResult.overview || aiResult.summary || ""}
+                                  </div>
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                              {findingsCount > 0 && (
+                                <div className="text-xs font-bold text-[#d77714] bg-white px-2.5 py-1 rounded-lg border border-[#ffe3a3] shrink-0">
+                                  {findingsCount} Điểm lưu ý
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
 
-                        {aiResult.findings && aiResult.findings.length === 0 && (
-                          <div className="p-4 rounded-xl bg-[#eafbf7] border border-[#b7f6e5] flex items-center gap-3">
-                            <CheckCircle2 className="w-6 h-6 text-[#159f7b] shrink-0" />
-                            <p className="text-sm font-semibold text-[#0d7a5f]">Không phát hiện điều khoản rủi ro đáng kể.</p>
-                          </div>
-                        )}
+                        {(() => {
+                          const findings = aiResult.findings || aiResult.ai_findings || [];
+                          if (findings.length === 0) {
+                            return (
+                              <div className="p-4 rounded-xl bg-[#eafbf7] border border-[#b7f6e5] flex items-center gap-3">
+                                <CheckCircle2 className="w-6 h-6 text-[#159f7b] shrink-0" />
+                                <p className="text-sm font-semibold text-[#0d7a5f]">
+                                  Hợp đồng không phát hiện điều khoản rủi ro hoặc bẫy pháp lý nổi bật.
+                                </p>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="space-y-3">
+                              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">
+                                Chi tiết điều khoản rủi ro ({findings.length})
+                              </h4>
+                              {findings.map((risk, idx) => {
+                                const isRiskHigh =
+                                  risk.severity === "high" ||
+                                  risk.risk_level === "critical" ||
+                                  risk.risk_level === "high";
+                                const isRiskMed =
+                                  risk.severity === "medium" ||
+                                  risk.risk_level === "medium";
+
+                                const title =
+                                  risk.title ||
+                                  risk.target_section ||
+                                  (risk.matched_term ? `Điều khoản: ${risk.matched_term}` : "Điều khoản rủi ro");
+                                const clauseSnippet = risk.clause_text || risk.matched_term;
+                                const analysisSnippet = risk.analysis || risk.warning;
+                                const lawSnippet = risk.law_reference || risk.reference;
+
+                                return (
+                                  <div key={idx} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm">
+                                    <div
+                                      className="flex items-center justify-between cursor-pointer"
+                                      onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        {isRiskHigh ? (
+                                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff1f0] text-[#e4534b] border border-[#ffd1cc]">
+                                            Mức rủi ro cao
+                                          </span>
+                                        ) : isRiskMed ? (
+                                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff4e6] text-[#d77714] border border-[#ffd8a8]">
+                                            Cần làm rõ
+                                          </span>
+                                        ) : (
+                                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#f2f7fc] text-[#49627d] border border-[#d8e3ef]">
+                                            Lưu ý nhẹ
+                                          </span>
+                                        )}
+                                        <h5 className="text-sm font-bold text-[#10253f]">{title}</h5>
+                                      </div>
+                                      {expandedRisk === idx ? (
+                                        <ChevronUp className="w-4 h-4 text-[#8297ac]" />
+                                      ) : (
+                                        <ChevronDown className="w-4 h-4 text-[#8297ac]" />
+                                      )}
+                                    </div>
+                                    <AnimatePresence>
+                                      {expandedRisk === idx && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: "auto", opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          className="overflow-hidden"
+                                        >
+                                          <div className="pt-3 space-y-3">
+                                            {clauseSnippet && (
+                                              <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#EAD7B8]">
+                                                &quot;{clauseSnippet}&quot;
+                                              </div>
+                                            )}
+                                            {analysisSnippet && (
+                                              <div className="text-xs text-[#49627d] leading-relaxed">
+                                                <strong>Phân tích:</strong> {analysisSnippet}
+                                              </div>
+                                            )}
+                                            {lawSnippet && (
+                                              <div className="text-xs text-[#8a6834] font-medium flex items-center gap-1.5">
+                                                <BookOpen className="w-3.5 h-3.5" />
+                                                <span>{lawSnippet}</span>
+                                              </div>
+                                            )}
+                                            {risk.negotiation_script && (
+                                              <div className="pt-2 border-t border-[#e6edf4]">
+                                                <div className="flex items-center justify-between text-[11px] font-bold text-[#159f7b] mb-1.5">
+                                                  <span className="flex items-center gap-1">
+                                                    <MessageCircle className="w-3 h-3" />
+                                                    Gợi ý câu trao đổi đàm phán:
+                                                  </span>
+                                                  <button
+                                                    onClick={() =>
+                                                      handleCopy(`risk-${idx}`, risk.negotiation_script ?? "")
+                                                    }
+                                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#eafbf7] hover:bg-[#d0f5ec] text-[#159f7b] border border-[#b7f6e5] transition-colors cursor-pointer"
+                                                  >
+                                                    {copiedId === `risk-${idx}` ? (
+                                                      <>
+                                                        <Check className="w-3 h-3" />
+                                                        <span>Đã sao chép</span>
+                                                      </>
+                                                    ) : (
+                                                      <>
+                                                        <Copy className="w-3 h-3" />
+                                                        <span>Sao chép</span>
+                                                      </>
+                                                    )}
+                                                  </button>
+                                                </div>
+                                                <p className="text-xs text-[#26435e] bg-[#f7fafc] p-2.5 rounded-lg border border-[#e6edf4]">
+                                                  &quot;{risk.negotiation_script}&quot;
+                                                </p>
+                                              </div>
+                                            )}
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
                       </>
                     )}
                   </div>

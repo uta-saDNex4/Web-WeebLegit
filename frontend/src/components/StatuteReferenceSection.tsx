@@ -42,8 +42,8 @@ export const StatuteReferenceSection: React.FC<StatuteReferenceSectionProps> = (
           </div>
         </div>
 
-        {/* 4 Statute Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 3 Statute Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {LEGAL_SOURCES.map((source) => (
             <div
               key={source.id}
