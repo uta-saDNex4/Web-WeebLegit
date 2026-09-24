@@ -2,42 +2,52 @@ import { LegalSource } from '../types';
 
 export const LEGAL_SOURCES: LegalSource[] = [
   {
-    id: 'labor-code',
-    title: 'Bộ luật Lao động & hướng dẫn liên quan',
-    description: 'Quy định pháp lý về hợp đồng lao động, thử việc tối thiểu 85% lương, cấm giữ bằng cấp/tiền cọc, và thời giờ làm việc làm thêm cho sinh viên.',
+    id: 'civil-code',
+    title: 'Bộ luật Dân sự 2015',
+    codeBadge: 'BLDS 2015',
+    description: 'Quy định nền tảng về hợp đồng dân sự, đặt cọc (Điều 328), phạt vi phạm và bồi thường thiệt hại (Điều 418).',
     articles: [
-      'Điều 17: Các hành vi người sử dụng lao động không được làm khi giao kết hợp đồng (Nghiêm cấm giữ bản chính giấy tờ tùy thân, văn bằng, chứng chỉ; giữ tiền hoặc tài sản).',
-      'Điều 26: Tiền lương thử việc (Ít nhất bằng 85% mức lương chính thức của công việc đó).',
-      'Điều 62: Hợp đồng đào tạo nghề và chi phí bồi hoàn đào tạo (Chỉ bồi hoàn chi phí hợp lệ kèm chứng từ đào tạo thực tế).',
-      'Điều 98: Tiền lương làm thêm giờ, làm việc vào ban đêm (Ít nhất 150% ngày thường, 200% ngày nghỉ tuần, 300% ngày lễ tết).'
+      'Điều 328 BLDS 2015: Đặt cọc và xử lý tài sản đặt cọc khi giao kết hoặc thực hiện hợp đồng dân sự.',
+      'Điều 418 BLDS 2015: Thỏa thuận phạt vi phạm và bồi thường thiệt hại trong hợp đồng.',
+      'Điều 472 - 482 BLDS 2015: Hợp đồng thuê tài sản, quyền và nghĩa vụ các bên.',
+      'Điều 513 BLDS 2015: Hợp đồng dịch vụ và giới hạn quyền yêu cầu sửa đổi.'
     ],
-    linkText: 'Tra cứu Bộ luật Lao động 2019 (45/2019/QH14)',
-    iconType: 'labor'
+    linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx',
+    iconType: 'civil',
+    actionType: 'modal'
+  },
+  {
+    id: 'labor-code',
+    title: 'Bộ luật Lao động 2019',
+    codeBadge: 'BLLĐ 2019',
+    description: 'Bảo vệ quyền lợi người làm việc, hợp đồng đào tạo (Điều 62), thử việc và các hành vi người sử dụng lao động không được làm (Điều 17).',
+    articles: [
+      'Điều 17 BLLĐ 2019: Các hành vi người sử dụng lao động không được làm khi giao kết hợp đồng (Nghiêm cấm giữ bản chính giấy tờ tùy thân, giữ tiền hoặc tài sản).',
+      'Điều 26 BLLĐ 2019: Tiền lương thử việc (Ít nhất bằng 85% mức lương chính thức của công việc đó).',
+      'Điều 62 BLLĐ 2019: Hợp đồng đào tạo nghề và chi phí bồi hoàn đào tạo (Chỉ bồi hoàn chi phí hợp lệ kèm chứng từ thực tế).',
+      'Điều 98 & 107 BLLĐ 2019: Tiền lương làm thêm giờ, thời giờ làm thêm và sự đồng ý của người lao động.'
+    ],
+    linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+    iconType: 'labor',
+    actionType: 'modal'
   },
   {
     id: 'housing-code',
-    title: 'Quy định về thuê nhà ở và dân sự',
-    description: 'Bảo vệ quyền lợi người thuê trọ, quy định đặt cọc theo Bộ luật Dân sự, giới hạn đơn giá điện nước sinh hoạt cho học sinh - sinh viên thuê trọ.',
+    title: 'Luật Nhà ở 2023 & Quy định Thuê trọ',
+    codeBadge: 'LNƠ 2023',
+    description: 'Quyền và nghĩa vụ các bên thuê nhà ở, giới hạn tăng giá điện nước, bảo vệ quyền cư trú hợp pháp.',
     articles: [
-      'Điều 328 BLDS 2015: Đặt cọc và xử lý tài sản đặt cọc khi chấm dứt hợp đồng.',
-      'Điều 472 - 482 BLDS 2015: Hợp đồng thuê tài sản, quyền và nghĩa vụ của bên thuê & cho thuê.',
-      'Thông tư 25/2018/TT-BCT & 09/2019/TT-BCT: Định mức giá bán lẻ điện sinh hoạt cho sinh viên thuê nhà trọ theo giá bậc thang nhà nước.',
-      'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.'
+      'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.',
+      'Thông tư 25/2018/TT-BCT & 09/2019/TT-BCT: Khung giá bán lẻ điện sinh hoạt cho sinh viên thuê nhà trọ theo giá bậc thang nhà nước.',
+      'Nghị định 144/2021/NĐ-CP: Xử phạt hành vi xâm phạm chỗ ở hợp pháp và tự ý kiểm tra phòng trọ.',
+      'Quy chế quản lý cư trú: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.'
     ],
-    linkText: 'Tra cứu Luật Nhà ở & Bộ luật Dân sự 2015',
-    iconType: 'housing'
-  },
-  {
-    id: 'cloud-storage',
-    title: 'Nhập tài liệu từ không gian lưu trữ của bạn',
-    description: 'Đồng bộ hóa trực tiếp hợp đồng PDF, ảnh chụp, file scan từ Google Drive, OneDrive, Dropbox hoặc bộ nhớ máy tính để kiểm tra bảo mật.',
-    articles: [
-      'Hỗ trợ định dạng: PDF, DOCX, TXT, PNG, JPG, HEIC.',
-      'Mã hóa dữ liệu cục bộ: Tài liệu của bạn được phân tích bảo mật và không chia sẻ cho bên thứ ba.',
-      'Tự động nhận diện chữ in hoa, điều khoản mập mờ và câu chữ gài bẫy pháp lý.'
-    ],
-    linkText: 'Kết nối tài khoản Drive / Tải lên ngay',
-    iconType: 'storage'
+    linkText: 'Xem điều khoản chi tiết',
+    url: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-27-2023-QH15-538466.aspx',
+    iconType: 'housing',
+    actionType: 'modal'
   }
 ];
 

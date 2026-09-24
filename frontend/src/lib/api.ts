@@ -65,7 +65,17 @@ async function apiFetch<T>(
     let message = `HTTP ${res.status}`;
     try {
       const body = await res.json();
-      message = body?.detail ?? body?.message ?? message;
+      if (typeof body?.detail === 'string') {
+        message = body.detail;
+      } else if (Array.isArray(body?.detail)) {
+        message = body.detail
+          .map((item: any) => item?.msg ?? JSON.stringify(item))
+          .join(', ');
+      } else if (body?.message) {
+        message = typeof body.message === 'string' ? body.message : JSON.stringify(body.message);
+      } else if (body?.detail && typeof body.detail === 'object') {
+        message = JSON.stringify(body.detail);
+      }
     } catch {
       // ignore parse error
     }
@@ -112,6 +122,10 @@ export interface VerificationResponse {
   result: 'matched' | 'mismatched' | 'failed';
   verification_log_id: string;
   duration_ms: number | null;
+  risk_score?: number;
+  risk_label?: string;
+  ai_overview?: string;
+  ai_findings?: AiFindingItem[];
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -224,29 +238,89 @@ export async function listContracts(params?: {
 
 // ─── AI Analysis Polling ───────────────────────────────────────────────────────
 
+export interface AiFindingItem {
+  risk_level: string;
+  severity: 'high' | 'medium' | 'low';
+  target_section: string;
+  title: string;
+  matched_term?: string;
+  clause_text?: string;
+  warning?: string;
+  analysis?: string;
+  reference?: string;
+  law_reference?: string;
+  negotiation_script?: string;
+}
+
 export interface AiAnalysisResult {
   status: 'processing' | 'completed';
   message?: string;
   risk_score?: number;
   risk_label?: string;
   overview?: string;
-  findings?: Array<{
-    severity: string;
-    title: string;
-    clause_text?: string;
-    analysis?: string;
-    law_reference?: string;
-    negotiation_script?: string;
-  }>;
+  ai_overview?: string;
+  findings?: AiFindingItem[];
+  ai_findings?: AiFindingItem[];
+  summary?: string;
+  contract_type?: string | null;
+  district?: string | null;
+  base_rent?: number | null;
 }
 
 export async function getAiAnalysis(
   contractId: string,
   logId: string,
 ): Promise<AiAnalysisResult> {
-  return apiFetch<AiAnalysisResult>(
+  const data = await apiFetch<any>(
     `/api/contracts/${contractId}/analysis?log_id=${logId}`,
   );
+  if (!data) return data;
+
+  const rawFindings: any[] = data.ai_findings || data.findings || [];
+  const normalizedFindings: AiFindingItem[] = rawFindings.map((f: any) => {
+    const rawLevel = String(f.risk_level || f.severity || 'medium').toLowerCase();
+    const severity: 'high' | 'medium' | 'low' =
+      rawLevel === 'critical' || rawLevel === 'high'
+        ? 'high'
+        : rawLevel === 'low'
+        ? 'low'
+        : 'medium';
+
+    const targetSection =
+      f.target_section ||
+      f.title ||
+      (f.matched_term ? `Điều khoản: ${f.matched_term}` : 'Điều khoản rủi ro');
+    const warningText =
+      f.warning || f.analysis || 'Cần lưu ý rà soát lại điều khoản này.';
+    const refLaw =
+      f.reference || f.law_reference || 'Bộ luật Dân sự 2015 & Luật Nhà ở 2023';
+    const term = f.matched_term || f.clause_text || '';
+
+    return {
+      risk_level: rawLevel,
+      severity,
+      target_section: targetSection,
+      title: f.title || targetSection,
+      matched_term: term,
+      clause_text: f.clause_text || term,
+      warning: warningText,
+      analysis: f.analysis || warningText,
+      reference: refLaw,
+      law_reference: f.law_reference || refLaw,
+      negotiation_script: f.negotiation_script,
+    };
+  });
+
+  const overviewText =
+    data.ai_overview || data.overview || data.summary || '';
+
+  return {
+    ...data,
+    overview: overviewText,
+    ai_overview: overviewText,
+    findings: normalizedFindings,
+    ai_findings: normalizedFindings,
+  };
 }
 
 // ─── Market Compare ────────────────────────────────────────────────────────────
@@ -395,5 +469,91 @@ export async function aiChat(
     },
     false, // không cần auth — public endpoint
   );
+}
+
+// ─── Admin API ─────────────────────────────────────────────────────────────────
+
+export interface AdminStatsResponse {
+  total_users: number;
+  total_contracts: number;
+  verified_contracts: number;
+  mismatch_contracts: number;
+  total_verifications: number;
+  total_risk_rules: number;
+  total_legal_references: number;
+}
+
+export interface AdminUserResponse {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AdminContractItem {
+  id: string;
+  uploader_email: string;
+  original_filename: string;
+  file_size_bytes: number;
+  sha256_hash: string;
+  contract_type: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface AdminLogItem {
+  id: string;
+  contract_id: string;
+  contract_filename: string;
+  requested_by_email: string;
+  expected_sha256: string;
+  actual_sha256: string;
+  result: string;
+  duration_ms: number | null;
+  created_at: string;
+}
+
+export interface AdminRiskRule {
+  id: string;
+  keyword_trigger: string;
+  risk_level: string;
+  default_warning_message: string;
+  target_section: string;
+  created_at: string;
+}
+
+export async function getAdminStats(): Promise<AdminStatsResponse> {
+  return apiFetch<AdminStatsResponse>('/api/admin/stats');
+}
+
+export async function getAdminUsers(): Promise<AdminUserResponse[]> {
+  return apiFetch<AdminUserResponse[]>('/api/admin/users');
+}
+
+export async function getAdminContracts(): Promise<AdminContractItem[]> {
+  return apiFetch<AdminContractItem[]>('/api/admin/contracts');
+}
+
+export async function getAdminLogs(): Promise<AdminLogItem[]> {
+  return apiFetch<AdminLogItem[]>('/api/admin/logs');
+}
+
+export async function getAdminRiskRules(): Promise<AdminRiskRule[]> {
+  return apiFetch<AdminRiskRule[]>('/api/admin/risk-rules');
+}
+
+export async function createAdminRiskRule(payload: {
+  keyword_trigger: string;
+  risk_level: 'critical' | 'high' | 'medium' | 'low';
+  default_warning_message: string;
+  target_section?: string;
+}): Promise<AdminRiskRule> {
+  return apiFetch<AdminRiskRule>('/api/admin/risk-rules', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }
 

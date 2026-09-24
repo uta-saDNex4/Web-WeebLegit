@@ -39,5 +39,8 @@ export interface LegalSource {
   description: string;
   articles: string[];
   linkText: string;
-  iconType: "labor" | "housing" | "storage";
+  url?: string;
+  iconType: "labor" | "housing" | "storage" | "civil" | "security";
+  codeBadge?: string;
+  actionType?: "modal" | "checker";
 }
