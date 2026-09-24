@@ -30,12 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { lang, toggleLang, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
-  const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark");
-  };
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);

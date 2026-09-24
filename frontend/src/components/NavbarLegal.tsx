@@ -5,7 +5,6 @@ import {
   Globe,
   Sun,
   Moon,
-  Monitor,
   Check,
   LogIn,
   UserPlus,
@@ -34,23 +33,15 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const { lang, toggleLang, t } = useLanguage();
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
-  const themeDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        themeDropdownRef.current &&
-        !themeDropdownRef.current.contains(event.target as Node)
-      ) {
-        setThemeDropdownOpen(false);
-      }
       if (
         userDropdownRef.current &&
         !userDropdownRef.current.contains(event.target as Node)
@@ -66,7 +57,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setThemeDropdownOpen(false);
         setUserDropdownOpen(false);
       }
     };
@@ -138,87 +128,23 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             <span>{lang}</span>
           </button>
 
-          {/* Theme Dropdown (Icon Only - Sáng / Tối / Hệ thống) */}
-          <div className="relative" ref={themeDropdownRef}>
-            <button
-              onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer shadow-2xs shrink-0"
-              title={
-                theme === "light"
-                  ? (lang === "EN" ? "Light theme" : "Giao diện: Sáng")
-                  : theme === "dark"
-                  ? (lang === "EN" ? "Dark theme" : "Giao diện: Tối")
-                  : (lang === "EN" ? "System theme" : "Giao diện: Hệ thống")
-              }
-              aria-label="Toggle theme dropdown"
-            >
-              {theme === "light" ? (
-                <Sun className="w-4 h-4 text-[#E5A93C]" />
-              ) : theme === "dark" ? (
-                <Moon className="w-4 h-4 text-[#8FA3BF]" />
-              ) : (
-                <Monitor className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
-              )}
-            </button>
-
-            {themeDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-[#0D1829] border border-[#E6DEC8] dark:border-[#1F3557] rounded-xl shadow-xl py-1 z-50">
-                <button
-                  onClick={() => {
-                    setTheme("light");
-                    setThemeDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                    theme === "light"
-                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
-                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Sun className="w-3.5 h-3.5 text-[#E5A93C]" />
-                    <span>{lang === "EN" ? "Light" : "Sáng"}</span>
-                  </span>
-                  {theme === "light" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setTheme("dark");
-                    setThemeDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                    theme === "dark"
-                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
-                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Moon className="w-3.5 h-3.5 text-[#8FA3BF]" />
-                    <span>{lang === "EN" ? "Dark" : "Tối"}</span>
-                  </span>
-                  {theme === "dark" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setTheme("system");
-                    setThemeDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                    theme === "system"
-                      ? "bg-[#FAF5ED] dark:bg-[#15253F] text-[#8A6731] dark:text-[#EAD7B8] font-bold"
-                      : "text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] font-medium"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Monitor className="w-3.5 h-3.5 text-[#49627D] dark:text-[#8FA3BF]" />
-                    <span>{lang === "EN" ? "System" : "Hệ thống"}</span>
-                  </span>
-                  {theme === "system" && <Check className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />}
-                </button>
-              </div>
+          {/* Theme Switcher (1 click: Light <-> Dark) */}
+          <button
+            onClick={toggleTheme}
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] hover:border-[#8A6731] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer shadow-2xs shrink-0"
+            title={
+              theme === "dark"
+                ? (lang === "EN" ? "Switch to Light mode" : "Chuyển sang Giao diện Sáng")
+                : (lang === "EN" ? "Switch to Dark mode" : "Chuyển sang Giao diện Tối")
+            }
+            aria-label="Toggle dark/light mode"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-[#E5A93C]" />
+            ) : (
+              <Moon className="w-4 h-4 text-[#49627D]" />
             )}
-          </div>
+          </button>
 
           {/* User Auth Controls */}
           {user ? (
@@ -333,41 +259,28 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-1 p-1 bg-[#F0EAE0] dark:bg-[#0D1829] rounded-xl border border-[#DCD3BE] dark:border-[#1F3354]">
-              <button
-                onClick={() => setTheme("light")}
-                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  theme === "light"
-                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
-                    : "text-[#49627D] dark:text-[#8FA3BF]"
-                }`}
-              >
-                <Sun className="w-3.5 h-3.5 text-[#E5A93C]" />
-                <span>{lang === "EN" ? "Light" : "Sáng"}</span>
-              </button>
-              <button
-                onClick={() => setTheme("dark")}
-                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
-                    : "text-[#49627D] dark:text-[#8FA3BF]"
-                }`}
-              >
-                <Moon className="w-3.5 h-3.5 text-[#8FA3BF]" />
-                <span>{lang === "EN" ? "Dark" : "Tối"}</span>
-              </button>
-              <button
-                onClick={() => setTheme("system")}
-                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  theme === "system"
-                    ? "bg-white dark:bg-[#1B2F4E] text-[#8A6731] dark:text-[#EAD7B8] shadow-xs"
-                    : "text-[#49627D] dark:text-[#8FA3BF]"
-                }`}
-              >
-                <Monitor className="w-3.5 h-3.5 text-[#49627D] dark:text-[#8FA3BF]" />
-                <span>{lang === "EN" ? "System" : "Hệ thống"}</span>
-              </button>
-            </div>
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] bg-[#F0EAE0]/60 dark:bg-[#0D1829] text-xs font-bold text-[#0F1E36] dark:text-[#CAD8ED] transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-[#E5A93C]" />
+                ) : (
+                  <Moon className="w-4 h-4 text-[#49627D]" />
+                )}
+                <span>
+                  {theme === "dark"
+                    ? (lang === "EN" ? "Dark theme" : "Giao diện: Tối")
+                    : (lang === "EN" ? "Light theme" : "Giao diện: Sáng")}
+                </span>
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1B2F4E] text-[11px] font-extrabold text-[#8A6731] dark:text-[#EAD7B8] shadow-2xs">
+                {theme === "dark"
+                  ? (lang === "EN" ? "Switch Light" : "Chuyển Sáng")
+                  : (lang === "EN" ? "Switch Dark" : "Chuyển Tối")}
+              </span>
+            </button>
           </div>
 
           <div className="space-y-2 text-sm font-bold text-[#1E324F] dark:text-[#CAD8ED]">
