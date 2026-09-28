@@ -142,7 +142,7 @@ function AdminDashboardInner() {
   // ─── Render Login for non-admins ──────────────────────────────────────────
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="flex items-center gap-3 text-[#10253f]">
           <div className="w-6 h-6 border-2 border-[#10253f] border-t-transparent rounded-full animate-spin" />
           <span className="font-semibold text-sm">Đang tải xác thực...</span>
@@ -153,7 +153,7 @@ function AdminDashboardInner() {
 
   if (!user || user.role !== "admin") {
     return (
-      <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-2xl border border-[#d8e3ef] shadow-xl p-8 space-y-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#EAD7B8] flex items-center justify-center text-[#10253f] shadow-sm">
@@ -222,7 +222,7 @@ function AdminDashboardInner() {
 
   // ─── Render Admin Dashboard ───────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FAF9F5] text-[#10253f] flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#10253f] flex flex-col">
       {/* Top Header */}
       <header className="bg-white border-b border-[#d8e3ef] px-6 py-4 sticky top-0 z-30 shadow-2xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

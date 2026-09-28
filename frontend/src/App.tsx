@@ -10,6 +10,7 @@ import { LanguageProvider } from "./lib/language-context";
 // New Legal Components
 import { NavbarLegal } from "./components/NavbarLegal";
 import { HeroLegal } from "./components/HeroLegal";
+import { FeaturePromoBanner } from "./components/FeaturePromoBanner";
 import { QuickDropzone } from "./components/QuickDropzone";
 import { LegalMetricsBar } from "./components/LegalMetricsBar";
 import { LegalProcess } from "./components/LegalProcess";
@@ -47,7 +48,7 @@ function AppInner() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F5] dark:bg-[#09111E] text-[#0F1E36] dark:text-[#E2E8F0] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#0F1E36] transition-colors duration-250">
+    <div className="min-h-screen bg-white dark:bg-[#09111E] text-[#0F1E36] dark:text-[#E2E8F0] flex flex-col font-sans antialiased selection:bg-[#EAD7B8] selection:text-[#0F1E36] transition-colors duration-250">
       {/* 1. Header / Navbar with High-Contrast Action Buttons */}
       <NavbarLegal
         onOpenChecker={handleOpenChecker}
@@ -57,6 +58,12 @@ function AppInner() {
 
       {/* Main Content Sections */}
       <main className="flex-1">
+        {/* 1. Feature Showcase Banner — 5s Auto-rotating promotional showcase */}
+        <FeaturePromoBanner
+          onOpenChecker={handleOpenChecker}
+          onScrollToSection={handleScrollTo}
+        />
+
         {/* 2. Hero Section & Live Interactive Contract Document Scanner Mockup */}
         <HeroLegal
           onOpenChecker={handleOpenChecker}

@@ -17,7 +17,7 @@ export const StatuteReferenceSection: React.FC<StatuteReferenceSectionProps> = (
   return (
     <section
       id="sources-section"
-      className="py-12 sm:py-16 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative"
+      className="py-12 sm:py-16 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative scroll-mt-24"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
