@@ -19,7 +19,6 @@ import {
   Sliders,
   Sun,
   Moon,
-  Monitor,
 } from "lucide-react";
 import * as api from "../../lib/api";
 import { AuthProvider, useAuth } from "../../lib/auth-context";
@@ -29,7 +28,7 @@ type AdminTab = "overview" | "contracts" | "users" | "logs" | "rules";
 
 function AdminDashboardInner() {
   const { user, login, logout, loading: authLoading } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [stats, setStats] = useState<api.AdminStatsResponse | null>(null);
@@ -237,45 +236,20 @@ function AdminDashboardInner() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Theme switcher */}
-            <div className="flex items-center bg-[#FAF6EE] dark:bg-[#12223C] border border-[#E5DBCA] dark:border-[#1F3557] rounded-lg p-0.5">
-              <button
-                type="button"
-                onClick={() => setTheme("light")}
-                className={`p-1 rounded transition-colors cursor-pointer ${
-                  theme === "light"
-                    ? "bg-white dark:bg-[#1E324F] shadow-xs text-[#8A6731] dark:text-[#EAD7B8]"
-                    : "text-[#8297ac] hover:text-[#10253f] dark:hover:text-white"
-                }`}
-                title="Giao diện Sáng"
-              >
-                <Sun className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setTheme("dark")}
-                className={`p-1 rounded transition-colors cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-white dark:bg-[#1E324F] shadow-xs text-[#8A6731] dark:text-[#EAD7B8]"
-                    : "text-[#8297ac] hover:text-[#10253f] dark:hover:text-white"
-                }`}
-                title="Giao diện Tối"
-              >
-                <Moon className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setTheme("system")}
-                className={`p-1 rounded transition-colors cursor-pointer ${
-                  theme === "system"
-                    ? "bg-white dark:bg-[#1E324F] shadow-xs text-[#8A6731] dark:text-[#EAD7B8]"
-                    : "text-[#8297ac] hover:text-[#10253f] dark:hover:text-white"
-                }`}
-                title="Giao diện Hệ thống"
-              >
-                <Monitor className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            {/* Theme Switcher (1 click: Light <-> Dark) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-1.5 rounded-lg border border-[#E5DBCA] dark:border-[#1F3557] bg-[#FAF6EE] dark:bg-[#12223C] text-[#8A6731] dark:text-[#EAD7B8] hover:border-[#8A6731] transition-colors cursor-pointer shadow-2xs"
+              title={theme === "dark" ? "Chuyển sang Giao diện Sáng" : "Chuyển sang Giao diện Tối"}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-[#E5A93C]" />
+              ) : (
+                <Moon className="w-4 h-4 text-[#49627D]" />
+              )}
+            </button>
 
             <button
               onClick={loadData}
