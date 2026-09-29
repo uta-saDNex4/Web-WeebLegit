@@ -53,8 +53,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-<<<<<<< HEAD
-=======
   // Active section scroll spy — Chỉ sáng khi đang ở trong đúng khu vực section tương ứng
   const [activeSection, setActiveSection] = useState<string>("");
 
@@ -93,7 +91,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
     };
   }, []);
 
->>>>>>> Mint
   // Close dropdowns on Esc key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -106,11 +103,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
   }, []);
 
   return (
-<<<<<<< HEAD
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#FAF9F5]/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
-=======
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
->>>>>>> Mint
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center shrink-0">
@@ -133,31 +126,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           </a>
         </div>
 
-<<<<<<< HEAD
-        {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-2 text-sm font-bold text-[#1E324F] dark:text-[#A9BCD6]">
-          <button
-            onClick={() => onScrollToSection("check-section")}
-            className="px-3.5 py-2 rounded-xl hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] transition-all cursor-pointer"
-          >
-            {lang === "EN" ? "Check" : "Kiểm Tra"}
-          </button>
-          <button
-            onClick={() => onScrollToSection("process-section")}
-            className="px-3.5 py-2 rounded-xl hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] transition-all cursor-pointer"
-          >
-            {lang === "EN" ? "How it works" : "Cách Dùng"}
-          </button>
-          <button
-            onClick={() => onScrollToSection("pitfalls-section")}
-            className="px-3.5 py-2 rounded-xl hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] transition-all cursor-pointer"
-          >
-            {lang === "EN" ? "Common Traps" : "Bẫy Hay Gặp"}
-          </button>
-          <button
-            onClick={() => onScrollToSection("sources-section")}
-            className="px-3.5 py-2 rounded-xl hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] transition-all cursor-pointer"
-=======
         {/* Desktop Navigation Links with Active Highlighting */}
         <nav className="hidden lg:flex items-center gap-2 text-sm">
           {/* 1. Kiểm Tra */}
@@ -216,7 +184,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                 ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
                 : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
             }`}
->>>>>>> Mint
           >
             {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
           </button>
@@ -349,21 +316,12 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-<<<<<<< HEAD
-        <div className="lg:hidden border-t border-[#E6DEC8] dark:border-[#1A2D49] bg-[#FAF9F5] dark:bg-[#09111E] px-4 py-4 space-y-3 shadow-2xl">
-          {/* Mobile Lang & 3-segment Theme Selector */}
-          <div className="pb-3 border-b border-[#EFE8D8] dark:border-[#162744] space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#65778F] dark:text-[#8FA3BF]">
-                {lang === "EN" ? "Interface theme" : "Chế độ giao diện"}:
-=======
         <div className="lg:hidden border-t border-[#E6DEC8] dark:border-[#1A2D49] bg-white dark:bg-[#09111E] px-4 py-4 space-y-3 shadow-2xl">
           {/* Mobile Lang & Theme Toggle */}
           <div className="pb-3 border-b border-[#EFE8D8] dark:border-[#162744] space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#65778F] dark:text-[#8FA3BF]">
                 {lang === "EN" ? "Interface language" : "Ngôn ngữ hiển thị"}:
->>>>>>> Mint
               </span>
               <button
                 onClick={toggleLang}
@@ -398,44 +356,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             </button>
           </div>
 
-<<<<<<< HEAD
-          <div className="space-y-2 text-sm font-bold text-[#1E324F] dark:text-[#CAD8ED]">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onScrollToSection("check-section");
-              }}
-              className="w-full text-left py-1.5 hover:text-[#8A6731]"
-            >
-              🔍 Kiểm Tra Hợp Đồng
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onScrollToSection("process-section");
-              }}
-              className="w-full text-left py-1.5 hover:text-[#8A6731]"
-            >
-              🛡️ Cách Dùng
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onScrollToSection("pitfalls-section");
-              }}
-              className="w-full text-left py-1.5 hover:text-[#8A6731]"
-            >
-              ⚠️ Bẫy Hay Gặp
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onScrollToSection("sources-section");
-              }}
-              className="w-full text-left py-1.5 hover:text-[#8A6731]"
-            >
-              ⚖️ {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
-=======
           <div className="space-y-1.5 text-sm">
             <button
               onClick={() => {
@@ -504,7 +424,6 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               {activeSection === "sources-section" && (
                 <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
               )}
->>>>>>> Mint
             </button>
           </div>
 

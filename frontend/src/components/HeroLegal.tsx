@@ -79,11 +79,7 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <div className="flex items-center gap-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-<<<<<<< HEAD
-                <span>{lang === "EN" ? "100% Private & Safe" : "Bảo mật tuyệt đối 100%"}</span>
-=======
                 <span>{lang === "EN" ? "Strict Data Privacy" : "Bảo mật dữ liệu nghiêm ngặt"}</span>
->>>>>>> Mint
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
