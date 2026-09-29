@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   X,
   UploadCloud,
@@ -22,10 +23,16 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "../lib/auth-context";
 import * as api from "../lib/api";
+import {
+  RiskGaugeAndHeatmap,
+  RiskFilterType,
+  getClauseBucket,
+} from "./RiskGaugeAndHeatmap";
 
 interface ContractCheckerModalProps {
   isOpen: boolean;
@@ -69,12 +76,13 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [contractType, setContractType] = useState<string>("thuê trọ");
 
   // AI Analysis state
   const [aiResult, setAiResult] = useState<api.AiAnalysisResult | null>(null);
   const [aiPolling, setAiPolling] = useState(false);
   const [expandedRisk, setExpandedRisk] = useState<number | null>(null);
+  const [riskFilter, setRiskFilter] = useState<RiskFilterType>("all");
+  const [showHashDetails, setShowHashDetails] = useState(false);
 
   // History tab state
   const [contracts, setContracts] = useState<api.ContractResponse[]>([]);
@@ -97,6 +105,8 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     setAiResult(null);
     setAiPolling(false);
     setExpandedRisk(null);
+    setRiskFilter("all");
+    setShowHashDetails(false);
     setMarketResult(null);
     setMarketError(null);
   };
@@ -124,11 +134,11 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     if (file) handleFileSelect(file);
   };
 
-  // Poll AI analysis result every 2.5s up to 15 tries (~37s)
+  // Poll AI analysis result every 3s up to 10 tries
   const pollAiAnalysis = (contractId: string, logId: string) => {
     setAiPolling(true);
     let attempts = 0;
-    const maxAttempts = 15;
+    const maxAttempts = 10;
     const poll = async () => {
       if (attempts >= maxAttempts) { setAiPolling(false); return; }
       attempts++;
@@ -138,11 +148,11 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           setAiResult(result);
           setAiPolling(false);
         } else {
-          setTimeout(poll, 2500);
+          setTimeout(poll, 3000);
         }
       } catch { setAiPolling(false); }
     };
-    setTimeout(poll, 1500);
+    setTimeout(poll, 2000);
   };
 
   const handleUploadAndVerify = async () => {
@@ -151,8 +161,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     setError(null);
     try {
       setStage("uploading");
-      const chosenType = contractType && contractType !== "other" ? contractType : undefined;
-      const contract = await api.uploadContract(selectedFile, chosenType);
+      const contract = await api.uploadContract(selectedFile);
       setUploadedContract({
         id: contract.id,
         filename: contract.original_filename,
@@ -184,7 +193,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
       setHistoryLoading(true);
       setHistoryError(null);
       api.listContracts({ limit: 20 })
-        .then((res) => setContracts(res?.items || []))
+        .then((res) => setContracts(res.items))
         .catch((err) => setHistoryError(err instanceof Error ? err.message : "Không tải được lịch sử"))
         .finally(() => setHistoryLoading(false));
     }
@@ -195,12 +204,9 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     setMarketLoading(true);
     setMarketError(null);
     try {
-      const cleanRent = marketRent
-        ? parseFloat(marketRent.replace(/[^0-9.]/g, ""))
-        : undefined;
       const res = await api.marketCompare(uploadedContract.id, {
         district: marketDistrict || undefined,
-        base_rent: cleanRent && !isNaN(cleanRent) ? cleanRent : undefined,
+        base_rent: marketRent ? parseFloat(marketRent) : undefined,
       });
       setMarketResult(res);
     } catch (err: unknown) {
@@ -228,30 +234,16 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
     ...(uploadedContract ? [{ key: "market" as ActiveTab, label: "Thị trường", icon: <BarChart2 className="w-4 h-4" /> }] : []),
   ];
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
+
   return (
-    <div 
-      onClick={handleClose}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto cursor-pointer"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        onClick={(e) => e.stopPropagation()}
-        className="cursor-default bg-white dark:bg-[#0b1424] rounded-2xl border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-6"
+        className="bg-white rounded-2xl border border-[#d8e3ef] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-6"
       >
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
@@ -304,6 +296,57 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           {/* ═══ TAB: CHECK ═══ */}
           {user && activeTab === "check" && (
             <>
+              {/* 4-Step Progress Stepper (DocuSign / Ironclad style) */}
+              {(() => {
+                const currentStep =
+                  stage === "upload"
+                    ? 1
+                    : stage === "uploading" || stage === "verifying"
+                      ? 2
+                      : aiPolling && !aiResult
+                        ? 3
+                        : 4;
+                const steps = [
+                  { id: 1, label: "1. Tải hợp đồng" },
+                  { id: 2, label: "2. Xác thực SHA-256" },
+                  { id: 3, label: "3. Chấm điểm Hybrid AI" },
+                  { id: 4, label: "4. Báo cáo điều khoản" },
+                ];
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 rounded-xl bg-[#f8fafd] border border-[#e6edf4]">
+                    {steps.map((s) => {
+                      const isDone = currentStep > s.id || (s.id === 4 && stage === "result" && Boolean(aiResult));
+                      const isActive = currentStep === s.id && !isDone;
+                      return (
+                        <div
+                          key={s.id}
+                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            isDone
+                              ? "bg-[#eafbf7] text-[#0d7a5f] border border-[#b7f6e5]"
+                              : isActive
+                                ? "bg-[#10253f] text-white shadow-2xs"
+                                : "bg-white text-[#94a3b8] border border-[#e6edf4]"
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 ${
+                              isDone
+                                ? "bg-[#159f7b] text-white"
+                                : isActive
+                                  ? "bg-[#EAD7B8] text-[#10253f]"
+                                  : "bg-[#f1f5f9] text-[#94a3b8]"
+                            }`}
+                          >
+                            {isDone ? "✓" : s.id}
+                          </span>
+                          <span className="truncate">{s.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
               {stage === "upload" && (
                 <>
                   <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}
@@ -320,26 +363,6 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                     </>)}
                   </div>
                   {error && <div className="px-3 py-2 bg-[#fff1f0] border border-[#ffd1cc] rounded-lg text-xs text-[#e4534b] font-medium flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /> {error}</div>}
-                  {selectedFile && user && (
-                    <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#d8e3ef] space-y-1.5">
-                      <label className="block text-xs font-semibold text-[#49627d]">
-                        Loại hợp đồng (định tuyến quy tắc rủi ro & giá thị trường):
-                      </label>
-                      <select
-                        value={contractType}
-                        onChange={(e) => setContractType(e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-semibold border border-[#d8e3ef] rounded-lg bg-white text-[#10253f] focus:outline-none focus:border-[#EAD7B8] cursor-pointer"
-                      >
-                        <option value="thuê trọ">Thuê phòng trọ / Căn hộ</option>
-                        <option value="ctv">Cộng tác viên (CTV)</option>
-                        <option value="intern">Thực tập sinh (Intern)</option>
-                        <option value="khóa học">Khóa học đào tạo / Học nghề</option>
-                        <option value="vay tiêu dùng">Vay tiêu dùng</option>
-                        <option value="trả góp">Mua hàng trả góp</option>
-                        <option value="other">Hợp đồng khác</option>
-                      </select>
-                    </div>
-                  )}
                   {selectedFile && user && (
                     <button onClick={handleUploadAndVerify} className="w-full py-3 bg-[#EAD7B8] hover:bg-[#dfc59f] text-[#10253f] text-sm font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer">
                       <ShieldCheck className="w-4 h-4" /> Upload & Xác thực SHA-256 <ArrowRight className="w-4 h-4" />
@@ -366,50 +389,56 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
 
               {stage === "result" && uploadedContract && verifyResult && (
                 <div className="space-y-5">
-                  {/* Verification badge */}
-                  <div className={`p-4 rounded-xl border flex items-center gap-4 ${verifyResult.result === "matched" ? "bg-[#eafbf7] border-[#b7f6e5]" : verifyResult.result === "mismatched" ? "bg-[#fff1f0] border-[#ffd1cc]" : "bg-[#fff8e6] border-[#ffe3a3]"}`}>
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${verifyResult.result === "matched" ? "bg-[#159f7b]/15" : verifyResult.result === "mismatched" ? "bg-[#e4534b]/15" : "bg-[#d77714]/15"}`}>
-                      {verifyResult.result === "matched" ? <CheckCircle2 className="w-7 h-7 text-[#159f7b]" /> : verifyResult.result === "mismatched" ? <ShieldAlert className="w-7 h-7 text-[#e4534b]" /> : <AlertTriangle className="w-7 h-7 text-[#d77714]" />}
-                    </div>
-                    <div>
-                      <p className={`font-bold text-sm ${verifyResult.result === "matched" ? "text-[#0d7a5f]" : verifyResult.result === "mismatched" ? "text-[#b91c1c]" : "text-[#7d480e]"}`}>
-                        {verifyResult.result === "matched" && "✅ File nguyên vẹn — Giữ đúng bản gốc"}
-                        {verifyResult.result === "mismatched" && "⚠️ Cảnh báo — File đã bị chỉnh sửa"}
-                        {verifyResult.result === "failed" && "❌ Chưa thể xác thực file"}
-                      </p>
-                      <p className="text-xs text-[#49627d] mt-0.5">
-                        {verifyResult.result === "matched" && "File hoàn toàn nguyên bản, không bị ai sửa đổi hay tráo trang."}
-                        {verifyResult.result === "mismatched" && "Mã kiểm tra không trùng — nội dung file đã bị thay đổi so với bản ban đầu."}
-                        {verifyResult.result === "failed" && "Không thể đọc file từ hệ thống để kiểm tra."}
-                      </p>
-                      {verifyResult.duration_ms != null && <p className="text-xs text-[#8297ac] mt-1">Thời gian xử lý: {verifyResult.duration_ms}ms</p>}
-                    </div>
-                  </div>
+                  {/* Verification badge with Progressive Disclosure toggle for SHA-256 */}
+                  <div className={`p-4 rounded-xl border space-y-3 ${verifyResult.result === "matched" ? "bg-[#eafbf7] border-[#b7f6e5]" : verifyResult.result === "mismatched" ? "bg-[#fff1f0] border-[#ffd1cc]" : "bg-[#fff8e6] border-[#ffe3a3]"}`}>
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <div className="flex items-center gap-3.5">
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${verifyResult.result === "matched" ? "bg-[#159f7b]/15" : verifyResult.result === "mismatched" ? "bg-[#e4534b]/15" : "bg-[#d77714]/15"}`}>
+                          {verifyResult.result === "matched" ? <CheckCircle2 className="w-6 h-6 text-[#159f7b]" /> : verifyResult.result === "mismatched" ? <ShieldAlert className="w-6 h-6 text-[#e4534b]" /> : <AlertTriangle className="w-6 h-6 text-[#d77714]" />}
+                        </div>
+                        <div>
+                          <p className={`font-bold text-sm ${verifyResult.result === "matched" ? "text-[#0d7a5f]" : verifyResult.result === "mismatched" ? "text-[#b91c1c]" : "text-[#7d480e]"}`}>
+                            {verifyResult.result === "matched" && "✅ File hợp lệ — SHA-256 khớp"}
+                            {verifyResult.result === "mismatched" && "⚠️ Cảnh báo — File đã bị thay đổi"}
+                            {verifyResult.result === "failed" && "❌ Xác thực thất bại"}
+                          </p>
+                          <p className="text-xs text-[#49627d] mt-0.5">
+                            📁 <strong>{uploadedContract.filename}</strong> ({formatBytes(uploadedContract.file_size_bytes)})
+                            {verifyResult.duration_ms != null ? ` • ${verifyResult.duration_ms}ms` : ""}
+                          </p>
+                        </div>
+                      </div>
 
-                  {/* Hash details */}
-                  <div className="p-4 rounded-xl bg-[#f8fafd] border border-[#d8e3ef] space-y-3">
-                    <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Mã Kiểm Tra Toàn Vẹn (Dấu Vân Tay SHA-256)</h4>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">📁 File: {uploadedContract.filename}</p>
-                        <p className="text-[11px] text-[#8297ac]">Dung lượng: {formatBytes(uploadedContract.file_size_bytes)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file ban đầu (lúc tải lên):</p>
-                        <code className="text-[10px] font-mono text-[#10253f] bg-white px-2 py-1 rounded-lg border border-[#d8e3ef] break-all block">{verifyResult.expected_sha256}</code>
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file kiểm tra lại thực tế:</p>
-                        <code className={`text-[10px] font-mono px-2 py-1 rounded-lg border break-all block ${verifyResult.result === "matched" ? "text-[#159f7b] bg-[#eafbf7] border-[#b7f6e5]" : "text-[#e4534b] bg-[#fff1f0] border-[#ffd1cc]"}`}>{verifyResult.actual_sha256}</code>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowHashDetails((v) => !v)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/90 hover:bg-white text-[#10253f] border border-[#d8e3ef] transition-colors cursor-pointer shrink-0"
+                      >
+                        {showHashDetails ? "Ẩn mã SHA-256" : "Chi tiết SHA-256"}
+                      </button>
                     </div>
+
+                    {showHashDetails && (
+                      <div className="p-3.5 rounded-xl bg-white/95 border border-[#d8e3ef] space-y-2 text-left">
+                        <div>
+                          <p className="text-[11px] font-semibold text-[#49627d] mb-1">Hash lưu trữ (expected):</p>
+                          <code className="text-[10px] font-mono text-[#10253f] bg-[#f8fafd] px-2 py-1 rounded-lg border border-[#d8e3ef] break-all block">{verifyResult.expected_sha256}</code>
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-semibold text-[#49627d] mb-1">Hash xác thực (actual):</p>
+                          <code className={`text-[10px] font-mono px-2 py-1 rounded-lg border break-all block ${verifyResult.result === "matched" ? "text-[#159f7b] bg-[#eafbf7] border-[#b7f6e5]" : "text-[#e4534b] bg-[#fff1f0] border-[#ffd1cc]"}`}>{verifyResult.actual_sha256}</code>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* AI Analysis Section */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#8a6834]" />
-                      <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Phân tích AI điều khoản rủi ro</h4>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#8a6834]" />
+                        <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Báo cáo Chấm điểm Rủi ro &amp; Điều khoản</h4>
+                      </div>
                       {aiPolling && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#fff8e6] text-[#d77714] text-[11px] font-semibold border border-[#ffe3a3]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#d77714] animate-pulse" /> AI đang phân tích...
@@ -421,126 +450,85 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                       <div className="p-4 rounded-xl bg-[#fff8e6] border border-[#ffe3a3] flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full border-2 border-[#d77714] border-t-transparent animate-spin shrink-0" />
                         <div>
-                          <p className="text-sm font-semibold text-[#7d480e]">AI đang quét điều khoản...</p>
-                          <p className="text-xs text-[#996324] mt-0.5">Kết quả sẽ hiện sau vài giây</p>
+                          <p className="text-sm font-semibold text-[#7d480e]">AI đang quét từng điều khoản hợp đồng...</p>
+                          <p className="text-xs text-[#996324] mt-0.5">Đối chiếu Bộ luật Dân sự 2015 &amp; Bộ luật Lao động 2019</p>
                         </div>
                       </div>
                     )}
 
-                    {aiResult && aiResult.status === "completed" && (
-                      <>
-                        {aiResult.risk_score != null && (() => {
-                          const score = Math.round(aiResult.risk_score ?? 0);
-                          const isHigh = score >= 70;
-                          const isMedHigh = score >= 35 && score < 70;
-                          const isLow = score > 0 && score < 35;
-                          const isSafe = score === 0;
+                    {aiResult && aiResult.status === "completed" && (() => {
+                      const findingsList = aiResult.findings ?? aiResult.ai_findings ?? [];
+                      const overviewText = aiResult.overview ?? aiResult.ai_overview ?? "";
+                      const scoreVal = Math.round(aiResult.risk_score ?? 0);
 
-                          const badgeBg = isHigh
-                            ? "bg-[#e4534b]"
-                            : isMedHigh
-                            ? "bg-[#d77714]"
-                            : isLow
-                            ? "bg-[#eab308]"
-                            : "bg-[#159f7b]";
+                      const filteredFindings = findingsList
+                        .map((item, originalIdx) => ({ item, originalIdx }))
+                        .filter(({ item }) =>
+                          riskFilter === "all" ? true : getClauseBucket(item) === riskFilter
+                        );
 
-                          const boxStyle = isHigh
-                            ? "bg-[#fff1f0] border-[#ffd1cc]"
-                            : isMedHigh
-                            ? "bg-[#fff8e6] border-[#ffe3a3]"
-                            : isLow
-                            ? "bg-[#fefce8] border-[#fef08a]"
-                            : "bg-[#eafbf7] border-[#b7f6e5]";
+                      return (
+                        <>
+                          {/* Circular SVG Risk Gauge + Interactive Clause Heatmap */}
+                          <RiskGaugeAndHeatmap
+                            score={scoreVal}
+                            riskLabel={aiResult.risk_label}
+                            overview={overviewText}
+                            analysisSource={aiResult.analysis_source}
+                            findings={findingsList}
+                            activeFilter={riskFilter}
+                            onFilterChange={setRiskFilter}
+                            onSelectClauseIndex={(idx) => {
+                              setRiskFilter("all");
+                              setExpandedRisk(idx);
+                            }}
+                          />
 
-                          const titleColor = isHigh
-                            ? "text-[#b91c1c]"
-                            : isMedHigh
-                            ? "text-[#7d480e]"
-                            : isLow
-                            ? "text-[#854d0e]"
-                            : "text-[#0d7a5f]";
-
-                          const descColor = isHigh
-                            ? "text-[#991b1b]"
-                            : isMedHigh
-                            ? "text-[#996324]"
-                            : isLow
-                            ? "text-[#a16207]"
-                            : "text-[#047857]";
-
-                          const findingsCount =
-                            (aiResult.findings?.length ?? aiResult.ai_findings?.length ?? 0);
-
-                          return (
-                            <div className={`p-3.5 rounded-xl border flex items-center justify-between ${boxStyle}`}>
-                              <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm ${badgeBg}`}>
-                                  {score}%
-                                </div>
-                                <div>
-                                  <div className={`text-sm font-bold ${titleColor}`}>
-                                    Đánh giá rủi ro: {aiResult.risk_label || (isSafe ? "An toàn" : "Cần lưu ý")}
-                                  </div>
-                                  <div className={`text-xs mt-0.5 ${descColor}`}>
-                                    {aiResult.ai_overview || aiResult.overview || aiResult.summary || ""}
-                                  </div>
-                                </div>
-                              </div>
-                              {findingsCount > 0 && (
-                                <div className="text-xs font-bold text-[#d77714] bg-white px-2.5 py-1 rounded-lg border border-[#ffe3a3] shrink-0">
-                                  {findingsCount} Điểm lưu ý
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
-
-                        {(() => {
-                          const findings = aiResult.findings || aiResult.ai_findings || [];
-                          if (findings.length === 0) {
-                            return (
-                              <div className="p-4 rounded-xl bg-[#eafbf7] border border-[#b7f6e5] flex items-center gap-3">
-                                <CheckCircle2 className="w-6 h-6 text-[#159f7b] shrink-0" />
-                                <p className="text-sm font-semibold text-[#0d7a5f]">
-                                  Hợp đồng không phát hiện điều khoản rủi ro hoặc bẫy pháp lý nổi bật.
-                                </p>
-                              </div>
-                            );
-                          }
-                          return (
+                          {filteredFindings.length > 0 && (
                             <div className="space-y-3">
-                              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">
-                                Chi tiết điều khoản rủi ro ({findings.length})
-                              </h4>
-                              {findings.map((risk, idx) => {
-                                const isRiskHigh =
-                                  risk.severity === "high" ||
-                                  risk.risk_level === "critical" ||
-                                  risk.risk_level === "high";
-                                const isRiskMed =
-                                  risk.severity === "medium" ||
-                                  risk.risk_level === "medium";
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">
+                                  Chi tiết mức độ rủi ro từng điều khoản ({filteredFindings.length}/{findingsList.length})
+                                </h4>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedRisk(expandedRisk === -99 ? null : -99)
+                                  }
+                                  className="text-xs font-semibold text-[#8a6834] hover:underline cursor-pointer"
+                                >
+                                  {expandedRisk === -99 ? "Thu gọn bớt" : "Mở tất cả điều khoản"}
+                                </button>
+                              </div>
 
-                                const title =
-                                  risk.title ||
-                                  risk.target_section ||
-                                  (risk.matched_term ? `Điều khoản: ${risk.matched_term}` : "Điều khoản rủi ro");
-                                const clauseSnippet = risk.clause_text || risk.matched_term;
-                                const analysisSnippet = risk.analysis || risk.warning;
-                                const lawSnippet = risk.law_reference || risk.reference;
+                              {filteredFindings.map(({ item: risk, originalIdx: idx }) => {
+                                const level = (risk.risk_level ?? risk.severity ?? "medium").toLowerCase();
+                                const clauseScore = risk.clause_risk_score ?? (level === "critical" ? 90 : level === "high" ? 70 : level === "medium" ? 45 : 20);
+                                const titleText = risk.title ?? risk.target_section ?? risk.matched_term ?? `Điều khoản #${idx + 1}`;
+                                const quoteText = risk.clause_text ?? risk.matched_term;
+                                const analysisText = risk.analysis ?? risk.warning;
+                                const lawRef = risk.law_reference ?? risk.reference;
+                                const isOpen =
+                                  expandedRisk === -99 ||
+                                  expandedRisk === idx ||
+                                  (expandedRisk === null && idx === 0);
 
                                 return (
                                   <div key={idx} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm">
                                     <div
-                                      className="flex items-center justify-between cursor-pointer"
-                                      onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
+                                      className="flex items-center justify-between cursor-pointer gap-2"
+                                      onClick={() => setExpandedRisk(isOpen && expandedRisk !== -99 ? -1 : idx)}
                                     >
-                                      <div className="flex items-center gap-2">
-                                        {isRiskHigh ? (
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        {level === "critical" ? (
+                                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff1f0] text-[#c92a2a] border border-[#ffa8a8]">
+                                            Rủi ro nghiêm trọng
+                                          </span>
+                                        ) : level === "high" ? (
                                           <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff1f0] text-[#e4534b] border border-[#ffd1cc]">
                                             Mức rủi ro cao
                                           </span>
-                                        ) : isRiskMed ? (
+                                        ) : level === "medium" ? (
                                           <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#fff4e6] text-[#d77714] border border-[#ffd8a8]">
                                             Cần làm rõ
                                           </span>
@@ -549,16 +537,40 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                             Lưu ý nhẹ
                                           </span>
                                         )}
-                                        <h5 className="text-sm font-bold text-[#10253f]">{title}</h5>
+                                        <span
+                                          className={`px-2 py-0.5 rounded text-[11px] font-extrabold border ${
+                                            clauseScore >= 70
+                                              ? "bg-[#fff1f0] text-[#e4534b] border-[#ffd1cc]"
+                                              : clauseScore >= 40
+                                                ? "bg-[#fff4e6] text-[#d77714] border-[#ffd8a8]"
+                                                : "bg-[#eafbf7] text-[#159f7b] border-[#b7f6e5]"
+                                          }`}
+                                        >
+                                          Điểm rủi ro: {Math.round(clauseScore)}/100
+                                        </span>
+                                        <h5 className="text-sm font-bold text-[#10253f]">{titleText}</h5>
                                       </div>
-                                      {expandedRisk === idx ? (
-                                        <ChevronUp className="w-4 h-4 text-[#8297ac]" />
+                                      {isOpen ? (
+                                        <ChevronUp className="w-4 h-4 text-[#8297ac] shrink-0" />
                                       ) : (
-                                        <ChevronDown className="w-4 h-4 text-[#8297ac]" />
+                                        <ChevronDown className="w-4 h-4 text-[#8297ac] shrink-0" />
                                       )}
                                     </div>
+                                    {/* Clause risk progress bar */}
+                                    <div className="mt-2.5 h-1.5 bg-[#f0f4f8] rounded-full overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full transition-all ${
+                                          clauseScore >= 70
+                                            ? "bg-[#e4534b]"
+                                            : clauseScore >= 40
+                                              ? "bg-[#d77714]"
+                                              : "bg-[#159f7b]"
+                                        }`}
+                                        style={{ width: `${Math.min(100, clauseScore)}%` }}
+                                      />
+                                    </div>
                                     <AnimatePresence>
-                                      {expandedRisk === idx && (
+                                      {isOpen && (
                                         <motion.div
                                           initial={{ height: 0, opacity: 0 }}
                                           animate={{ height: "auto", opacity: 1 }}
@@ -566,20 +578,31 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                           className="overflow-hidden"
                                         >
                                           <div className="pt-3 space-y-3">
-                                            {clauseSnippet && (
+                                            {quoteText && (
                                               <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#EAD7B8]">
-                                                &quot;{clauseSnippet}&quot;
+                                                &quot;{quoteText}&quot;
                                               </div>
                                             )}
-                                            {analysisSnippet && (
+                                            {analysisText && (
                                               <div className="text-xs text-[#49627d] leading-relaxed">
-                                                <strong>Phân tích:</strong> {analysisSnippet}
+                                                <strong>Phân tích:</strong> {analysisText}
                                               </div>
                                             )}
-                                            {lawSnippet && (
-                                              <div className="text-xs text-[#8a6834] font-medium flex items-center gap-1.5">
-                                                <BookOpen className="w-3.5 h-3.5" />
-                                                <span>{lawSnippet}</span>
+                                            {lawRef && (
+                                              <div className="text-xs text-[#8a6834] font-medium flex items-center justify-between gap-2 flex-wrap bg-[#FAF5ED] px-3 py-2 rounded-lg border border-[#EAD7B8]/70">
+                                                <span className="flex items-center gap-1.5">
+                                                  <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                                                  <span>Căn cứ pháp lý: <strong>{lawRef}</strong></span>
+                                                </span>
+                                                <a
+                                                  href={`https://thuvienphapluat.vn/page/tim-van-ban.aspx?keyword=${encodeURIComponent(lawRef)}`}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#10253f] hover:text-[#8a6834] underline"
+                                                >
+                                                  <span>Tra cứu điều luật</span>
+                                                  <ExternalLink className="w-3 h-3" />
+                                                </a>
                                               </div>
                                             )}
                                             {risk.negotiation_script && (
@@ -587,12 +610,10 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                                 <div className="flex items-center justify-between text-[11px] font-bold text-[#159f7b] mb-1.5">
                                                   <span className="flex items-center gap-1">
                                                     <MessageCircle className="w-3 h-3" />
-                                                    Gợi ý câu trao đổi đàm phán:
+                                                    Gợi ý câu trao đổi:
                                                   </span>
                                                   <button
-                                                    onClick={() =>
-                                                      handleCopy(`risk-${idx}`, risk.negotiation_script ?? "")
-                                                    }
+                                                    onClick={() => handleCopy(`risk-${idx}`, risk.negotiation_script ?? "")}
                                                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#eafbf7] hover:bg-[#d0f5ec] text-[#159f7b] border border-[#b7f6e5] transition-colors cursor-pointer"
                                                   >
                                                     {copiedId === `risk-${idx}` ? (
@@ -621,15 +642,34 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                 );
                               })}
                             </div>
-                          );
-                        })()}
-                      </>
-                    )}
+                          )}
+
+                          {findingsList.length === 0 && (
+                            <div className="p-4 rounded-xl bg-[#eafbf7] border border-[#b7f6e5] flex items-center gap-3">
+                              <CheckCircle2 className="w-6 h-6 text-[#159f7b] shrink-0" />
+                              <p className="text-sm font-semibold text-[#0d7a5f]">
+                                Không phát hiện điều khoản rủi ro đáng kể.
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
-                  <button onClick={resetAll} className="w-full py-2.5 border border-[#d8e3ef] text-sm font-semibold text-[#49627d] hover:text-[#10253f] hover:border-[#EAD7B8] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
-                    <RefreshCw className="w-4 h-4" /> Kiểm tra file khác
-                  </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <Link
+                      href={`/history/${uploadedContract.id}`}
+                      onClick={handleClose}
+                      className="py-2.5 px-4 bg-[#10253f] hover:bg-[#1e3a5f] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span>Mở trang báo cáo đầy đủ</span>
+                    </Link>
+                    <button onClick={resetAll} className="py-2.5 px-4 border border-[#d8e3ef] text-sm font-semibold text-[#49627d] hover:text-[#10253f] hover:border-[#EAD7B8] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
+                      <RefreshCw className="w-4 h-4" /> Kiểm tra file khác
+                    </button>
+                  </div>
                 </div>
               )}
             </>
@@ -638,9 +678,19 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           {/* ═══ TAB: HISTORY ═══ */}
           {user && activeTab === "history" && (
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-4 h-4" /> Lịch sử hợp đồng của bạn
-              </h4>
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="w-4 h-4" /> Lịch sử hợp đồng của bạn
+                </h4>
+                <Link
+                  href="/history"
+                  onClick={handleClose}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#8a6834] hover:text-[#10253f] bg-[#FAF5ED] px-3 py-1.5 rounded-lg border border-[#EAD7B8]/60 transition-colors"
+                >
+                  <span>Mở trang Lịch sử đầy đủ</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
               {historyLoading && (
                 <div className="flex items-center justify-center py-10 gap-3 text-[#8297ac]">
                   <div className="w-6 h-6 rounded-full border-2 border-[#EAD7B8] border-t-transparent animate-spin" />
@@ -654,7 +704,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                 </div>
               )}
               {!historyLoading && contracts.map((contract) => (
-                <div key={contract.id} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm space-y-2">
+                <div key={contract.id} className="p-4 rounded-xl bg-white border border-[#d8e3ef] hover:border-[#EAD7B8] shadow-sm space-y-2.5 transition-all">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-[#8a6834] shrink-0" />
@@ -671,6 +721,56 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                     <span>{formatDate(contract.created_at)}</span>
                   </div>
                   <code className="text-[10px] font-mono text-[#49627d] bg-[#f8fafd] px-2 py-1 rounded border border-[#e6edf4] block truncate">SHA-256: {contract.sha256_hash}</code>
+                  <div className="pt-1 flex items-center justify-end gap-2">
+                    <button
+                      onClick={async () => {
+                        setUploadedContract({
+                          id: contract.id,
+                          filename: contract.original_filename,
+                          sha256_hash: contract.sha256_hash,
+                          file_size_bytes: contract.file_size_bytes,
+                          status: contract.status,
+                        });
+                        setVerifyResult({
+                          result: contract.status === "verified" ? "matched" : contract.status === "mismatch" ? "mismatched" : "failed",
+                          expected_sha256: contract.sha256_hash,
+                          actual_sha256: contract.sha256_hash,
+                          duration_ms: null,
+                          verification_log_id: "",
+                        });
+                        setStage("result");
+                        setActiveTab("check");
+                        setAiPolling(true);
+                        try {
+                          const hist = await api.getContractAnalysisHistory(contract.id);
+                          if (hist.length > 0) {
+                            setAiResult({
+                              status: "completed",
+                              risk_score: hist[0].risk_score,
+                              risk_label: hist[0].risk_label,
+                              overview: hist[0].overview,
+                              ai_overview: hist[0].ai_overview,
+                              findings: hist[0].findings,
+                              ai_findings: hist[0].ai_findings,
+                            });
+                          }
+                        } finally {
+                          setAiPolling(false);
+                        }
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#f8fafd] hover:bg-[#eef3f8] text-[#10253f] border border-[#d8e3ef] transition-colors cursor-pointer"
+                    >
+                      Xem nhanh tại đây
+                    </button>
+                    <Link
+                      href={`/history/${contract.id}`}
+                      onClick={handleClose}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#10253f] hover:bg-[#1e3a5f] text-white transition-colors"
+                    >
+                      <span>Xem chi tiết phần chấm</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>

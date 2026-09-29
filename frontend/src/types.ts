@@ -1,18 +1,28 @@
+export interface TemplateSourceLink {
+  title: string;
+  url: string;
+  note?: string;
+}
+
 export interface ContractTemplate {
   id: string;
   title: string;
   subtitle: string;
-  category: "work" | "internship" | "freelance" | "housing";
+  category: "work" | "internship" | "freelance" | "housing" | "education" | "finance";
   description: string;
   tags: string[];
   riskCount: number;
+  featured?: boolean;
+  sourceUrls?: TemplateSourceLink[];
   clauses: {
     title: string;
     content: string;
     isRisky?: boolean;
+    clauseRiskScore?: number;
     riskReason?: string;
     advice?: string;
     lawReference?: string;
+    lawReferenceUrl?: string;
   }[];
 }
 

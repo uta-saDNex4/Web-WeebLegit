@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import io
 import os
 import secrets
 from pathlib import Path
@@ -23,6 +24,59 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MiB
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10 MiB
 ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".json"}
 CHUNK_SIZE = 1024 * 1024
+
+
+def extract_text_from_file(file_path: Path, max_chars: int = 500_000) -> str:
+    """Extract readable text from PDF, DOCX, or plain text files.
+
+    Uses proper parsers for binary formats instead of raw byte decode,
+    ensuring Vietnamese text is preserved for rule-based risk analysis.
+    """
+    ext = file_path.suffix.lower()
+
+    if ext == ".pdf":
+        try:
+            import pypdf
+            reader = pypdf.PdfReader(str(file_path))
+            pages_text = []
+            total = 0
+            for page in reader.pages:
+                page_text = page.extract_text() or ""
+                pages_text.append(page_text)
+                total += len(page_text)
+                if total >= max_chars:
+                    break
+            return "\n".join(pages_text)[:max_chars]
+        except Exception as exc:
+            print(f"[TextExtract] pypdf failed for {file_path.name}: {exc}")
+            return ""
+
+    if ext == ".docx":
+        try:
+            import docx
+            doc = docx.Document(str(file_path))
+            paragraphs = []
+            total = 0
+            for para in doc.paragraphs:
+                paragraphs.append(para.text)
+                total += len(para.text)
+                if total >= max_chars:
+                    break
+            return "\n".join(paragraphs)[:max_chars]
+        except Exception as exc:
+            print(f"[TextExtract] python-docx failed for {file_path.name}: {exc}")
+            return ""
+
+    # .txt, .json, or other text-based formats
+    try:
+        text = file_path.read_text(encoding="utf-8", errors="replace")
+        return text[:max_chars]
+    except Exception:
+        try:
+            raw = file_path.read_bytes()
+            return raw.decode("utf-8", errors="ignore")[:max_chars]
+        except Exception:
+            return ""
 
 
 def validate_magic_bytes(header: bytes, ext: str) -> bool:
@@ -145,15 +199,13 @@ class ContractService:
                 raise FileNotFoundError(contract.storage_key)
 
             digest = hashlib.sha256()
-            captured = bytearray()
 
             with storage_path.open("rb") as stored_file:
                 while chunk := stored_file.read(CHUNK_SIZE):
                     digest.update(chunk)
-                    if len(captured) < 512 * 1024:
-                        captured.extend(chunk[: 512 * 1024 - len(captured)])
 
-            analysis_text = bytes(captured).decode("utf-8", errors="ignore")
+            # Extract text using proper parsers (PDF, DOCX, TXT)
+            analysis_text = extract_text_from_file(storage_path)
             actual_hash = digest.hexdigest()
 
             if hmac.compare_digest(actual_hash, contract.sha256_hash.strip()):

@@ -19,13 +19,33 @@ if ENV_FILE.is_file():
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip())
 
-SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://admin:matkhau_xinfu@localhost:5432/contract_verifier_db",
-)
+def _resolve_database_url() -> str:
+    env_url = os.getenv("DATABASE_URL", "").strip()
+    if env_url:
+        if env_url.startswith("postgres://"):
+            env_url = env_url.replace("postgres://", "postgresql://", 1)
+        return env_url
 
-# Create engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
+    # Check if local PostgreSQL on port 5432 is reachable
+    import socket
+    try:
+        with socket.create_connection(("127.0.0.1", 5432), timeout=0.5):
+            return "postgresql://admin:matkhau_xinfu@localhost:5432/contract_verifier_db"
+    except OSError:
+        sqlite_path = (PROJECT_ROOT / "contract_verifier.db").as_posix()
+        return f"sqlite:///{sqlite_path}"
+
+
+SQLALCHEMY_DATABASE_URL = _resolve_database_url()
+
+# Create engine with pre-ping and recycle to handle cloud database connection drops
+_connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args=_connect_args,
+    pool_pre_ping=True,
+    pool_recycle=300,
+)
 
 # Create session factory
 SessionLocal = sessionmaker(

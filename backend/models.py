@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 from uuid import UUID
-from sqlalchemy import Boolean, CHAR, CheckConstraint, DateTime, ForeignKey, Index, Integer, JSON, String, Text, UniqueConstraint, Uuid, func
+from sqlalchemy import Boolean, CHAR, CheckConstraint, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Text, UniqueConstraint, Uuid, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -124,3 +124,41 @@ class ContractImage(Base):
     sha256_hash: Mapped[str] = mapped_column(CHAR(64), nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class AnalysisResult(Base):
+    __tablename__ = "analysis_results"
+    __table_args__ = (
+        CheckConstraint("analysis_source IN ('deepseek', 'rule-based', 'hybrid')", name="ck_analysis_source"),
+        CheckConstraint("analysis_duration_ms IS NULL OR analysis_duration_ms >= 0", name="ck_analysis_duration"),
+    )
+
+    id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True)
+    contract_id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("contracts.id", ondelete="RESTRICT"), nullable=False, index=True)
+    user_id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True)
+    verification_log_id: Mapped[UUID | None] = mapped_column(Uuid(as_uuid=True), ForeignKey("verification_logs.id", ondelete="RESTRICT"), nullable=True, index=True)
+    risk_score: Mapped[float] = mapped_column(Float, nullable=False)
+    risk_label: Mapped[str] = mapped_column(String(128), nullable=False)
+    ai_overview: Mapped[str | None] = mapped_column(Text)
+    findings: Mapped[list[Any]] = mapped_column(JSON().with_variant(JSONB, "postgresql"), nullable=False, default=list, server_default="[]")
+    analysis_source: Mapped[str] = mapped_column(String(32), nullable=False)
+    model_version: Mapped[str | None] = mapped_column(String(64))
+    analysis_duration_ms: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+Index("idx_analysis_contract_date", AnalysisResult.contract_id, AnalysisResult.created_at.desc())
+Index("idx_analysis_user_date", AnalysisResult.user_id, AnalysisResult.created_at.desc())
+
+
+class AiChatSession(Base):
+    __tablename__ = "ai_chat_sessions"
+
+    id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True)
+    contract_id: Mapped[UUID | None] = mapped_column(Uuid(as_uuid=True), ForeignKey("contracts.id", ondelete="RESTRICT"), nullable=True, index=True)
+    session_title: Mapped[str] = mapped_column(String(255), nullable=False)
+    messages: Mapped[list[Any]] = mapped_column(JSON().with_variant(JSONB, "postgresql"), nullable=False, default=list, server_default="[]")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+Index("idx_chats_user_date", AiChatSession.user_id, AiChatSession.updated_at.desc())

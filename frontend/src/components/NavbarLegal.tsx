@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronDown,
   Sparkles,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLanguage } from "../lib/language-context";
@@ -187,6 +188,14 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           >
             {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
           </button>
+
+          {/* 5. Lịch Sử */}
+          <a
+            href="/history"
+            className="px-3.5 py-2 rounded-xl transition-all cursor-pointer font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+          >
+            {lang === "EN" ? "History" : "Lịch Sử"}
+          </a>
         </nav>
 
         {/* Right Action Tools: Language, Theme & High-Contrast Buttons */}
@@ -252,6 +261,13 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                       <span>{lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị Admin"}</span>
                     </a>
                   )}
+                  <a
+                    href="/history"
+                    className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                  >
+                    <Clock className="w-4 h-4 text-[#8A6731]" />
+                    <span>{lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
+                  </a>
                   <button
                     onClick={() => {
                       setUserDropdownOpen(false);
@@ -425,6 +441,20 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                 <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
               )}
             </button>
+            <a
+              href="/history"
+              className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+            >
+              <span>📜 {lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
+            </a>
+            {user?.role === "admin" && (
+              <a
+                href="/admin"
+                className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between font-semibold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              >
+                <span>🛡️ {lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị"}</span>
+              </a>
+            )}
           </div>
 
           <div className="pt-3 border-t border-[#EFE8D8] dark:border-[#162744] flex flex-col gap-2">

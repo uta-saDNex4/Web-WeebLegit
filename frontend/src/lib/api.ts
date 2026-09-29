@@ -7,19 +7,15 @@ export function getBaseUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
   if (typeof window !== 'undefined') {
-    // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, hoặc domain thật), ưu tiên sử dụng
+    // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, cloudflare tunnel), ưu tiên sử dụng
     if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
       return envUrl;
     }
-    // Nếu truy cập từ máy khác qua IP LAN hoặc hostname khác localhost/127.0.0.1
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      return `${window.location.protocol}//${window.location.hostname}:8000`;
-    }
-    if (envUrl) return envUrl;
-    return `${window.location.protocol}//${window.location.hostname}:8000`;
+    // Mặc định trên trình duyệt dùng relative path để Next.js proxy rewrite
+    return '';
   }
 
-  return envUrl || 'http://localhost:8000';
+  return process.env.BACKEND_INTERNAL_URL || envUrl || 'http://localhost:8000';
 }
 
 // ─── Token helpers ────────────────────────────────────────────────────────────
@@ -243,6 +239,7 @@ export interface AiFindingItem {
   severity: 'high' | 'medium' | 'low';
   target_section: string;
   title: string;
+  clause_risk_score?: number;
   matched_term?: string;
   clause_text?: string;
   warning?: string;
@@ -265,6 +262,8 @@ export interface AiAnalysisResult {
   contract_type?: string | null;
   district?: string | null;
   base_rent?: number | null;
+  analysis_source?: string;
+  model_version?: string;
 }
 
 export async function getAiAnalysis(
@@ -307,6 +306,7 @@ export async function getAiAnalysis(
       analysis: f.analysis || warningText,
       reference: refLaw,
       law_reference: f.law_reference || refLaw,
+      clause_risk_score: typeof f.clause_risk_score === 'number' ? f.clause_risk_score : undefined,
       negotiation_script: f.negotiation_script,
     };
   });
@@ -321,6 +321,64 @@ export async function getAiAnalysis(
     findings: normalizedFindings,
     ai_findings: normalizedFindings,
   };
+}
+
+export interface AnalysisHistoryItem {
+  id: string;
+  contract_id: string;
+  user_id: string;
+  verification_log_id: string | null;
+  risk_score: number;
+  risk_label: string;
+  ai_overview: string;
+  overview: string;
+  findings: AiFindingItem[];
+  ai_findings: AiFindingItem[];
+  analysis_source: string;
+  model_version: string | null;
+  analysis_duration_ms: number | null;
+  created_at: string | null;
+  original_filename?: string | null;
+  contract_type?: string | null;
+  file_size_bytes?: number | null;
+  sha256_hash?: string | null;
+  contract_status?: string | null;
+}
+
+export interface AnalysisHistoryListResponse {
+  items: AnalysisHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export async function getContractAnalysisHistory(
+  contractId: string,
+): Promise<AnalysisHistoryItem[]> {
+  return apiFetch<AnalysisHistoryItem[]>(
+    `/api/contracts/${contractId}/analysis-history`,
+  );
+}
+
+export async function getAnalysisResultDetail(
+  resultId: string,
+): Promise<AnalysisHistoryItem> {
+  return apiFetch<AnalysisHistoryItem>(
+    `/api/contracts/analysis-results/${resultId}`,
+  );
+}
+
+export async function getMyAnalysisHistory(params?: {
+  page?: number;
+  limit?: number;
+}): Promise<AnalysisHistoryListResponse> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString() ? `?${q.toString()}` : '';
+  return apiFetch<AnalysisHistoryListResponse>(
+    `/api/contracts/analysis-history/me${qs}`,
+  );
 }
 
 // ─── Market Compare ────────────────────────────────────────────────────────────
@@ -439,19 +497,52 @@ export interface AiChatMessage {
 
 export interface AiChatResponse {
   reply: string;
-  answer: string;
+  answer?: string;
   citations: string[];
-  citation: string | null;
+  citation?: string | null;
   negotiation_script?: string | null;
   source?: string;
   model?: string | null;
+  session_id?: string | null;
+}
+
+export interface ChatAttachmentResponse {
+  filename: string;
+  file_type: 'image' | 'document';
+  mime_type: string;
+  file_size_bytes: number;
+  image_base64: string | null;
+  extracted_text: string | null;
+}
+
+export async function uploadChatAttachment(
+  file: File,
+): Promise<ChatAttachmentResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiFetch<ChatAttachmentResponse>(
+    '/api/ai/chat-upload',
+    {
+      method: 'POST',
+      body: formData,
+    },
+    false,
+  );
 }
 
 export async function aiChat(
   question: string,
   contractContext?: string,
   history?: AiChatMessage[],
+  options?: {
+    sessionId?: string | null;
+    attachmentName?: string | null;
+    attachmentText?: string | null;
+    imageBase64?: string | null;
+    imageMimeType?: string | null;
+  },
 ): Promise<AiChatResponse> {
+  const hasToken = Boolean(getToken());
   return apiFetch<AiChatResponse>(
     '/api/ai/chat',
     {
@@ -460,15 +551,58 @@ export async function aiChat(
       body: JSON.stringify({
         message: question,
         question: question,
-        contract_context: contractContext,
-        history: history?.map((h) => ({
-          role: h.role === 'model' || h.role === 'assistant' ? 'model' : 'user',
-          content: h.content,
-        })),
+        contract_context: contractContext || null,
+        history:
+          history?.map((h) => ({
+            role: h.role === 'model' || h.role === 'assistant' ? 'assistant' : 'user',
+            content: h.content,
+          })) || [],
+        session_id: options?.sessionId || null,
+        attachment_name: options?.attachmentName || null,
+        attachment_text: options?.attachmentText || null,
+        image_base64: options?.imageBase64 || null,
+        image_mime_type: options?.imageMimeType || null,
       }),
     },
-    false, // không cần auth — public endpoint
+    hasToken,
   );
+}
+
+export interface AiChatSessionSummary {
+  id: string;
+  session_title: string;
+  message_count: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface AiChatSessionDetail {
+  id: string;
+  session_title: string;
+  messages: Array<{
+    role: 'user' | 'assistant';
+    content: string;
+    attachment_name?: string | null;
+    has_image?: boolean;
+    citations?: string[];
+    negotiation_script?: string | null;
+  }>;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export async function listChatSessions(): Promise<AiChatSessionSummary[]> {
+  return apiFetch<AiChatSessionSummary[]>('/api/ai/sessions');
+}
+
+export async function getChatSession(
+  sessionId: string,
+): Promise<AiChatSessionDetail> {
+  return apiFetch<AiChatSessionDetail>(`/api/ai/sessions/${sessionId}`);
+}
+
+export async function deleteChatSession(sessionId: string): Promise<void> {
+  await apiFetch<void>(`/api/ai/sessions/${sessionId}`, { method: 'DELETE' });
 }
 
 // ─── Admin API ─────────────────────────────────────────────────────────────────

@@ -8,12 +8,14 @@ from typing import Annotated
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, UploadFile, status
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..ai_engine import normalize_finding
 from ..auth import check_admin_role, get_current_user
 from ..database import get_db
-from ..models import ContractClause, ContractImage, User
+from ..models import AnalysisResult, Contract, ContractClause, ContractImage, User
 from ..repositories import ContractRepository, VerificationRepository
 from ..schemas import (
     ClauseCreate,
@@ -25,7 +27,9 @@ from ..schemas import (
     VerificationLogResponse,
     VerificationResponse,
 )
-from ..services import AIService, ContractService, MarketService, get_cached_ai_analysis
+from ..services import AIService, ContractService, MarketService
+from ..services.ai_service import get_analysis_result_from_db
+from ..services.contract_service import extract_text_from_file
 
 router = APIRouter(prefix="/api/contracts", tags=["contracts"])
 
@@ -34,11 +38,11 @@ SECURE_STORAGE_ROOT = Path(os.getenv("SECURE_STORAGE_ROOT", str(PROJECT_ROOT / "
 MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 
-def _run_ai_task(db_factory, log_id: UUID, contract_text: str, metadata: dict) -> None:
+def _run_ai_task(db_factory, log_id: UUID, contract_text: str, metadata: dict, contract_id: UUID = None, user_id: UUID = None) -> None:
     db = next(db_factory())
     try:
         ai_svc = AIService()
-        ai_svc.analyze_contract_with_db_rules(db, log_id, contract_text, metadata)
+        ai_svc.analyze_contract_with_db_rules(db, log_id, contract_text, contract_id=contract_id, user_id=user_id, metadata=metadata)
     finally:
         db.close()
 
@@ -77,6 +81,72 @@ async def upload_contract(
     return await service.upload_contract(file, current, contract_type=contract_type)
 
 
+def _serialize_analysis_result(r: AnalysisResult, contract: Contract | None = None) -> dict:
+    findings = [normalize_finding(f) for f in (r.findings or [])]
+    return {
+        "id": str(r.id),
+        "contract_id": str(r.contract_id),
+        "user_id": str(r.user_id),
+        "verification_log_id": str(r.verification_log_id) if r.verification_log_id else None,
+        "risk_score": r.risk_score,
+        "risk_label": r.risk_label,
+        "ai_overview": r.ai_overview or "",
+        "overview": r.ai_overview or "",
+        "findings": findings,
+        "ai_findings": findings,
+        "analysis_source": r.analysis_source,
+        "model_version": r.model_version,
+        "analysis_duration_ms": r.analysis_duration_ms,
+        "created_at": r.created_at.isoformat() if r.created_at else None,
+        "original_filename": contract.original_filename if contract else None,
+        "contract_type": contract.contract_type if contract else None,
+        "file_size_bytes": contract.file_size_bytes if contract else None,
+        "sha256_hash": contract.sha256_hash.strip() if contract and contract.sha256_hash else None,
+        "contract_status": contract.status if contract else None,
+    }
+
+
+@router.get("/analysis-history/me", response_model=dict)
+def get_my_analysis_history(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=100),
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get all AI analysis results belonging to the current user across all contracts."""
+    offset = (page - 1) * limit
+    total = db.scalar(
+        select(func.count()).select_from(AnalysisResult).where(AnalysisResult.user_id == current.id)
+    ) or 0
+    rows = db.execute(
+        select(AnalysisResult, Contract)
+        .join(Contract, Contract.id == AnalysisResult.contract_id)
+        .where(AnalysisResult.user_id == current.id)
+        .order_by(AnalysisResult.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    items = [_serialize_analysis_result(r, c) for r, c in rows]
+    return {"items": items, "total": total, "page": page, "limit": limit}
+
+
+@router.get("/analysis-results/{result_id}", response_model=dict)
+def get_analysis_result_detail(
+    result_id: UUID,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get a single AI analysis result by its ID."""
+    r = db.scalars(select(AnalysisResult).where(AnalysisResult.id == result_id)).first()
+    if not r:
+        raise HTTPException(404, "Analysis result not found")
+    contract = ContractRepository(db).get_by_id(r.contract_id)
+    if r.user_id != current.id and current.role != "admin":
+        if not contract or contract.uploaded_by != current.id:
+            raise HTTPException(403, "Not allowed to access this analysis result")
+    return _serialize_analysis_result(r, contract)
+
+
 @router.get("/{contract_id}", response_model=ContractResponse)
 def contract_detail(
     contract_id: UUID,
@@ -104,7 +174,7 @@ def verify_contract(
     contract, log, analysis_text = service.verify_contract(contract_id, current)
 
     metadata = {"contract_type": contract.contract_type}
-    background_tasks.add_task(_run_ai_task, get_db, log.id, analysis_text, metadata)
+    background_tasks.add_task(_run_ai_task, get_db, log.id, analysis_text, metadata, contract_id=contract.id, user_id=current.id)
 
     return VerificationResponse(
         contract_id=contract.id,
@@ -134,15 +204,63 @@ def get_ai_analysis(
         raise HTTPException(404, "Contract not found")
     ContractService(db).check_ownership(contract, current)
 
-    cached_result = get_cached_ai_analysis(log_id)
-    if not cached_result:
-        # If background task is still running or not cached
+    db_result = get_analysis_result_from_db(db, log_id)
+    if not db_result:
+        # If background task is still running or not saved yet
         return {
             "status": "processing",
             "message": "AI analysis is still processing. Please try again shortly.",
         }
 
-    return {"status": "completed", **cached_result}
+    return {"status": "completed", **db_result}
+
+
+@router.get("/{contract_id}/analysis-history", response_model=list[dict])
+def get_contract_analysis_history(
+    contract_id: UUID,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get all stored AI analysis results for a specific contract."""
+    repo = ContractRepository(db)
+    contract = repo.get_by_id(contract_id)
+    if not contract:
+        raise HTTPException(404, "Contract not found")
+    ContractService(db).check_ownership(contract, current)
+
+    results = list(
+        db.scalars(
+            select(AnalysisResult)
+            .where(AnalysisResult.contract_id == contract_id)
+            .order_by(AnalysisResult.created_at.desc())
+        ).all()
+    )
+
+    # If this contract was uploaded previously and has no stored analysis yet,
+    # run analysis on the stored file automatically so the user can view its report.
+    if not results:
+        storage_path = Path(contract.storage_key)
+        if storage_path.is_file():
+            analysis_text = extract_text_from_file(storage_path)
+            latest_log = VerificationRepository(db).get_by_contract(contract_id)
+            log_id = latest_log[0].id if latest_log else None
+            AIService().analyze_contract_with_db_rules(
+                db=db,
+                log_id=log_id or uuid4(),
+                contract_text=analysis_text,
+                contract_id=contract.id,
+                user_id=contract.uploaded_by,
+                metadata={"contract_type": contract.contract_type},
+            )
+            results = list(
+                db.scalars(
+                    select(AnalysisResult)
+                    .where(AnalysisResult.contract_id == contract_id)
+                    .order_by(AnalysisResult.created_at.desc())
+                ).all()
+            )
+
+    return [_serialize_analysis_result(r, contract) for r in results]
 
 
 @router.post("/{contract_id}/market-compare", response_model=MarketComparisonResponse)

@@ -129,3 +129,42 @@ class MarketComparisonResponse(BaseModel):
     price_difference_percent: float | None
     market_average: float | None
     recommendations: list[str] = Field(default_factory=list)
+
+
+class AnalysisResultResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    contract_id: UUID
+    user_id: UUID
+    verification_log_id: UUID | None
+    risk_score: float
+    risk_label: str
+    ai_overview: str | None
+    findings: list[dict[str, Any]]
+    analysis_source: str
+    model_version: str | None
+    analysis_duration_ms: int | None
+    created_at: datetime
+
+
+class AnalysisHistoryResponse(BaseModel):
+    items: list[AnalysisResultResponse]
+    total: int
+    page: int
+    limit: int
+
+
+class AiChatSessionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    user_id: UUID
+    contract_id: UUID | None
+    session_title: str
+    messages: list[dict[str, Any]]
+    created_at: datetime
+    updated_at: datetime
+
+
+class AiChatSessionListResponse(BaseModel):
+    items: list[AiChatSessionResponse]
+    total: int
