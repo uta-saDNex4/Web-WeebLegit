@@ -31,6 +31,7 @@ export const FloatingAiWidget: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -228,7 +229,9 @@ export const FloatingAiWidget: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 20 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="fixed bottom-22 right-4 sm:right-6 z-[80] w-[92vw] sm:w-[410px] h-[550px] max-h-[82vh] bg-white dark:bg-[#0b1424] rounded-2xl border border-[#cbd5e1] dark:border-[#1a2d4b] shadow-2xl flex flex-col overflow-hidden"
+            className={`fixed bottom-22 right-4 sm:right-6 z-[80] w-[92vw] sm:w-[410px] ${
+              isMinimized ? "h-auto" : "h-[550px] max-h-[82vh]"
+            } bg-white dark:bg-[#0b1424] rounded-2xl border border-[#cbd5e1] dark:border-[#1a2d4b] shadow-2xl flex flex-col overflow-hidden`}
           >
             {/* Header */}
             <div className="px-4 py-3.5 bg-slate-50 dark:bg-[#08101e] border-b border-[#e2e8f0] dark:border-[#1a2d4b] flex items-center justify-between">
@@ -251,14 +254,17 @@ export const FloatingAiWidget: React.FC = () => {
 
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => setIsMinimized(!isMinimized)}
                   className="p-1.5 rounded-lg text-[#64748b] dark:text-[#8fa3bf] hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-[#13233f] transition-colors cursor-pointer"
-                  title="Thu nhỏ"
+                  title={isMinimized ? "Mở rộng" : "Thu nhỏ"}
                 >
                   <Minimize2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsMinimized(false);
+                  }}
                   className="p-1.5 rounded-lg text-[#64748b] dark:text-[#8fa3bf] hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-[#13233f] transition-colors cursor-pointer"
                   title="Đóng"
                 >
@@ -268,7 +274,9 @@ export const FloatingAiWidget: React.FC = () => {
             </div>
 
             {/* Messages Body */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/70 dark:bg-[#070e1b]/60">
+            {!isMinimized && (
+              <>
+                <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/70 dark:bg-[#070e1b]/60">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -386,6 +394,8 @@ export const FloatingAiWidget: React.FC = () => {
                 </button>
               </div>
             </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -413,13 +423,6 @@ export const FloatingAiWidget: React.FC = () => {
             <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-[#091222]"></span>
-            </span>
-          )}
-
-          {/* Badge "N" at bottom right */}
-          {!isOpen && (
-            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-[#0a1220] border border-[#cbd5e1] dark:border-[#2b446c] flex items-center justify-center text-[10px] font-black text-[#10253f] dark:text-white shadow">
-              N
             </span>
           )}
         </button>

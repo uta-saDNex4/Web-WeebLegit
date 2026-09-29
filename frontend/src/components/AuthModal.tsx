@@ -89,26 +89,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                 <ShieldCheck className="w-5 h-5 text-[#10253f]" />
               </div>
               <div>
-                <h2 className="font-bold text-[#10253f] text-base">WeebLegit</h2>
-                <p className="text-xs text-[#8297ac]">Nền tảng xác thực hợp đồng</p>
+                <h2 className="font-bold text-[#10253f] dark:text-white text-base">WeebLegit</h2>
+                <p className="text-xs text-[#8297ac] dark:text-[#5a7a9a]">Nền tảng xác thực hợp đồng</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-1.5 rounded-lg text-[#8297ac] hover:text-[#10253f] hover:bg-slate-100 transition-colors">
+            <button onClick={onClose} className="p-1.5 rounded-lg text-[#8297ac] hover:text-[#10253f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4b] transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Tab switcher */}
           <div className="px-6 pb-4">
-            <div className="flex bg-[#f2f7fc] rounded-xl p-1 gap-1">
+            <div className="flex bg-[#f2f7fc] dark:bg-[#0d1e35] rounded-xl p-1 gap-1">
               {(['login', 'register'] as Tab[]).map((t) => (
                 <button
                   key={t}
                   onClick={() => switchTab(t)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                     tab === t
-                      ? 'bg-white text-[#8a6834] shadow-sm'
-                      : 'text-[#49627d] hover:text-[#10253f]'
+                      ? 'bg-white dark:bg-[#0b1424] text-[#8a6834] dark:text-[#EAD7B8] shadow-sm'
+                      : 'text-[#49627d] dark:text-[#5a7a9a] hover:text-[#10253f] dark:hover:text-white'
                   }`}
                 >
                   {t === 'login' ? <LogIn className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
@@ -128,7 +128,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                   placeholder="Họ và tên (tuỳ chọn)"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] dark:border-[#1a2d4b] bg-white dark:bg-[#0d1e35] text-sm text-[#10253f] dark:text-white placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
                 />
               </div>
             )}
@@ -141,7 +141,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                 value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#d8e3ef] dark:border-[#1a2d4b] bg-white dark:bg-[#0d1e35] text-sm text-[#10253f] dark:text-white placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
               />
             </div>
 
@@ -154,7 +154,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                 required
                 minLength={8}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#d8e3ef] text-sm text-[#10253f] placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
+                className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#d8e3ef] dark:border-[#1a2d4b] bg-white dark:bg-[#0d1e35] text-sm text-[#10253f] dark:text-white placeholder:text-[#8297ac] focus:outline-none focus:border-[#EAD7B8] focus:ring-2 focus:ring-[#EAD7B8]/20 transition-all"
               />
               <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8297ac] hover:text-[#10253f] transition-colors">
                 {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

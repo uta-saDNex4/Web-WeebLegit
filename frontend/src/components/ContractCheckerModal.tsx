@@ -254,27 +254,27 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
         className="cursor-default bg-white dark:bg-[#0b1424] rounded-2xl border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden my-6"
       >
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-[#e6edf4] flex items-center justify-between bg-[#f8fafd]">
+        <div className="px-6 py-4 border-b border-[#e6edf4] dark:border-[#1a2d4b] flex items-center justify-between bg-[#f8fafd] dark:bg-[#08101e]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] flex items-center justify-center text-[#10253f]">
+            <div className="w-8 h-8 rounded-lg bg-[#EAD7B8] dark:bg-[#EAD7B8]/20 flex items-center justify-center text-[#10253f] dark:text-[#EAD7B8]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-[#10253f]">Trình kiểm tra & Xác thực hợp đồng</h3>
-              <p className="text-xs text-[#8297ac]">Upload hợp đồng để tính SHA-256 & phân tích AI</p>
+              <h3 className="font-bold text-base text-[#10253f] dark:text-white">Trình kiểm tra & Xác thực hợp đồng</h3>
+              <p className="text-xs text-[#8297ac] dark:text-[#5a7a9a]">Upload hợp đồng để tính SHA-256 & phân tích AI</p>
             </div>
           </div>
-          <button onClick={handleClose} className="p-1.5 rounded-lg text-[#8297ac] hover:text-[#10253f] hover:bg-slate-100 transition-colors">
+          <button onClick={handleClose} className="p-1.5 rounded-lg text-[#8297ac] hover:text-[#10253f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2d4b] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs — only shown when logged in */}
         {user && (
-          <div className="px-6 flex gap-1 bg-[#f8fafd] border-b border-[#e6edf4]">
+          <div className="px-6 flex gap-1 bg-[#f8fafd] dark:bg-[#08101e] border-b border-[#e6edf4] dark:border-[#1a2d4b]">
             {tabs.map((tab) => (
               <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-all cursor-pointer border-b-2 -mb-px ${activeTab === tab.key ? "border-[#8a6834] text-[#8a6834]" : "border-transparent text-[#49627d] hover:text-[#10253f]"
+                className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-all cursor-pointer border-b-2 -mb-px ${activeTab === tab.key ? "border-[#8a6834] text-[#8a6834] dark:border-[#EAD7B8] dark:text-[#EAD7B8]" : "border-transparent text-[#49627d] dark:text-[#5a7a9a] hover:text-[#10253f] dark:hover:text-white"
                   }`}>
                 {tab.icon}{tab.label}
               </button>
@@ -283,17 +283,17 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
         )}
 
         {/* Modal Body */}
-        <div className="flex-1 p-6 overflow-y-auto space-y-5">
+        <div className="flex-1 p-6 overflow-y-auto space-y-5 bg-white dark:bg-[#0b1424]">
 
           {/* ── Chưa đăng nhập ── */}
           {!user && (
-            <div className="p-5 rounded-xl bg-[#f2f7fc] border border-[#d8e3ef] flex flex-col items-center gap-3 text-center">
+            <div className="p-5 rounded-xl bg-[#f2f7fc] dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] flex flex-col items-center gap-3 text-center">
               <div className="w-12 h-12 rounded-full bg-[#EAD7B8]/20 flex items-center justify-center">
                 <Lock className="w-6 h-6 text-[#8a6834]" />
               </div>
               <div>
-                <p className="font-semibold text-[#10253f] text-sm">Cần đăng nhập để sử dụng</p>
-                <p className="text-xs text-[#8297ac] mt-0.5">Tạo tài khoản miễn phí để upload và xác thực hợp đồng</p>
+                <p className="font-semibold text-[#10253f] dark:text-white text-sm">Cần đăng nhập để sử dụng</p>
+                <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf] mt-0.5">Tạo tài khoản miễn phí để upload và xác thực hợp đồng</p>
               </div>
               <button onClick={onNeedAuth} className="inline-flex items-center gap-2 px-4 py-2 bg-[#EAD7B8] text-[#10253f] text-sm font-semibold rounded-xl shadow-sm hover:bg-[#dfc59f] transition-colors cursor-pointer">
                 <ShieldCheck className="w-4 h-4" /> Đăng nhập / Đăng ký
@@ -307,28 +307,28 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               {stage === "upload" && (
                 <>
                   <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${isDragging ? "border-[#EAD7B8] bg-[#EAD7B8]/10" : selectedFile ? "border-[#159f7b] bg-[#eafbf7]" : "border-[#b9cadd] hover:border-[#EAD7B8] bg-[#f8fafd]/80"}`}>
+                    className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${isDragging ? "border-[#EAD7B8] bg-[#EAD7B8]/10" : selectedFile ? "border-[#159f7b] bg-[#eafbf7] dark:bg-[#06241c]" : "border-[#b9cadd] dark:border-[#1a2d4b] hover:border-[#EAD7B8] bg-[#f8fafd]/80 dark:bg-[#0d1e35]"}`}>
                     <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])} />
                     {selectedFile ? (<>
                       <FileText className="w-9 h-9 text-[#159f7b] mx-auto mb-2" />
-                      <p className="font-bold text-sm text-[#10253f]">{selectedFile.name}</p>
-                      <p className="text-xs text-[#8297ac] mt-1">{formatBytes(selectedFile.size)} • Nhấn để đổi file</p>
+                      <p className="font-bold text-sm text-[#10253f] dark:text-white">{selectedFile.name}</p>
+                      <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf] mt-1">{formatBytes(selectedFile.size)} • Nhấn để đổi file</p>
                     </>) : (<>
                       <UploadCloud className="w-9 h-9 text-[#8a6834] mx-auto mb-2" />
-                      <p className="font-bold text-sm text-[#10253f] mb-1">Kéo thả hoặc nhấn để chọn file</p>
-                      <p className="text-xs text-[#8297ac]">Hỗ trợ PDF, DOCX, DOC, TXT (tối đa 20MB)</p>
+                      <p className="font-bold text-sm text-[#10253f] dark:text-white mb-1">Kéo thả hoặc nhấn để chọn file</p>
+                      <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf]">Hỗ trợ PDF, DOCX, DOC, TXT (tối đa 20MB)</p>
                     </>)}
                   </div>
                   {error && <div className="px-3 py-2 bg-[#fff1f0] border border-[#ffd1cc] rounded-lg text-xs text-[#e4534b] font-medium flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /> {error}</div>}
                   {selectedFile && user && (
-                    <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#d8e3ef] space-y-1.5">
-                      <label className="block text-xs font-semibold text-[#49627d]">
+                    <div className="p-3 bg-[#f8fafd] dark:bg-[#0d1e35] rounded-xl border border-[#d8e3ef] dark:border-[#1a2d4b] space-y-1.5">
+                      <label className="block text-xs font-semibold text-[#49627d] dark:text-[#8fa3bf]">
                         Loại hợp đồng (định tuyến quy tắc rủi ro & giá thị trường):
                       </label>
                       <select
                         value={contractType}
                         onChange={(e) => setContractType(e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-semibold border border-[#d8e3ef] rounded-lg bg-white text-[#10253f] focus:outline-none focus:border-[#EAD7B8] cursor-pointer"
+                        className="w-full px-3 py-2 text-xs font-semibold border border-[#d8e3ef] dark:border-[#1a2d4b] rounded-lg bg-white dark:bg-[#0b1424] text-[#10253f] dark:text-white focus:outline-none focus:border-[#EAD7B8] cursor-pointer"
                       >
                         <option value="thuê trọ">Thuê phòng trọ / Căn hộ</option>
                         <option value="ctv">Cộng tác viên (CTV)</option>
@@ -358,8 +358,8 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                     </div>
                   </div>
                   <div className="text-center">
-                    <p className="font-semibold text-[#10253f] text-sm">{stage === "uploading" ? "Đang tải lên & tính SHA-256..." : "Đang xác thực toàn vẹn file..."}</p>
-                    <p className="text-xs text-[#8297ac] mt-1">{stage === "uploading" ? "Server đang hash file của bạn" : "So sánh hash constant-time"}</p>
+                    <p className="font-semibold text-[#10253f] dark:text-white text-sm">{stage === "uploading" ? "Đang tải lên & tính SHA-256..." : "Đang xác thực toàn vẹn file..."}</p>
+                    <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf] mt-1">{stage === "uploading" ? "Server đang hash file của bạn" : "So sánh hash constant-time"}</p>
                   </div>
                 </div>
               )}
@@ -367,40 +367,40 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               {stage === "result" && uploadedContract && verifyResult && (
                 <div className="space-y-5">
                   {/* Verification badge */}
-                  <div className={`p-4 rounded-xl border flex items-center gap-4 ${verifyResult.result === "matched" ? "bg-[#eafbf7] border-[#b7f6e5]" : verifyResult.result === "mismatched" ? "bg-[#fff1f0] border-[#ffd1cc]" : "bg-[#fff8e6] border-[#ffe3a3]"}`}>
+                  <div className={`p-4 rounded-xl border flex items-center gap-4 ${verifyResult.result === "matched" ? "bg-[#eafbf7] dark:bg-[#06241c] border-[#b7f6e5] dark:border-[#0e503e]" : verifyResult.result === "mismatched" ? "bg-[#fff1f0] dark:bg-[#2b0e0f] border-[#ffd1cc] dark:border-[#5c1c1f]" : "bg-[#fff8e6] dark:bg-[#2b1f09] border-[#ffe3a3] dark:border-[#5c4213]"}`}>
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${verifyResult.result === "matched" ? "bg-[#159f7b]/15" : verifyResult.result === "mismatched" ? "bg-[#e4534b]/15" : "bg-[#d77714]/15"}`}>
                       {verifyResult.result === "matched" ? <CheckCircle2 className="w-7 h-7 text-[#159f7b]" /> : verifyResult.result === "mismatched" ? <ShieldAlert className="w-7 h-7 text-[#e4534b]" /> : <AlertTriangle className="w-7 h-7 text-[#d77714]" />}
                     </div>
                     <div>
-                      <p className={`font-bold text-sm ${verifyResult.result === "matched" ? "text-[#0d7a5f]" : verifyResult.result === "mismatched" ? "text-[#b91c1c]" : "text-[#7d480e]"}`}>
+                      <p className={`font-bold text-sm ${verifyResult.result === "matched" ? "text-[#0d7a5f] dark:text-emerald-400" : verifyResult.result === "mismatched" ? "text-[#b91c1c] dark:text-red-400" : "text-[#7d480e] dark:text-amber-400"}`}>
                         {verifyResult.result === "matched" && "✅ File nguyên vẹn — Giữ đúng bản gốc"}
                         {verifyResult.result === "mismatched" && "⚠️ Cảnh báo — File đã bị chỉnh sửa"}
                         {verifyResult.result === "failed" && "❌ Chưa thể xác thực file"}
                       </p>
-                      <p className="text-xs text-[#49627d] mt-0.5">
+                      <p className="text-xs text-[#49627d] dark:text-[#a0bcd8] mt-0.5">
                         {verifyResult.result === "matched" && "File hoàn toàn nguyên bản, không bị ai sửa đổi hay tráo trang."}
                         {verifyResult.result === "mismatched" && "Mã kiểm tra không trùng — nội dung file đã bị thay đổi so với bản ban đầu."}
                         {verifyResult.result === "failed" && "Không thể đọc file từ hệ thống để kiểm tra."}
                       </p>
-                      {verifyResult.duration_ms != null && <p className="text-xs text-[#8297ac] mt-1">Thời gian xử lý: {verifyResult.duration_ms}ms</p>}
+                      {verifyResult.duration_ms != null && <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf] mt-1">Thời gian xử lý: {verifyResult.duration_ms}ms</p>}
                     </div>
                   </div>
 
                   {/* Hash details */}
-                  <div className="p-4 rounded-xl bg-[#f8fafd] border border-[#d8e3ef] space-y-3">
-                    <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Mã Kiểm Tra Toàn Vẹn (Dấu Vân Tay SHA-256)</h4>
+                  <div className="p-4 rounded-xl bg-[#f8fafd] dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] space-y-3">
+                    <h4 className="text-xs font-bold text-[#8297ac] dark:text-[#8fa3bf] uppercase tracking-wider">Mã Kiểm Tra Toàn Vẹn (Dấu Vân Tay SHA-256)</h4>
                     <div className="space-y-2">
                       <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">📁 File: {uploadedContract.filename}</p>
-                        <p className="text-[11px] text-[#8297ac]">Dung lượng: {formatBytes(uploadedContract.file_size_bytes)}</p>
+                        <p className="text-[11px] font-semibold text-[#49627d] dark:text-[#cad8ed] mb-1">📁 File: {uploadedContract.filename}</p>
+                        <p className="text-[11px] text-[#8297ac] dark:text-[#8fa3bf]">Dung lượng: {formatBytes(uploadedContract.file_size_bytes)}</p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file ban đầu (lúc tải lên):</p>
-                        <code className="text-[10px] font-mono text-[#10253f] bg-white px-2 py-1 rounded-lg border border-[#d8e3ef] break-all block">{verifyResult.expected_sha256}</code>
+                        <p className="text-[11px] font-semibold text-[#49627d] dark:text-[#cad8ed] mb-1">Mã file ban đầu (lúc tải lên):</p>
+                        <code className="text-[10px] font-mono text-[#10253f] dark:text-[#cad8ed] bg-white dark:bg-[#081220] px-2 py-1 rounded-lg border border-[#d8e3ef] dark:border-[#1a2d4b] break-all block">{verifyResult.expected_sha256}</code>
                       </div>
                       <div>
-                        <p className="text-[11px] font-semibold text-[#49627d] mb-1">Mã file kiểm tra lại thực tế:</p>
-                        <code className={`text-[10px] font-mono px-2 py-1 rounded-lg border break-all block ${verifyResult.result === "matched" ? "text-[#159f7b] bg-[#eafbf7] border-[#b7f6e5]" : "text-[#e4534b] bg-[#fff1f0] border-[#ffd1cc]"}`}>{verifyResult.actual_sha256}</code>
+                        <p className="text-[11px] font-semibold text-[#49627d] dark:text-[#cad8ed] mb-1">Mã file kiểm tra lại thực tế:</p>
+                        <code className={`text-[10px] font-mono px-2 py-1 rounded-lg border break-all block ${verifyResult.result === "matched" ? "text-[#159f7b] dark:text-emerald-400 bg-[#eafbf7] dark:bg-[#06241c] border-[#b7f6e5] dark:border-[#0e503e]" : "text-[#e4534b] dark:text-red-400 bg-[#fff1f0] dark:bg-[#2b0e0f] border-[#ffd1cc] dark:border-[#5c1c1f]"}`}>{verifyResult.actual_sha256}</code>
                       </div>
                     </div>
                   </div>
@@ -408,21 +408,21 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                   {/* AI Analysis Section */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#8a6834]" />
-                      <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">Phân tích AI điều khoản rủi ro</h4>
+                      <Sparkles className="w-4 h-4 text-[#8a6834] dark:text-[#EAD7B8]" />
+                      <h4 className="text-xs font-bold text-[#8297ac] dark:text-[#8fa3bf] uppercase tracking-wider">Phân tích AI điều khoản rủi ro</h4>
                       {aiPolling && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#fff8e6] text-[#d77714] text-[11px] font-semibold border border-[#ffe3a3]">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#fff8e6] dark:bg-[#2b1f09] text-[#d77714] dark:text-amber-400 text-[11px] font-semibold border border-[#ffe3a3] dark:border-[#5c4213]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#d77714] animate-pulse" /> AI đang phân tích...
                         </span>
                       )}
                     </div>
 
                     {aiPolling && !aiResult && (
-                      <div className="p-4 rounded-xl bg-[#fff8e6] border border-[#ffe3a3] flex items-center gap-3">
+                      <div className="p-4 rounded-xl bg-[#fff8e6] dark:bg-[#2b1f09] border border-[#ffe3a3] dark:border-[#5c4213] flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full border-2 border-[#d77714] border-t-transparent animate-spin shrink-0" />
                         <div>
-                          <p className="text-sm font-semibold text-[#7d480e]">AI đang quét điều khoản...</p>
-                          <p className="text-xs text-[#996324] mt-0.5">Kết quả sẽ hiện sau vài giây</p>
+                          <p className="text-sm font-semibold text-[#7d480e] dark:text-[#f8d092]">AI đang quét điều khoản...</p>
+                          <p className="text-xs text-[#996324] dark:text-[#e0b574] mt-0.5">Kết quả sẽ hiện sau vài giây</p>
                         </div>
                       </div>
                     )}
@@ -509,7 +509,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                           }
                           return (
                             <div className="space-y-3">
-                              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider">
+                              <h4 className="text-xs font-bold text-[#8297ac] dark:text-[#8fa3bf] uppercase tracking-wider">
                                 Chi tiết điều khoản rủi ro ({findings.length})
                               </h4>
                               {findings.map((risk, idx) => {
@@ -530,7 +530,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                 const lawSnippet = risk.law_reference || risk.reference;
 
                                 return (
-                                  <div key={idx} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm">
+                                  <div key={idx} className="p-4 rounded-xl bg-white dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-sm">
                                     <div
                                       className="flex items-center justify-between cursor-pointer"
                                       onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
@@ -549,7 +549,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                             Lưu ý nhẹ
                                           </span>
                                         )}
-                                        <h5 className="text-sm font-bold text-[#10253f]">{title}</h5>
+                                        <h5 className="text-sm font-bold text-[#10253f] dark:text-white">{title}</h5>
                                       </div>
                                       {expandedRisk === idx ? (
                                         <ChevronUp className="w-4 h-4 text-[#8297ac]" />
@@ -567,23 +567,23 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                         >
                                           <div className="pt-3 space-y-3">
                                             {clauseSnippet && (
-                                              <div className="p-3 bg-[#f8fafd] rounded-lg text-xs text-[#26435e] italic border-l-2 border-[#EAD7B8]">
+                                              <div className="p-3 bg-[#f8fafd] dark:bg-[#071324] rounded-lg text-xs text-[#26435e] dark:text-[#a0bcd8] italic border-l-2 border-[#EAD7B8]">
                                                 &quot;{clauseSnippet}&quot;
                                               </div>
                                             )}
                                             {analysisSnippet && (
-                                              <div className="text-xs text-[#49627d] leading-relaxed">
+                                              <div className="text-xs text-[#49627d] dark:text-[#cad8ed] leading-relaxed">
                                                 <strong>Phân tích:</strong> {analysisSnippet}
                                               </div>
                                             )}
                                             {lawSnippet && (
-                                              <div className="text-xs text-[#8a6834] font-medium flex items-center gap-1.5">
+                                              <div className="text-xs text-[#8a6834] dark:text-[#EAD7B8] font-medium flex items-center gap-1.5">
                                                 <BookOpen className="w-3.5 h-3.5" />
                                                 <span>{lawSnippet}</span>
                                               </div>
                                             )}
                                             {risk.negotiation_script && (
-                                              <div className="pt-2 border-t border-[#e6edf4]">
+                                              <div className="pt-2 border-t border-[#e6edf4] dark:border-[#1a2d4b]">
                                                 <div className="flex items-center justify-between text-[11px] font-bold text-[#159f7b] mb-1.5">
                                                   <span className="flex items-center gap-1">
                                                     <MessageCircle className="w-3 h-3" />
@@ -608,7 +608,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                                                     )}
                                                   </button>
                                                 </div>
-                                                <p className="text-xs text-[#26435e] bg-[#f7fafc] p-2.5 rounded-lg border border-[#e6edf4]">
+                                                <p className="text-xs text-[#26435e] dark:text-[#cad8ed] bg-[#f7fafc] dark:bg-[#071324] p-2.5 rounded-lg border border-[#e6edf4] dark:border-[#1a2d4b]">
                                                   &quot;{risk.negotiation_script}&quot;
                                                 </p>
                                               </div>
@@ -627,7 +627,7 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
                     )}
                   </div>
 
-                  <button onClick={resetAll} className="w-full py-2.5 border border-[#d8e3ef] text-sm font-semibold text-[#49627d] hover:text-[#10253f] hover:border-[#EAD7B8] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
+                  <button onClick={resetAll} className="w-full py-2.5 border border-[#d8e3ef] dark:border-[#1a2d4b] text-sm font-semibold text-[#49627d] dark:text-[#a0bcd8] hover:text-[#10253f] dark:hover:text-white hover:border-[#EAD7B8] rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
                     <RefreshCw className="w-4 h-4" /> Kiểm tra file khác
                   </button>
                 </div>
@@ -638,39 +638,39 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           {/* ═══ TAB: HISTORY ═══ */}
           {user && activeTab === "history" && (
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-xs font-bold text-[#8297ac] dark:text-[#8fa3bf] uppercase tracking-wider flex items-center gap-2">
                 <Clock className="w-4 h-4" /> Lịch sử hợp đồng của bạn
               </h4>
               {historyLoading && (
-                <div className="flex items-center justify-center py-10 gap-3 text-[#8297ac]">
+                <div className="flex items-center justify-center py-10 gap-3 text-[#8297ac] dark:text-[#8fa3bf]">
                   <div className="w-6 h-6 rounded-full border-2 border-[#EAD7B8] border-t-transparent animate-spin" />
                   <span className="text-sm">Đang tải...</span>
                 </div>
               )}
               {historyError && <div className="px-3 py-2 bg-[#fff1f0] border border-[#ffd1cc] rounded-lg text-xs text-[#e4534b] font-medium flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /> {historyError}</div>}
               {!historyLoading && !historyError && contracts.length === 0 && (
-                <div className="p-8 rounded-xl bg-[#f8fafd] border border-[#d8e3ef] text-center text-sm text-[#8297ac]">
+                <div className="p-8 rounded-xl bg-[#f8fafd] dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] text-center text-sm text-[#8297ac] dark:text-[#8fa3bf]">
                   Bạn chưa upload hợp đồng nào. Hãy dùng tab <strong>Kiểm tra</strong> để bắt đầu.
                 </div>
               )}
               {!historyLoading && contracts.map((contract) => (
-                <div key={contract.id} className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm space-y-2">
+                <div key={contract.id} className="p-4 rounded-xl bg-white dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-sm space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-[#8a6834] shrink-0" />
-                      <p className="text-sm font-semibold text-[#10253f] truncate max-w-[260px]">{contract.original_filename}</p>
+                      <FileText className="w-4 h-4 text-[#8a6834] dark:text-[#EAD7B8] shrink-0" />
+                      <p className="text-sm font-semibold text-[#10253f] dark:text-white truncate max-w-[260px]">{contract.original_filename}</p>
                     </div>
-                    <span className={`shrink-0 text-[11px] font-bold px-2 py-0.5 rounded border ${contract.status === "verified" ? "bg-[#eafbf7] text-[#0d7a5f] border-[#b7f6e5]" : "bg-[#f2f7fc] text-[#49627d] border-[#d8e3ef]"}`}>
+                    <span className={`shrink-0 text-[11px] font-bold px-2 py-0.5 rounded border ${contract.status === "verified" ? "bg-[#eafbf7] dark:bg-[#06241c] text-[#0d7a5f] dark:text-emerald-400 border-[#b7f6e5] dark:border-[#0e503e]" : "bg-[#f2f7fc] dark:bg-[#0a1525] text-[#49627d] dark:text-[#8fa3bf] border-[#d8e3ef] dark:border-[#1a2d4b]"}`}>
                       {contract.status}
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8297ac]">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8297ac] dark:text-[#8fa3bf]">
                     <span>{formatBytes(contract.file_size_bytes)}</span>
                     <span>{contract.mime_type}</span>
                     {contract.contract_type && <span>Loại: {contract.contract_type}</span>}
                     <span>{formatDate(contract.created_at)}</span>
                   </div>
-                  <code className="text-[10px] font-mono text-[#49627d] bg-[#f8fafd] px-2 py-1 rounded border border-[#e6edf4] block truncate">SHA-256: {contract.sha256_hash}</code>
+                  <code className="text-[10px] font-mono text-[#49627d] dark:text-[#cad8ed] bg-[#f8fafd] dark:bg-[#081220] px-2 py-1 rounded border border-[#e6edf4] dark:border-[#1a2d4b] block truncate">SHA-256: {contract.sha256_hash}</code>
                 </div>
               ))}
             </div>
@@ -679,21 +679,21 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
           {/* ═══ TAB: MARKET COMPARE ═══ */}
           {user && activeTab === "market" && uploadedContract && (
             <div className="space-y-5">
-              <h4 className="text-xs font-bold text-[#8297ac] uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-xs font-bold text-[#8297ac] dark:text-[#8fa3bf] uppercase tracking-wider flex items-center gap-2">
                 <BarChart2 className="w-4 h-4" /> So sánh giá thị trường
               </h4>
-              <div className="p-4 rounded-xl bg-[#f8fafd] border border-[#d8e3ef] space-y-3">
-                <p className="text-xs text-[#49627d]">So sánh điều khoản giá thuê trong hợp đồng <strong className="text-[#10253f]">{uploadedContract.filename}</strong> với giá thị trường sinh viên.</p>
+              <div className="p-4 rounded-xl bg-[#f8fafd] dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] space-y-3">
+                <p className="text-xs text-[#49627d] dark:text-[#a0bcd8]">So sánh điều khoản giá thuê trong hợp đồng <strong className="text-[#10253f] dark:text-white">{uploadedContract.filename}</strong> với giá thị trường sinh viên.</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#49627d] mb-1">Quận / Khu vực</label>
+                    <label className="block text-xs font-semibold text-[#49627d] dark:text-[#cad8ed] mb-1">Quận / Khu vực</label>
                     <input type="text" placeholder="Ví dụ: Quận 1, Thủ Đức..." value={marketDistrict} onChange={(e) => setMarketDistrict(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[#d8e3ef] rounded-lg focus:outline-none focus:border-[#EAD7B8] text-[#10253f] placeholder-[#8297ac]" />
+                      className="w-full px-3 py-2 text-sm border border-[#d8e3ef] dark:border-[#1a2d4b] rounded-lg bg-white dark:bg-[#081220] focus:outline-none focus:border-[#EAD7B8] text-[#10253f] dark:text-white placeholder-[#8297ac] dark:placeholder-[#5a7a9a]" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#49627d] mb-1">Giá thuê / tháng (VNĐ)</label>
+                    <label className="block text-xs font-semibold text-[#49627d] dark:text-[#cad8ed] mb-1">Giá thuê / tháng (VNĐ)</label>
                     <input type="number" placeholder="Ví dụ: 3500000" value={marketRent} onChange={(e) => setMarketRent(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[#d8e3ef] rounded-lg focus:outline-none focus:border-[#EAD7B8] text-[#10253f] placeholder-[#8297ac]" />
+                      className="w-full px-3 py-2 text-sm border border-[#d8e3ef] dark:border-[#1a2d4b] rounded-lg bg-white dark:bg-[#081220] focus:outline-none focus:border-[#EAD7B8] text-[#10253f] dark:text-white placeholder-[#8297ac] dark:placeholder-[#5a7a9a]" />
                   </div>
                 </div>
                 <button onClick={handleMarketCompare} disabled={marketLoading}
@@ -704,27 +704,27 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
               </div>
               {marketError && <div className="px-3 py-2 bg-[#fff1f0] border border-[#ffd1cc] rounded-lg text-xs text-[#e4534b] font-medium flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /> {marketError}</div>}
               {marketResult && (
-                <div className="p-4 rounded-xl bg-white border border-[#d8e3ef] shadow-sm space-y-4">
-                  <div className={`p-3 rounded-xl border flex items-center gap-3 ${marketResult.price_evaluation === "fair" ? "bg-[#eafbf7] border-[#b7f6e5]" : marketResult.price_evaluation === "high" ? "bg-[#fff1f0] border-[#ffd1cc]" : "bg-[#fff8e6] border-[#ffe3a3]"}`}>
+                <div className="p-4 rounded-xl bg-white dark:bg-[#0d1e35] border border-[#d8e3ef] dark:border-[#1a2d4b] shadow-sm space-y-4">
+                  <div className={`p-3 rounded-xl border flex items-center gap-3 ${marketResult.price_evaluation === "fair" ? "bg-[#eafbf7] dark:bg-[#06241c] border-[#b7f6e5] dark:border-[#0e503e]" : marketResult.price_evaluation === "high" ? "bg-[#fff1f0] dark:bg-[#2b0e0f] border-[#ffd1cc] dark:border-[#5c1c1f]" : "bg-[#fff8e6] dark:bg-[#2b1f09] border-[#ffe3a3] dark:border-[#5c4213]"}`}>
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${marketResult.price_evaluation === "fair" ? "bg-[#159f7b]" : marketResult.price_evaluation === "high" ? "bg-[#e4534b]" : "bg-[#d77714]"}`}>
                       {marketResult.price_difference_percent != null ? `${marketResult.price_difference_percent > 0 ? "+" : ""}${Math.round(marketResult.price_difference_percent)}%` : "—"}
                     </div>
                     <div>
-                      <p className="font-bold text-sm text-[#10253f]">
+                      <p className="font-bold text-sm text-[#10253f] dark:text-white">
                         {marketResult.price_evaluation === "fair" && "✅ Giá hợp lý so với thị trường"}
                         {marketResult.price_evaluation === "high" && "⚠️ Giá cao hơn thị trường"}
                         {marketResult.price_evaluation === "low" && "💡 Giá thấp hơn thị trường"}
                       </p>
-                      {marketResult.market_average != null && <p className="text-xs text-[#49627d] mt-0.5">Trung bình thị trường: {marketResult.market_average.toLocaleString("vi-VN")} VNĐ/tháng</p>}
-                      {marketResult.district && <p className="text-xs text-[#8297ac]">Khu vực: {marketResult.district}</p>}
+                      {marketResult.market_average != null && <p className="text-xs text-[#49627d] dark:text-[#a0bcd8] mt-0.5">Trung bình thị trường: {marketResult.market_average.toLocaleString("vi-VN")} VNĐ/tháng</p>}
+                      {marketResult.district && <p className="text-xs text-[#8297ac] dark:text-[#8fa3bf]">Khu vực: {marketResult.district}</p>}
                     </div>
                   </div>
                   {marketResult.recommendations.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-xs font-bold text-[#49627d]">Khuyến nghị:</p>
+                      <p className="text-xs font-bold text-[#49627d] dark:text-[#cad8ed]">Khuyến nghị:</p>
                       {marketResult.recommendations.map((rec, i) => (
-                        <div key={i} className="flex items-start gap-2 text-xs text-[#26435e]">
-                          <ArrowRight className="w-3.5 h-3.5 text-[#8a6834] mt-0.5 shrink-0" /><span>{rec}</span>
+                        <div key={i} className="flex items-start gap-2 text-xs text-[#26435e] dark:text-[#cad8ed]">
+                          <ArrowRight className="w-3.5 h-3.5 text-[#8a6834] dark:text-[#EAD7B8] mt-0.5 shrink-0" /><span>{rec}</span>
                         </div>
                       ))}
                     </div>
@@ -736,9 +736,9 @@ export const ContractCheckerModal: React.FC<ContractCheckerModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-3.5 bg-[#f8fafd] border-t border-[#e6edf4] flex items-center justify-between">
-          <span className="text-xs text-[#8297ac]">WeebLegit AI • Bảo mật 100% dữ liệu</span>
-          <button onClick={handleClose} className="px-4 py-2 bg-[#10253f] hover:bg-[#173d5a] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer">
+        <div className="px-6 py-3.5 bg-[#f8fafd] dark:bg-[#08101e] border-t border-[#e6edf4] dark:border-[#1a2d4b] flex items-center justify-between">
+          <span className="text-xs text-[#8297ac] dark:text-[#5a7a9a]">WeebLegit AI • Bảo mật 100% dữ liệu</span>
+          <button onClick={handleClose} className="px-4 py-2 bg-[#10253f] dark:bg-[#EAD7B8] hover:bg-[#173d5a] dark:hover:bg-[#dfc59f] text-white dark:text-[#10253f] text-xs font-semibold rounded-xl transition-colors cursor-pointer">
             Đóng bảng kiểm tra
           </button>
         </div>

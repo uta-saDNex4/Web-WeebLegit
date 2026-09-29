@@ -437,7 +437,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                   }}
                   className="py-2.5 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] text-xs font-bold text-[#0F1E36] dark:text-white text-center"
                 >
-                  Đăng nhập
+                  {lang === "EN" ? "Sign In" : "Đăng nhập"}
                 </button>
                 <button
                   onClick={() => {
@@ -446,7 +446,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                   }}
                   className="py-2.5 rounded-xl border border-[#8A6731] bg-[#FAF5ED] dark:bg-[#12223C] text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] text-center"
                 >
-                  Đăng ký
+                  {lang === "EN" ? "Register" : "Đăng ký"}
                 </button>
               </div>
             ) : (
@@ -457,7 +457,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                 }}
                 className="py-2 text-xs font-bold text-red-600 text-center"
               >
-                Đăng xuất ({user.email})
+                {lang === "EN" ? `Sign Out (${user.email})` : `Đăng xuất (${user.email})`}
               </button>
             )}
 
@@ -468,7 +468,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               }}
               className="w-full py-3 rounded-xl bg-[#0F223D] text-[#EAD7B8] border border-[#EAD7B8] font-black text-xs uppercase tracking-wider text-center shadow-md"
             >
-              🚀 Bắt Đầu Kiểm Tra Hợp Đồng Ngay
+              🚀 {lang === "EN" ? "Start Contract Check" : "Bắt Đầu Kiểm Tra Hợp Đồng Ngay"}
             </button>
           </div>
         </div>
