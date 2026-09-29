@@ -20,7 +20,11 @@ export const LegalProcess: React.FC<LegalProcessProps> = ({ onStartProcess }) =>
   return (
     <section
       id="process-section"
+<<<<<<< HEAD
       className="py-12 sm:py-16 bg-[#FAF6EF]/60 dark:bg-[#0A1322]/60 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative"
+=======
+      className="py-12 sm:py-16 bg-white dark:bg-[#0A1322]/60 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative scroll-mt-24"
+>>>>>>> Mint
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Section Header */}

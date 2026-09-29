@@ -53,6 +53,47 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+<<<<<<< HEAD
+=======
+  // Active section scroll spy — Chỉ sáng khi đang ở trong đúng khu vực section tương ứng
+  const [activeSection, setActiveSection] = useState<string>("");
+
+  useEffect(() => {
+    const sectionIds = [
+      "check-section",
+      "process-section",
+      "pitfalls-section",
+      "sources-section",
+    ];
+
+    const handleScroll = () => {
+      // Trigger threshold: 220px từ mép trên viewport (sau navbar 80px)
+      const triggerPoint = 220;
+      let current = "";
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= triggerPoint && rect.bottom > triggerPoint) {
+          current = id;
+          break;
+        }
+      }
+
+      setActiveSection(current);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+
+>>>>>>> Mint
   // Close dropdowns on Esc key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,7 +106,11 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
   }, []);
 
   return (
+<<<<<<< HEAD
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#FAF9F5]/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
+=======
+    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
+>>>>>>> Mint
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center shrink-0">
@@ -88,6 +133,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           </a>
         </div>
 
+<<<<<<< HEAD
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-2 text-sm font-bold text-[#1E324F] dark:text-[#A9BCD6]">
           <button
@@ -111,6 +157,66 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
           <button
             onClick={() => onScrollToSection("sources-section")}
             className="px-3.5 py-2 rounded-xl hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] transition-all cursor-pointer"
+=======
+        {/* Desktop Navigation Links with Active Highlighting */}
+        <nav className="hidden lg:flex items-center gap-2 text-sm">
+          {/* 1. Kiểm Tra */}
+          <button
+            onClick={() => {
+              setActiveSection("check-section");
+              onScrollToSection("check-section");
+            }}
+            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+              activeSection === "check-section"
+                ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
+                : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+            }`}
+          >
+            {lang === "EN" ? "Check" : "Kiểm Tra"}
+          </button>
+
+          {/* 2. Cách Sử Dụng */}
+          <button
+            onClick={() => {
+              setActiveSection("process-section");
+              onScrollToSection("process-section");
+            }}
+            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+              activeSection === "process-section"
+                ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
+                : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+            }`}
+          >
+            {lang === "EN" ? "How to use" : "Cách Sử Dụng"}
+          </button>
+
+          {/* 3. Bẫy Thường Gặp */}
+          <button
+            onClick={() => {
+              setActiveSection("pitfalls-section");
+              onScrollToSection("pitfalls-section");
+            }}
+            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+              activeSection === "pitfalls-section"
+                ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
+                : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+            }`}
+          >
+            {lang === "EN" ? "Common Traps" : "Bẫy Thường Gặp"}
+          </button>
+
+          {/* 4. Luật Tham Chiếu */}
+          <button
+            onClick={() => {
+              setActiveSection("sources-section");
+              onScrollToSection("sources-section");
+            }}
+            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+              activeSection === "sources-section"
+                ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
+                : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+            }`}
+>>>>>>> Mint
           >
             {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
           </button>
@@ -243,12 +349,21 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
+<<<<<<< HEAD
         <div className="lg:hidden border-t border-[#E6DEC8] dark:border-[#1A2D49] bg-[#FAF9F5] dark:bg-[#09111E] px-4 py-4 space-y-3 shadow-2xl">
           {/* Mobile Lang & 3-segment Theme Selector */}
           <div className="pb-3 border-b border-[#EFE8D8] dark:border-[#162744] space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#65778F] dark:text-[#8FA3BF]">
                 {lang === "EN" ? "Interface theme" : "Chế độ giao diện"}:
+=======
+        <div className="lg:hidden border-t border-[#E6DEC8] dark:border-[#1A2D49] bg-white dark:bg-[#09111E] px-4 py-4 space-y-3 shadow-2xl">
+          {/* Mobile Lang & Theme Toggle */}
+          <div className="pb-3 border-b border-[#EFE8D8] dark:border-[#162744] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#65778F] dark:text-[#8FA3BF]">
+                {lang === "EN" ? "Interface language" : "Ngôn ngữ hiển thị"}:
+>>>>>>> Mint
               </span>
               <button
                 onClick={toggleLang}
@@ -283,6 +398,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             </button>
           </div>
 
+<<<<<<< HEAD
           <div className="space-y-2 text-sm font-bold text-[#1E324F] dark:text-[#CAD8ED]">
             <button
               onClick={() => {
@@ -319,6 +435,76 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               className="w-full text-left py-1.5 hover:text-[#8A6731]"
             >
               ⚖️ {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
+=======
+          <div className="space-y-1.5 text-sm">
+            <button
+              onClick={() => {
+                setActiveSection("check-section");
+                setMobileMenuOpen(false);
+                onScrollToSection("check-section");
+              }}
+              className={`w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between ${
+                activeSection === "check-section"
+                  ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068]"
+                  : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              }`}
+            >
+              <span>🔍 {lang === "EN" ? "Contract Check" : "Kiểm Tra Hợp Đồng"}</span>
+              {activeSection === "check-section" && (
+                <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("process-section");
+                setMobileMenuOpen(false);
+                onScrollToSection("process-section");
+              }}
+              className={`w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between ${
+                activeSection === "process-section"
+                  ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068]"
+                  : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              }`}
+            >
+              <span>🛡️ {lang === "EN" ? "How to use" : "Cách Sử Dụng"}</span>
+              {activeSection === "process-section" && (
+                <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("pitfalls-section");
+                setMobileMenuOpen(false);
+                onScrollToSection("pitfalls-section");
+              }}
+              className={`w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between ${
+                activeSection === "pitfalls-section"
+                  ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068]"
+                  : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              }`}
+            >
+              <span>⚠️ {lang === "EN" ? "Common Traps" : "Bẫy Thường Gặp"}</span>
+              {activeSection === "pitfalls-section" && (
+                <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("sources-section");
+                setMobileMenuOpen(false);
+                onScrollToSection("sources-section");
+              }}
+              className={`w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between ${
+                activeSection === "sources-section"
+                  ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068]"
+                  : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              }`}
+            >
+              <span>⚖️ {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}</span>
+              {activeSection === "sources-section" && (
+                <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
+              )}
+>>>>>>> Mint
             </button>
           </div>
 

@@ -18,7 +18,11 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
   return (
     <section id="check-section" className="py-8 scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
+<<<<<<< HEAD
         <div className="bg-gradient-to-r from-[#FAF6EE] via-white to-[#FAF6EE] dark:from-[#0E1A2D] dark:via-[#0A1424] dark:to-[#0E1A2D] rounded-3xl border-2 border-[#E5DBCA] dark:border-[#1E3558] p-6 sm:p-9 shadow-lg">
+=======
+        <div className="bg-gradient-to-r from-white via-[#FAFAFA] to-white dark:from-[#0E1A2D] dark:via-[#0A1424] dark:to-[#0E1A2D] rounded-3xl border-2 border-[#E5DBCA] dark:border-[#1E3558] p-6 sm:p-9 shadow-lg">
+>>>>>>> Mint
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Description */}
             <div className="lg:col-span-5 space-y-4 text-left">
