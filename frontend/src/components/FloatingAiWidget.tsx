@@ -10,10 +10,25 @@ import {
   Minimize2,
   Copy,
   Check,
+  Plus,
+  History,
+  Trash2,
+  MessageSquare,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import * as api from "../lib/api";
 import { useLanguage } from "../lib/language-context";
+import {
+  ChatSession,
+  getOrCreateCurrentSession,
+  createNewSession,
+  addMessageToSession,
+  getChatSessions,
+  setActiveSessionId,
+  deleteSession,
+  CHAT_HISTORY_EVENT,
+} from "../lib/chat-history";
 
 interface Message {
   id: string;
@@ -32,6 +47,9 @@ export const FloatingAiWidget: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [sessionsList, setSessionsList] = useState<ChatSession[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -44,20 +62,53 @@ export const FloatingAiWidget: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Initialize initial message with translated string
+  // Nạp hoặc khởi tạo session đang hoạt động
   useEffect(() => {
-    setMessages([
+    const current = getOrCreateCurrentSession(t("ai.initial_msg"));
+    setSessionId(current.id);
+    setMessages(current.messages.length > 0 ? current.messages : [
       {
-        id: "1",
+        id: "init_1",
         sender: "ai",
         text: t("ai.initial_msg"),
         timestamp: new Date().toLocaleTimeString("vi-VN", {
           hour: "2-digit",
           minute: "2-digit",
         }),
-      },
+      }
     ]);
-  }, [lang]);
+    setSessionsList(getChatSessions());
+  }, []);
+
+  // Lắng nghe sự kiện đổi session hoặc cập nhật chat từ các trang khác (như /profile)
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSessionsList(getChatSessions());
+    };
+
+    const handleOpenExternal = (e: any) => {
+      const targetId = e.detail?.sessionId;
+      if (targetId) {
+        const sessions = getChatSessions();
+        const found = sessions.find((s) => s.id === targetId);
+        if (found) {
+          setActiveSessionId(targetId);
+          setSessionId(targetId);
+          setMessages(found.messages);
+          setIsOpen(true);
+          setIsMinimized(false);
+          setShowHistory(false);
+        }
+      }
+    };
+
+    window.addEventListener(CHAT_HISTORY_EVENT, handleUpdate);
+    window.addEventListener("weeb_open_chat_session" as any, handleOpenExternal);
+    return () => {
+      window.removeEventListener(CHAT_HISTORY_EVENT, handleUpdate);
+      window.removeEventListener("weeb_open_chat_session" as any, handleOpenExternal);
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -68,12 +119,51 @@ export const FloatingAiWidget: React.FC = () => {
     }
   }, [isOpen, messages]);
 
+  const handleStartNewSession = () => {
+    const newSession = createNewSession(t("ai.initial_msg"));
+    setSessionId(newSession.id);
+    setMessages(newSession.messages);
+    setShowHistory(false);
+    setInputValue("");
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleSelectSession = (targetSession: ChatSession) => {
+    setActiveSessionId(targetSession.id);
+    setSessionId(targetSession.id);
+    setMessages(targetSession.messages);
+    setShowHistory(false);
+  };
+
+  const handleDeleteSession = (e: React.MouseEvent, targetId: string) => {
+    e.stopPropagation();
+    deleteSession(targetId);
+    const updated = getChatSessions();
+    setSessionsList(updated);
+    if (sessionId === targetId) {
+      if (updated.length > 0) {
+        handleSelectSession(updated[0]);
+      } else {
+        handleStartNewSession();
+      }
+    }
+  };
+
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend ?? inputValue).trim();
     if (!text || isTyping) return;
 
+    let currentSid = sessionId;
+    if (!currentSid) {
+      const s = getOrCreateCurrentSession(t("ai.initial_msg"));
+      currentSid = s.id;
+      setSessionId(s.id);
+    }
+
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: "u_" + Date.now().toString(),
       sender: "user",
       text,
       timestamp: new Date().toLocaleTimeString("vi-VN", {
@@ -83,6 +173,9 @@ export const FloatingAiWidget: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    addMessageToSession(currentSid, userMsg);
+    setSessionsList(getChatSessions());
+
     setInputValue("");
     setIsTyping(true);
 
@@ -107,7 +200,7 @@ export const FloatingAiWidget: React.FC = () => {
           : "Bộ luật Lao động 2019, Bộ luật Dân sự 2015 & Luật Nhà ở 2023");
 
       const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: "ai_" + (Date.now() + 1).toString(),
         sender: "ai",
         text: aiReply,
         citation,
@@ -118,6 +211,8 @@ export const FloatingAiWidget: React.FC = () => {
         }),
       };
       setMessages((prev) => [...prev, aiMsg]);
+      addMessageToSession(currentSid, aiMsg);
+      setSessionsList(getChatSessions());
     } catch {
       let fallbackText =
         lang === "EN"
@@ -159,7 +254,7 @@ export const FloatingAiWidget: React.FC = () => {
       }
 
       const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: "ai_" + (Date.now() + 1).toString(),
         sender: "ai",
         text: fallbackText,
         citation: fallbackCitation,
@@ -169,6 +264,8 @@ export const FloatingAiWidget: React.FC = () => {
         }),
       };
       setMessages((prev) => [...prev, aiMsg]);
+      addMessageToSession(currentSid, aiMsg);
+      setSessionsList(getChatSessions());
     } finally {
       setIsTyping(false);
     }
@@ -254,6 +351,24 @@ export const FloatingAiWidget: React.FC = () => {
 
               <div className="flex items-center gap-1">
                 <button
+                  onClick={handleStartNewSession}
+                  className="p-1.5 rounded-lg text-[#64748b] dark:text-[#8fa3bf] hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-[#13233f] transition-colors cursor-pointer"
+                  title={lang === "EN" ? "New conversation" : "Cuộc trò chuyện mới"}
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                    showHistory
+                      ? "text-[#8a6834] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#13233f]"
+                      : "text-[#64748b] dark:text-[#8fa3bf] hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-[#13233f]"
+                  }`}
+                  title={lang === "EN" ? "Chat history" : "Lịch sử trò chuyện"}
+                >
+                  <History className="w-4 h-4" />
+                </button>
+                <button
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="p-1.5 rounded-lg text-[#64748b] dark:text-[#8fa3bf] hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-[#13233f] transition-colors cursor-pointer"
                   title={isMinimized ? "Mở rộng" : "Thu nhỏ"}
@@ -273,10 +388,86 @@ export const FloatingAiWidget: React.FC = () => {
               </div>
             </div>
 
-            {/* Messages Body */}
-            {!isMinimized && (
-              <>
-                <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/70 dark:bg-[#070e1b]/60">
+            {/* Messages Body or History View */}
+            {!isMinimized &&
+              (showHistory ? (
+                  <div className="flex-1 p-3 overflow-y-auto space-y-2 bg-slate-50/90 dark:bg-[#070e1b]/80">
+                    <div className="flex items-center justify-between px-1 pb-2 border-b border-[#e2e8f0] dark:border-[#1a2d4b]">
+                      <span className="text-xs font-bold text-[#0f172a] dark:text-white flex items-center gap-1.5">
+                        <History className="w-3.5 h-3.5 text-[#8a6834] dark:text-[#EAD7B8]" />
+                        <span>{lang === "EN" ? "Chat Sessions" : "Lịch sử cuộc trò chuyện"}</span>
+                        <span className="text-[11px] font-semibold text-[#64748b] dark:text-[#8fa3bf]">
+                          ({sessionsList.length})
+                        </span>
+                      </span>
+                      <button
+                        onClick={handleStartNewSession}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-[#FAF5ED] dark:bg-[#13233f] text-[#8a6834] dark:text-[#EAD7B8] border border-[#EAD7B8]/60 dark:border-[#EAD7B8]/40 hover:bg-[#EAD7B8]/30 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>{lang === "EN" ? "New" : "Mới"}</span>
+                      </button>
+                    </div>
+
+                    {sessionsList.length === 0 ? (
+                      <div className="text-center py-12 text-[#64748b] dark:text-[#8fa3bf] text-xs">
+                        {lang === "EN" ? "No saved chat history yet." : "Chưa có cuộc trò chuyện nào được lưu."}
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5 pt-1">
+                        {sessionsList.map((s) => {
+                          const isCurrent = s.id === sessionId;
+                          return (
+                            <div
+                              key={s.id}
+                              onClick={() => handleSelectSession(s)}
+                              className={`group w-full text-left p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                                isCurrent
+                                  ? "bg-white dark:bg-[#101e35] border-[#EAD7B8] dark:border-[#EAD7B8]/60 shadow-xs"
+                                  : "bg-white/70 dark:bg-[#0c182c]/60 border-[#e2e8f0] dark:border-[#1a2d4b] hover:border-[#cbd5e1] dark:hover:border-[#2b446c]"
+                              }`}
+                            >
+                              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                <MessageSquare
+                                  className={`w-4 h-4 mt-0.5 shrink-0 ${
+                                    isCurrent ? "text-[#8a6834] dark:text-[#EAD7B8]" : "text-[#94a3b8]"
+                                  }`}
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <p
+                                    className={`text-xs font-semibold truncate ${
+                                      isCurrent ? "text-[#0f172a] dark:text-white" : "text-[#334155] dark:text-[#cbd5e1]"
+                                    }`}
+                                  >
+                                    {s.title || (lang === "EN" ? "Conversation" : "Cuộc trò chuyện")}
+                                  </p>
+                                  <p className="text-[10px] text-[#64748b] dark:text-[#8fa3bf] mt-0.5">
+                                    {new Date(s.updatedAt).toLocaleDateString("vi-VN", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}{" "}
+                                    • {s.messages.length} {lang === "EN" ? "msgs" : "tin nhắn"}
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteSession(e, s.id)}
+                                className="p-1 rounded-md text-[#94a3b8] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
+                                title={lang === "EN" ? "Delete session" : "Xóa phiên này"}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/70 dark:bg-[#070e1b]/60">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -395,7 +586,7 @@ export const FloatingAiWidget: React.FC = () => {
               </div>
             </div>
               </>
-            )}
+            ))}
           </motion.div>
         )}
       </AnimatePresence>

@@ -243,6 +243,13 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                       {user.email}
                     </p>
                   </div>
+                  <a
+                    href="/profile"
+                    className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                  >
+                    <User className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Profile & AI History" : "Hồ Sơ & Lịch Sử AI"}</span>
+                  </a>
                   {user.role === "admin" && (
                     <a
                       href="/admin"
@@ -450,15 +457,25 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="py-2 text-xs font-bold text-red-600 text-center"
-              >
-                {lang === "EN" ? `Sign Out (${user.email})` : `Đăng xuất (${user.email})`}
-              </button>
+              <div className="space-y-2">
+                <a
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] bg-white dark:bg-[#11213A] text-xs font-bold text-[#0F1E36] dark:text-white flex items-center justify-center gap-2 text-center"
+                >
+                  <User className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                  <span>{lang === "EN" ? "Profile & AI History" : "Hồ Sơ & Lịch Sử AI"}</span>
+                </a>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full py-2 text-xs font-bold text-red-600 text-center cursor-pointer"
+                >
+                  {lang === "EN" ? `Sign Out (${user.email})` : `Đăng xuất (${user.email})`}
+                </button>
+              </div>
             )}
 
             <button
