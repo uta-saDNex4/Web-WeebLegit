@@ -15,28 +15,28 @@ export const LEGAL_SOURCES: LegalSource[] = [
     articleLinks: [
       {
         text: 'Điều 328 BLDS 2015: Đặt cọc và xử lý tài sản đặt cọc khi giao kết hoặc thực hiện hợp đồng dân sự.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_328',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_328'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_328',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_328'
       },
       {
         text: 'Điều 418 BLDS 2015: Thỏa thuận phạt vi phạm và bồi thường thiệt hại trong hợp đồng.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_418',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_418'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_418',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_418'
       },
       {
         text: 'Điều 472 - 482 BLDS 2015: Hợp đồng thuê tài sản, quyền và nghĩa vụ các bên.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_472',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_472'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_472',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_472'
       },
       {
         text: 'Điều 513 BLDS 2015: Hợp đồng dịch vụ và giới hạn quyền yêu cầu sửa đổi.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_513',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_513'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_513',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx#dieu_513'
       }
     ],
     linkText: 'Xem điều khoản chi tiết',
-    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942',
-    url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942',
+    govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+    url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
     iconType: 'civil',
     actionType: 'modal'
   },
@@ -54,28 +54,28 @@ export const LEGAL_SOURCES: LegalSource[] = [
     articleLinks: [
       {
         text: 'Điều 17 BLLĐ 2019: Các hành vi người sử dụng lao động không được làm khi giao kết hợp đồng (Nghiêm cấm giữ bản chính giấy tờ tùy thân, giữ tiền hoặc tài sản).',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_17',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_17'
+        govUrl: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_17',
+        url: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_17'
       },
       {
         text: 'Điều 26 BLLĐ 2019: Tiền lương thử việc (Ít nhất bằng 85% mức lương chính thức của công việc đó).',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_26',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_26'
+        govUrl: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_26',
+        url: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_26'
       },
       {
         text: 'Điều 62 BLLĐ 2019: Hợp đồng đào tạo nghề và chi phí bồi hoàn đào tạo (Chỉ bồi hoàn chi phí hợp lệ kèm chứng từ thực tế).',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_62',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_62'
+        govUrl: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_62',
+        url: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_62'
       },
       {
         text: 'Điều 98 & 107 BLLĐ 2019: Tiền lương làm thêm giờ, thời giờ làm thêm và sự đồng ý của người lao động.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_98',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_98'
+        govUrl: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_98',
+        url: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019#dieu_98'
       }
     ],
     linkText: 'Xem điều khoản chi tiết',
-    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253',
-    url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253',
+    govUrl: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019',
+    url: 'https://vcci.com.vn/legal-document/bo-luat-lao-dong-2019',
     iconType: 'labor',
     actionType: 'modal'
   },
@@ -93,28 +93,28 @@ export const LEGAL_SOURCES: LegalSource[] = [
     articleLinks: [
       {
         text: 'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265#Dieu_132',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265#Dieu_132'
+        govUrl: 'https://vcci.com.vn/legal-document/luat-nha-o-2023#dieu_132',
+        url: 'https://vcci.com.vn/legal-document/luat-nha-o-2023#dieu_132'
       },
       {
         text: 'Thông tư 25/2018/TT-BCT & 09/2019/TT-BCT: Khung giá bán lẻ điện sinh hoạt cho sinh viên thuê nhà trọ theo giá bậc thang nhà nước.',
-        govUrl: 'https://vbpl.vn/bocongthuong/Pages/vbpq-toanvan.aspx?ItemID=131257',
-        url: 'https://vbpl.vn/bocongthuong/Pages/vbpq-toanvan.aspx?ItemID=131257'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Bao-hiem/Thong-tu-25-2018-TT-BCT-sua-doi-Thong-tu-16-2014-TT-BCT-thuc-hien-gia-ban-dien-394032.aspx',
+        url: 'https://thuvienphapluat.vn/van-ban/Bao-hiem/Thong-tu-25-2018-TT-BCT-sua-doi-Thong-tu-16-2014-TT-BCT-thuc-hien-gia-ban-dien-394032.aspx'
       },
       {
         text: 'Nghị định 144/2021/NĐ-CP: Xử phạt hành vi xâm phạm chỗ ở hợp pháp và tự ý kiểm tra phòng trọ.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=151722',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=151722'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Vi-pham-hanh-chinh/Nghi-dinh-144-2021-ND-CP-xu-phat-vi-pham-hanh-chinh-an-ninh-trat-tu-an-toan-xa-hoi-464315.aspx',
+        url: 'https://thuvienphapluat.vn/van-ban/Vi-pham-hanh-chinh/Nghi-dinh-144-2021-ND-CP-xu-phat-vi-pham-hanh-chinh-an-ninh-trat-tu-an-toan-xa-hoi-464315.aspx'
       },
       {
         text: 'Luật Cư trú 2020: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.',
-        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=145689',
-        url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=145689'
+        govUrl: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Luat-Cu-tru-2020-435315.aspx',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Luat-Cu-tru-2020-435315.aspx'
       }
     ],
     linkText: 'Xem điều khoản chi tiết',
-    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265',
-    url: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265',
+    govUrl: 'https://vcci.com.vn/legal-document/luat-nha-o-2023',
+    url: 'https://vcci.com.vn/legal-document/luat-nha-o-2023',
     iconType: 'housing',
     actionType: 'modal'
   }

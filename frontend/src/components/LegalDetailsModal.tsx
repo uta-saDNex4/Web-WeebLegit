@@ -100,8 +100,8 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
                     className="p-2 rounded-xl bg-[#FAF5ED] dark:bg-[#162744] hover:bg-[#8A6731] dark:hover:bg-[#EAD7B8] text-[#8a6834] dark:text-[#EAD7B8] hover:text-white dark:hover:text-[#0F1E36] border border-[#D6C5A2] dark:border-[#274068] transition-all shrink-0 flex items-center justify-center shadow-2xs group/link cursor-pointer"
                     title={
                       lang === 'EN'
-                        ? 'View official statutory article on National Legal Database (vbpl.vn) ↗'
-                        : 'Xem điều khoản chính thống trên Cổng VBQPPL Quốc gia (vbpl.vn) ↗'
+                        ? 'View official statutory article ↗'
+                        : 'Mở xem trực tiếp văn bản điều khoản pháp luật ↗'
                     }
                   >
                     <ExternalLink className="w-4 h-4 transition-transform group-hover/link:scale-110" />
@@ -116,8 +116,8 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
         <div className="px-6 py-3.5 bg-[#f8fafd] dark:bg-[#0f1b2f] border-t border-[#e6edf4] dark:border-[#1a2d4b] flex items-center justify-between">
           <span className="text-xs text-[#8297ac] dark:text-[#8fa3bf]">
             {lang === 'EN'
-              ? 'Standardized Legal Citations • Direct links to National Legal Database'
-              : 'Dẫn chứng chuẩn hóa • Liên kết trực tiếp Cơ sở dữ liệu Quốc gia về VBQPPL'}
+              ? 'Standardized Legal Citations • Direct links to official legal provisions'
+              : 'Dẫn chứng pháp lý chuẩn hóa • Mở trực tiếp điều khoản quy phạm pháp luật'}
           </span>
         </div>
       </motion.div>
