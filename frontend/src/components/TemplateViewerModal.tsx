@@ -161,9 +161,6 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
                       : `Văn bản & File mẫu hợp đồng gốc (${template.sourceUrls.length} nguồn)`}
                   </span>
                 </h4>
-                <span className="text-[11px] font-semibold text-[#8a6834] dark:text-[#EAD7B8]">
-                  {lang === "EN" ? "Open directly on legal portal ↗" : "Mở trực tiếp trên cổng pháp luật ↗"}
-                </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {template.sourceUrls.map((src, sIdx) => (
@@ -276,10 +273,10 @@ export const TemplateViewerModal: React.FC<TemplateViewerModalProps> = ({
                             href={clause.lawReferenceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#FAF5ED] dark:bg-[#162744] hover:bg-[#EAD7B8]/50 dark:hover:bg-[#1e3458] text-[#7d480e] dark:text-[#EAD7B8] border border-[#EAD7B8] dark:border-[#2c4875] text-[11px] font-bold transition-colors"
+                            className="p-1.5 rounded-lg bg-[#FAF5ED] dark:bg-[#162744] hover:bg-[#8A6731] dark:hover:bg-[#EAD7B8] text-[#8a6834] dark:text-[#EAD7B8] hover:text-white dark:hover:text-[#0F1E36] border border-[#EAD7B8] dark:border-[#2c4875] transition-all flex items-center justify-center shadow-2xs group/btn cursor-pointer"
+                            title={lang === "EN" ? "Open statutory reference on legal portal ↗" : "Mở xem trực tiếp điều khoản pháp luật này ↗"}
                           >
-                            <span>{lang === "EN" ? "View Official Statute" : "Tra cứu điều luật gốc"}</span>
-                            <ExternalLink className="w-3 h-3" />
+                            <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover/btn:scale-110" />
                           </a>
                         )}
                       </div>

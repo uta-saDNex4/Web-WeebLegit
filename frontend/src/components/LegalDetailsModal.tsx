@@ -78,86 +78,37 @@ export const LegalDetailsModal: React.FC<LegalDetailsModalProps> = ({ source, on
               source.articleLinks ||
               source.articles.map((text) => ({
                 text,
-                url: source.url || "#",
+                url: source.govUrl || source.url || "#",
                 govUrl: source.govUrl,
               }))
             ).map((art, idx) => (
               <div
                 key={idx}
-                className="p-3.5 bg-[#f8fafd] dark:bg-[#0e192c] rounded-xl border border-[#e6edf4] dark:border-[#1a2d4b] text-xs text-[#10253f] dark:text-[#e2e8f0] leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="p-3.5 bg-[#f8fafd] dark:bg-[#0e192c] rounded-xl border border-[#e6edf4] dark:border-[#1a2d4b] text-xs text-[#10253f] dark:text-[#e2e8f0] leading-relaxed flex items-center justify-between gap-3"
               >
-                <div className="flex gap-2.5">
+                <div className="flex items-start gap-2.5 min-w-0 flex-1">
                   <ShieldCheck className="w-4 h-4 text-[#8a6834] dark:text-[#EAD7B8] shrink-0 mt-0.5" />
-                  <span>{art.text}</span>
+                  <span className="font-medium leading-relaxed">{art.text}</span>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 pl-6 sm:pl-0">
-                  {art.govUrl && (
-                    <a
-                      href={art.govUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0F223D] hover:bg-[#162E52] text-[#EAD7B8] border border-[#EAD7B8]/40 text-[11px] font-bold transition-all"
-                      title={
-                        lang === 'EN'
-                          ? 'View article on National Legal Database (vbpl.vn)'
-                          : 'Xem điều khoản trên Cổng dữ liệu Pháp luật Quốc gia (vbpl.vn)'
-                      }
-                    >
-                      <span>{lang === 'EN' ? 'Gov Portal' : 'Cổng Nhà nước'}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                  {art.url && (
-                    <a
-                      href={art.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF5ED] dark:bg-[#162744] hover:bg-[#EAD7B8]/30 text-[#8a6834] dark:text-[#EAD7B8] border border-[#D6C5A2] dark:border-[#274068] text-[11px] font-bold transition-all"
-                      title={lang === 'EN' ? 'Look up on Thư viện Pháp luật' : 'Tra cứu văn bản trên Thư viện Pháp luật'}
-                    >
-                      <span>{lang === 'EN' ? 'Quick Lookup' : 'Tra cứu nhanh'}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
+                {(art.govUrl || art.url) && (
+                  <a
+                    href={art.govUrl || art.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 rounded-xl bg-[#FAF5ED] dark:bg-[#162744] hover:bg-[#8A6731] dark:hover:bg-[#EAD7B8] text-[#8a6834] dark:text-[#EAD7B8] hover:text-white dark:hover:text-[#0F1E36] border border-[#D6C5A2] dark:border-[#274068] transition-all shrink-0 flex items-center justify-center shadow-2xs group/link cursor-pointer"
+                    title={
+                      lang === 'EN'
+                        ? 'View official statutory article on National Legal Database (vbpl.vn) ↗'
+                        : 'Xem điều khoản chính thống trên Cổng VBQPPL Quốc gia (vbpl.vn) ↗'
+                    }
+                  >
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover/link:scale-110" />
+                  </a>
+                )}
               </div>
             ))}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            {source.govUrl && (
-              <a
-                href={source.govUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="p-3 rounded-xl bg-[#0F223D] hover:bg-[#162E52] border border-[#EAD7B8]/60 text-xs text-[#EAD7B8] flex items-center justify-between transition-all group cursor-pointer shadow-xs"
-              >
-                <span className="font-bold group-hover:underline">
-                  {lang === 'EN'
-                    ? 'Full Text on National Legal Portal (vbpl.vn)'
-                    : 'Toàn văn trên Cổng VBQPPL Nhà nước (vbpl.vn)'}
-                </span>
-                <ExternalLink className="w-3.5 h-3.5 shrink-0 ml-2 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
-            )}
-            {source.url && (
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="p-3 rounded-xl bg-[#FAF5ED] dark:bg-[#12223c] border border-[#EAD7B8]/70 dark:border-[#1f3557] hover:border-[#8a6834] dark:hover:border-[#EAD7B8] hover:bg-[#EAD7B8]/20 dark:hover:bg-[#1a2f50] text-xs text-[#8a6834] dark:text-[#EAD7B8] flex items-center justify-between transition-all group cursor-pointer shadow-2xs"
-              >
-                <span className="font-bold group-hover:underline">
-                  {lang === 'EN' ? `Browse Index (${source.title})` : `Tra cứu mục lục (${source.title})`}
-                </span>
-                <ExternalLink className="w-3.5 h-3.5 shrink-0 ml-2 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
-            )}
           </div>
         </div>
 

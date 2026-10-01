@@ -46,7 +46,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Nêu rõ: Nếu bên thuê báo trước 30 ngày hoặc do nhà trọ hư hỏng không khắc phục thì bên cho thuê phải hoàn trả lại 100% tiền cọc.',
         lawReference: 'Điều 328 & Điều 472 Bộ luật Dân sự 2015',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_328',
       },
       {
         title: 'Điều 2: Đơn giá điện nước và dịch vụ',
@@ -60,7 +60,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Giá điện nhà trọ cho sinh viên được áp dụng theo Thông tư 25/2018/TT-BCT & Thông tư 09/2023/TT-BCT. Phí dịch vụ phải niêm yết cố định trong suốt thời hạn hợp đồng.',
         lawReference: 'Thông tư 25/2018/TT-BCT & Nghị định 17/2022/NĐ-CP',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Thuong-mai/Thong-tu-25-2018-TT-BCT-sua-doi-Thong-tu-16-2014-TT-BCT-thuc-hien-gia-ban-dien-394022.aspx',
+          'https://vbpl.vn/bocongthuong/Pages/vbpq-toanvan.aspx?ItemID=131257',
       },
       {
         title: 'Điều 3: Quyền ra vào và kiểm tra phòng',
@@ -73,7 +73,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Bổ sung: Chủ nhà chỉ được vào phòng khi có sự đồng ý của bên thuê hoặc có thông báo trước tối thiểu 24 giờ (trừ trường hợp khẩn cấp như hỏa hoạn).',
         lawReference: 'Điều 22 Hiến pháp 2013 & Điều 132 Luật Nhà ở 2023',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-522234.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265#Dieu_132',
       },
       {
         title: 'Điều 4: Biên bản bàn giao trang thiết bị',
@@ -84,7 +84,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Giúp tránh tranh chấp trừ tiền cọc vô lý khi trả phòng.',
         lawReference: 'Điều 479 & Điều 482 Bộ luật Dân sự 2015',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_479',
       },
     ],
   },
@@ -128,7 +128,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Yêu cầu quy định rõ thời gian báo trước lịch ca tối thiểu 3 ngày và mức phụ cấp làm thêm giờ (tối thiểu 150% theo Điều 98 BLLĐ).',
         lawReference: 'Điều 98, Điều 107 Bộ luật Lao động 2019',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_98',
       },
       {
         title: 'Điều 2: Tiền lương và hình thức chi trả',
@@ -142,7 +142,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Khoản 2 Điều 17 Bộ luật Lao động 2019 nghiêm cấm người sử dụng lao động giữ tiền, tài sản hoặc giấy tờ tùy thân của người lao động để bảo đảm thực hiện hợp đồng.',
         lawReference: 'Điều 17 Bộ luật Lao động 2019 (Hành vi bị cấm)',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_17',
       },
       {
         title: 'Điều 3: Thời gian thử việc',
@@ -156,7 +156,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Đề nghị điều chỉnh mức lương thử việc lên tối thiểu 85% lương chính thức theo Điều 26 BLLĐ 2019.',
         lawReference: 'Điều 26 Bộ luật Lao động 2019',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_26',
       },
       {
         title: 'Điều 4: Chấm dứt hợp đồng',
@@ -168,7 +168,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Điều khoản này phù hợp với hợp đồng lao động xác định thời hạn dưới 12 tháng.',
         lawReference: 'Điều 35 Bộ luật Lao động 2019',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_35',
       },
     ],
   },
@@ -209,7 +209,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Nên ghi rõ tên hoặc chức danh Mentor cùng lịch đánh giá tiến độ định kỳ.',
         lawReference: 'Điều 61 Bộ luật Lao động 2019 (Học nghề, tập nghề)',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_61',
       },
       {
         title: 'Điều 2: Phụ cấp và hỗ trợ chi phí',
@@ -223,7 +223,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Khoản 5 Điều 61 BLLĐ 2019 quy định: Nếu người học nghề, tập nghề trực tiếp làm ra sản phẩm hợp quy cách thì phải được trả lương theo thỏa thuận.',
         lawReference: 'Khoản 5 Điều 61 Bộ luật Lao động 2019',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_61',
       },
       {
         title: 'Điều 3: Cam kết đào tạo và phạt bồi thường',
@@ -237,7 +237,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Theo Điều 62 BLLĐ, chi phí đào tạo chỉ được yêu cầu bồi thường khi có ký hợp đồng đào tạo nghề riêng và công ty chi trả học phí thực tế kèm hóa đơn hợp lệ.',
         lawReference: 'Điều 62 Bộ luật Lao động 2019',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_62',
       },
       {
         title: 'Điều 4: Xác nhận dấu mộc báo cáo',
@@ -248,7 +248,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Điều khoản chuẩn giúp bảo đảm sinh viên đủ điều kiện tốt nghiệp.',
         lawReference: 'Điều 385 Bộ luật Dân sự 2015 (Khái niệm hợp đồng)',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_385',
       },
     ],
   },
@@ -291,7 +291,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Quy định tối đa 2 - 3 vòng chỉnh sửa miễn phí theo brief ban đầu; các chỉnh sửa ngoài phạm vi tính phí bổ sung.',
         lawReference: 'Điều 513 & Điều 517 Bộ luật Dân sự 2015',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_513',
       },
       {
         title: 'Điều 2: Tiến độ thanh toán',
@@ -305,7 +305,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Áp dụng quy tắc chia đợt: Tạm ứng 30-50% khi ký hợp đồng, 30% khi duyệt bản nháp, và 20-40% còn lại trước khi giao file gốc hoàn chỉnh.',
         lawReference: 'Điều 519 Bộ luật Dân sự 2015 (Trả tiền dịch vụ)',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_519',
       },
       {
         title: 'Điều 3: Bản quyền và quyền tác giả',
@@ -316,7 +316,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Điều khoản bảo vệ quyền lợi sở hữu trí tuệ rất chuẩn mực.',
         lawReference: 'Điều 19 & Điều 20 Luật Sở hữu trí tuệ',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/So-huu-tri-tue/Luat-So-huu-tri-tue-2005-50-2005-QH11-7022.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=23707#Dieu_19',
       },
     ],
   },
@@ -359,7 +359,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Yêu cầu ghi rõ: Nếu trung tâm lùi lịch quá 14 ngày hoặc thay đổi hình thức học không đúng cam kết ban đầu, học viên có quyền rút học phí 100%.',
         lawReference: 'Điều 25 Luật Bảo vệ quyền lợi người tiêu dùng 2023',
         lawReferenceUrl:
-          'https://vanban.chinhphu.vn/?classid=1&docid=208363&orggroupid=1&pageid=27160',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165275#Dieu_25',
       },
       {
         title: 'Điều 2: Điều kiện cam kết việc làm sau khóa học',
@@ -373,7 +373,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Đề nghị quy định tỷ lệ chuyên cần hợp lý (ví dụ: tham gia tối thiểu 85% thời lượng học và đạt bài thi cuối khóa).',
         lawReference: 'Điều 405 & Điều 513 Bộ luật Dân sự 2015',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_405',
       },
       {
         title: 'Điều 3: Lộ trình đào tạo và tài liệu học tập',
@@ -384,7 +384,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Nên đính kèm syllabus chi tiết vào phụ lục hợp đồng.',
         lawReference: 'Điều 516 Bộ luật Dân sự 2015',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_516',
       },
     ],
   },
@@ -427,7 +427,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Theo Điều 468 BLDS 2015, lãi suất theo thỏa thuận không được vượt quá 20%/năm của khoản tiền vay (trừ trường hợp luật tổ chức tín dụng có quy định khác nhưng phải minh bạch toàn bộ phí).',
         lawReference: 'Điều 468 Bộ luật Dân sự 2015 & Thông tư 43/2016/TT-NHNN',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-296215.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_468',
       },
       {
         title: 'Điều 2: Quyền truy cập dữ liệu cá nhân và đôn đốc nợ',
@@ -441,7 +441,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
           'Thông tư 18/2019/TT-NHNN nghiêm cấm nhắc nợ người không có nghĩa vụ trả nợ (bạn bè, người thân, trường học) và Nghị định 13/2023/NĐ-CP bảo vệ dữ liệu cá nhân.',
         lawReference: 'Thông tư 18/2019/TT-NHNN & Nghị định 13/2023/NĐ-CP',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Tien-te-Ngan-hang/Thong-tu-18-2019-TT-NHNN-sua-doi-Thong-tu-43-2016-TT-NHNN-cho-vay-tieu-dung-428287.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=140134',
       },
       {
         title: 'Điều 3: Bảng minh họa lịch trả nợ và tất toán trước hạn',
@@ -452,7 +452,7 @@ export const CONTRACT_TEMPLATES: ContractTemplate[] = [
         advice: 'Luôn yêu cầu bảng tính tổng số tiền thực trả cuối cùng trước khi đặt bút ký.',
         lawReference: 'Thông tư 43/2016/TT-NHNN',
         lawReferenceUrl:
-          'https://thuvienphapluat.vn/van-ban/Tien-te-Ngan-hang/Thong-tu-43-2016-TT-NHNN-cho-vay-tieu-dung-cua-cong-ty-tai-chinh-326281.aspx',
+          'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=119280',
       },
     ],
   },
