@@ -7,29 +7,34 @@ from pathlib import Path
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Header, HTTPException, Query, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..ai_engine import normalize_finding
-from ..auth import check_admin_role, get_current_user
+from ..ai_engine import normalize_finding, quick_check_contract_skill
+from ..auth import _decode_access_token, check_admin_role, get_current_user
 from ..database import get_db
 from ..models import AnalysisResult, Contract, ContractClause, ContractImage, User
 from ..repositories import ContractRepository, VerificationRepository
 from ..schemas import (
     ClauseCreate,
     ClauseResponse,
+    ContractCompareRequest,
+    ContractContentResponse,
     ContractImageResponse,
     ContractListResponse,
     ContractResponse,
     MarketComparisonResponse,
+    QuickCheckResponse,
     VerificationLogResponse,
     VerificationResponse,
 )
 from ..services import AIService, ContractService, MarketService
 from ..services.ai_service import get_analysis_result_from_db
 from ..services.contract_service import extract_text_from_file
+from ..services.subscription_service import check_contract_quota, get_user_subscription_info
 
 router = APIRouter(prefix="/api/contracts", tags=["contracts"])
 
@@ -74,11 +79,139 @@ async def upload_contract(
     file: Annotated[UploadFile, File(...)],
     current: User = Depends(get_current_user),
     contract_type: Annotated[str | None, Header()] = None,
+    contract_type_form: Annotated[str | None, Form(alias="contract_type")] = None,
     db: Session = Depends(get_db),
 ):
-    """Upload a new contract file and calculate initial SHA-256 hash."""
+    """Upload a new contract file and calculate initial SHA-256 hash after verifying subscription quota."""
+    from urllib.parse import unquote
+    raw_type = contract_type_form or contract_type
+    actual_contract_type = unquote(raw_type) if raw_type else None
+
+    check_contract_quota(db, current)
     service = ContractService(db)
-    return await service.upload_contract(file, current, contract_type=contract_type)
+    return await service.upload_contract(file, current, contract_type=actual_contract_type)
+
+
+@router.post("/compare", response_model=dict)
+def compare_two_contracts(
+    payload: ContractCompareRequest,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Compare two contracts of the same contract_type side-by-side (Medium & Pro tiers only)."""
+    sub_info = get_user_subscription_info(db, current)
+    if not sub_info["can_compare_contracts"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Tính năng So sánh 2 Hợp đồng yêu cầu gói Medium hoặc Pro. Vui lòng nâng cấp tại /upgrade.",
+        )
+
+    if payload.contract_id_a == payload.contract_id_b:
+        raise HTTPException(status_code=400, detail="Vui lòng chọn 2 hợp đồng khác nhau để so sánh.")
+
+    repo = ContractRepository(db)
+    contract_a = repo.get_by_id(payload.contract_id_a)
+    contract_b = repo.get_by_id(payload.contract_id_b)
+    if not contract_a or not contract_b:
+        raise HTTPException(status_code=404, detail="Không tìm thấy một trong hai hợp đồng.")
+
+    ContractService(db).check_ownership(contract_a, current)
+    ContractService(db).check_ownership(contract_b, current)
+
+    type_a = (contract_a.contract_type or "chung").strip().lower()
+    type_b = (contract_b.contract_type or "chung").strip().lower()
+    if type_a != type_b:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Chỉ cho phép so sánh 2 hợp đồng cùng loại (Hợp đồng A: '{contract_a.contract_type or 'Chung'}' ≠ Hợp đồng B: '{contract_b.contract_type or 'Chung'}').",
+        )
+
+    def _get_or_create_latest_analysis(c: Contract) -> AnalysisResult | None:
+        res = db.scalars(
+            select(AnalysisResult)
+            .where(AnalysisResult.contract_id == c.id)
+            .order_by(AnalysisResult.created_at.desc())
+        ).first()
+        if not res:
+            storage_path = Path(c.storage_key)
+            if storage_path.is_file():
+                text = extract_text_from_file(storage_path)
+                latest_log = VerificationRepository(db).get_by_contract(c.id)
+                log_id = latest_log[0].id if latest_log else uuid4()
+                AIService().analyze_contract_with_db_rules(
+                    db=db,
+                    log_id=log_id,
+                    contract_text=text,
+                    contract_id=c.id,
+                    user_id=c.uploaded_by,
+                    metadata={"contract_type": c.contract_type},
+                )
+                res = db.scalars(
+                    select(AnalysisResult)
+                    .where(AnalysisResult.contract_id == c.id)
+                    .order_by(AnalysisResult.created_at.desc())
+                ).first()
+        return res
+
+    res_a = _get_or_create_latest_analysis(contract_a)
+    res_b = _get_or_create_latest_analysis(contract_b)
+
+    def _summarize(c: Contract, r: AnalysisResult | None) -> dict:
+        findings = [normalize_finding(f) for f in (r.findings if r and r.findings else [])]
+        high_cnt = sum(1 for f in findings if str(f.get("severity", "")).lower() in ("high", "critical", "cao"))
+        med_cnt = sum(1 for f in findings if str(f.get("severity", "")).lower() in ("medium", "trung bình"))
+        low_cnt = max(0, len(findings) - high_cnt - med_cnt)
+        return {
+            "contract_id": str(c.id),
+            "original_filename": c.original_filename,
+            "contract_type": c.contract_type or "Chung",
+            "sha256_hash": c.sha256_hash.strip() if c.sha256_hash else "",
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+            "risk_score": float(r.risk_score) if r else 0.0,
+            "risk_label": r.risk_label if r else "Chưa phân tích",
+            "overview": (r.ai_overview or "") if r else "",
+            "findings_count": len(findings),
+            "high_risk_count": high_cnt,
+            "medium_risk_count": med_cnt,
+            "low_risk_count": low_cnt,
+            "findings": findings,
+        }
+
+    sum_a = _summarize(contract_a, res_a)
+    sum_b = _summarize(contract_b, res_b)
+
+    score_a = sum_a["risk_score"]
+    score_b = sum_b["risk_score"]
+    diff = round(abs(score_a - score_b), 1)
+
+    if score_a <= score_b:
+        safer = sum_a
+        riskier = sum_b
+    else:
+        safer = sum_b
+        riskier = sum_a
+
+    return {
+        "contract_type": contract_a.contract_type or "Chung",
+        "contract_a": sum_a,
+        "contract_b": sum_b,
+        "score_difference": diff,
+        "safer_contract_id": safer["contract_id"],
+        "safer_filename": safer["original_filename"],
+        "recommendation_vi": (
+            f"Hợp đồng '{safer['original_filename']}' an toàn hơn với điểm rủi ro {safer['risk_score']}/100 "
+            f"({safer['high_risk_count']} điều khoản nguy hiểm cao), thấp hơn {diff} điểm so với "
+            f"'{riskier['original_filename']}' ({riskier['risk_score']}/100, {riskier['high_risk_count']} điều khoản nguy hiểm cao). "
+            f"Khuyến nghị ưu tiên ký hoặc dùng '{safer['original_filename']}' làm chuẩn đàm phán."
+        ),
+        "recommendation_en": (
+            f"Contract '{safer['original_filename']}' is safer with a risk score of {safer['risk_score']}/100 "
+            f"({safer['high_risk_count']} high-risk clauses), which is {diff} points lower than "
+            f"'{riskier['original_filename']}' ({riskier['risk_score']}/100, {riskier['high_risk_count']} high-risk clauses). "
+            f"We recommend prioritizing '{safer['original_filename']}' as your negotiation baseline."
+        ),
+    }
+
 
 
 def _serialize_analysis_result(r: AnalysisResult, contract: Contract | None = None) -> dict:
@@ -190,6 +323,135 @@ def verify_contract(
     )
 
 
+@router.post("/{contract_id}/quick-check", response_model=QuickCheckResponse)
+def quick_check_contract(
+    contract_id: UUID,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Execute AI Quick Check skill: constant-time SHA-256 + deterministic low-token risk check."""
+    service = ContractService(db)
+    contract, log, analysis_text = service.verify_contract(contract_id, current)
+
+    metadata = {"contract_type": contract.contract_type}
+    report = quick_check_contract_skill(analysis_text, metadata)
+
+    # Save to AnalysisResult for permanent history
+    findings_formatted = [
+        {"title": f"Cảnh báo: {r[:40]}", "warning": r, "severity": "high", "matched_term": r}
+        for r in report.get("key_risks", [])
+    ]
+    try:
+        from ..services.ai_service import save_analysis_result_to_db
+        save_analysis_result_to_db(
+            db=db,
+            contract_id=contract.id,
+            user_id=current.id,
+            log_id=log.id,
+            report={
+                "risk_score": report["risk_score"],
+                "risk_label": report["risk_label"],
+                "ai_overview": report["ai_overview"],
+                "ai_findings": findings_formatted,
+            },
+            analysis_source="hybrid",
+            model_version=report.get("model_version"),
+            duration_ms=log.duration_ms,
+        )
+    except Exception as exc:
+        print(f"[QuickCheck] Failed to save analysis result: {exc}")
+
+    return QuickCheckResponse(
+        contract_id=contract.id,
+        expected_sha256=contract.sha256_hash.strip(),
+        actual_sha256=log.actual_sha256.strip(),
+        result=log.result,
+        verification_log_id=log.id,
+        duration_ms=log.duration_ms,
+        risk_score=float(report["risk_score"]),
+        risk_label=report["risk_label"],
+        ai_overview=report["ai_overview"],
+        key_risks=report.get("key_risks", []),
+        high_risk_count=report.get("high_risk_count", 0),
+    )
+
+
+@router.get("/{contract_id}/content", response_model=ContractContentResponse)
+def get_contract_content(
+    contract_id: UUID,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Retrieve full extracted text and metadata of a contract for Legal Studio display."""
+    repo = ContractRepository(db)
+    contract = repo.get_by_id(contract_id)
+    if not contract:
+        raise HTTPException(404, "Contract not found")
+    ContractService(db).check_ownership(contract, current)
+
+    storage_path = Path(contract.storage_key)
+    text = ""
+    if storage_path.is_file():
+        text = extract_text_from_file(storage_path)
+
+    ext = Path(contract.original_filename).suffix.lower()
+    is_image = ext in {".jpg", ".jpeg", ".png", ".webp"} or (contract.mime_type or "").startswith("image/")
+
+    return ContractContentResponse(
+        contract_id=contract.id,
+        original_filename=contract.original_filename,
+        mime_type=contract.mime_type,
+        file_size_bytes=contract.file_size_bytes,
+        sha256_hash=contract.sha256_hash.strip(),
+        contract_type=contract.contract_type or "Chung",
+        created_at=contract.created_at,
+        text=text,
+        char_count=len(text),
+        is_image=is_image,
+        file_url=f"/api/contracts/{contract.id}/raw",
+    )
+
+
+@router.get("/{contract_id}/raw")
+def get_contract_raw_file(
+    contract_id: UUID,
+    token: str | None = Query(None),
+    authorization: str | None = Header(None),
+    db: Session = Depends(get_db),
+):
+    """Serve the raw original contract file (Image, PDF, Word) with owner authentication via header or token query."""
+    raw_token = token
+    if not raw_token and authorization and authorization.startswith("Bearer "):
+        raw_token = authorization.split("Bearer ", 1)[1].strip()
+
+    user = None
+    if raw_token:
+        payload = _decode_access_token(raw_token)
+        uid = payload.get("sub")
+        if uid:
+            user = db.get(User, UUID(str(uid)))
+
+    repo = ContractRepository(db)
+    contract = repo.get_by_id(contract_id)
+    if not contract:
+        raise HTTPException(404, "Contract not found")
+
+    if not user or (contract.uploaded_by != user.id and user.role != "admin"):
+        raise HTTPException(403, "Not allowed to access this contract file")
+
+    storage_path = Path(contract.storage_key)
+    if not storage_path.is_file():
+        raise HTTPException(404, "File not found on storage")
+
+    mime = contract.mime_type or "application/octet-stream"
+    return FileResponse(
+        path=str(storage_path),
+        media_type=mime,
+        filename=contract.original_filename,
+    )
+
+
+
 @router.get("/{contract_id}/analysis", response_model=dict)
 def get_ai_analysis(
     contract_id: UUID,
@@ -241,24 +503,28 @@ def get_contract_analysis_history(
     if not results:
         storage_path = Path(contract.storage_key)
         if storage_path.is_file():
-            analysis_text = extract_text_from_file(storage_path)
-            latest_log = VerificationRepository(db).get_by_contract(contract_id)
-            log_id = latest_log[0].id if latest_log else None
-            AIService().analyze_contract_with_db_rules(
-                db=db,
-                log_id=log_id or uuid4(),
-                contract_text=analysis_text,
-                contract_id=contract.id,
-                user_id=contract.uploaded_by,
-                metadata={"contract_type": contract.contract_type},
-            )
-            results = list(
-                db.scalars(
-                    select(AnalysisResult)
-                    .where(AnalysisResult.contract_id == contract_id)
-                    .order_by(AnalysisResult.created_at.desc())
-                ).all()
-            )
+            try:
+                analysis_text = extract_text_from_file(storage_path)
+                latest_log = VerificationRepository(db).get_by_contract(contract_id)
+                log_id = latest_log[0].id if latest_log else None
+                AIService().analyze_contract_with_db_rules(
+                    db=db,
+                    log_id=log_id,
+                    contract_text=analysis_text,
+                    contract_id=contract.id,
+                    user_id=contract.uploaded_by,
+                    metadata={"contract_type": contract.contract_type},
+                )
+                results = list(
+                    db.scalars(
+                        select(AnalysisResult)
+                        .where(AnalysisResult.contract_id == contract_id)
+                        .order_by(AnalysisResult.created_at.desc())
+                    ).all()
+                )
+            except Exception as exc:
+                db.rollback()
+                print(f"[AnalysisHistory] Auto-analysis fallback failed: {exc}")
 
     return [_serialize_analysis_result(r, contract) for r in results]
 
@@ -272,6 +538,13 @@ def compare_market(
     db: Session = Depends(get_db),
 ):
     """Compare contract terms (pricing, deposit) against student market benchmarks."""
+    sub_info = get_user_subscription_info(db, current)
+    if sub_info["plan_tier"] == "free":
+        raise HTTPException(
+            status_code=403,
+            detail="Tính năng So sánh Giá Thị Trường yêu cầu gói Medium hoặc Pro. Vui lòng nâng cấp tại /upgrade.",
+        )
+
     repo = ContractRepository(db)
     contract = repo.get_by_id(contract_id)
     if not contract:

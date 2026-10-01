@@ -4,7 +4,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
   {
     id: 'civil-code',
     title: 'Bộ luật Dân sự 2015',
-    codeBadge: 'BLDS 2015',
+    codeBadge: 'Luật số 91/2015/QH13',
     description: 'Quy định nền tảng về hợp đồng dân sự, đặt cọc (Điều 328), phạt vi phạm và bồi thường thiệt hại (Điều 418).',
     articles: [
       'Điều 328 BLDS 2015: Đặt cọc và xử lý tài sản đặt cọc khi giao kết hoặc thực hiện hợp đồng dân sự.',
@@ -12,7 +12,30 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 472 - 482 BLDS 2015: Hợp đồng thuê tài sản, quyền và nghĩa vụ các bên.',
       'Điều 513 BLDS 2015: Hợp đồng dịch vụ và giới hạn quyền yêu cầu sửa đổi.'
     ],
+    articleLinks: [
+      {
+        text: 'Điều 328 BLDS 2015: Đặt cọc và xử lý tài sản đặt cọc khi giao kết hoặc thực hiện hợp đồng dân sự.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_328',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx#dieu_328'
+      },
+      {
+        text: 'Điều 418 BLDS 2015: Thỏa thuận phạt vi phạm và bồi thường thiệt hại trong hợp đồng.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_418',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx#dieu_418'
+      },
+      {
+        text: 'Điều 472 - 482 BLDS 2015: Hợp đồng thuê tài sản, quyền và nghĩa vụ các bên.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_472',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx#dieu_472'
+      },
+      {
+        text: 'Điều 513 BLDS 2015: Hợp đồng dịch vụ và giới hạn quyền yêu cầu sửa đổi.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942#Dieu_513',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx#dieu_513'
+      }
+    ],
     linkText: 'Xem điều khoản chi tiết',
+    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=95942',
     url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Bo-luat-dan-su-2015-282332.aspx',
     iconType: 'civil',
     actionType: 'modal'
@@ -20,7 +43,7 @@ export const LEGAL_SOURCES: LegalSource[] = [
   {
     id: 'labor-code',
     title: 'Bộ luật Lao động 2019',
-    codeBadge: 'BLLĐ 2019',
+    codeBadge: 'Luật số 45/2019/QH14',
     description: 'Bảo vệ quyền lợi người làm việc, hợp đồng đào tạo (Điều 62), thử việc và các hành vi người sử dụng lao động không được làm (Điều 17).',
     articles: [
       'Điều 17 BLLĐ 2019: Các hành vi người sử dụng lao động không được làm khi giao kết hợp đồng (Nghiêm cấm giữ bản chính giấy tờ tùy thân, giữ tiền hoặc tài sản).',
@@ -28,7 +51,30 @@ export const LEGAL_SOURCES: LegalSource[] = [
       'Điều 62 BLLĐ 2019: Hợp đồng đào tạo nghề và chi phí bồi hoàn đào tạo (Chỉ bồi hoàn chi phí hợp lệ kèm chứng từ thực tế).',
       'Điều 98 & 107 BLLĐ 2019: Tiền lương làm thêm giờ, thời giờ làm thêm và sự đồng ý của người lao động.'
     ],
+    articleLinks: [
+      {
+        text: 'Điều 17 BLLĐ 2019: Các hành vi người sử dụng lao động không được làm khi giao kết hợp đồng (Nghiêm cấm giữ bản chính giấy tờ tùy thân, giữ tiền hoặc tài sản).',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_17',
+        url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx#dieu_17'
+      },
+      {
+        text: 'Điều 26 BLLĐ 2019: Tiền lương thử việc (Ít nhất bằng 85% mức lương chính thức của công việc đó).',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_26',
+        url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx#dieu_26'
+      },
+      {
+        text: 'Điều 62 BLLĐ 2019: Hợp đồng đào tạo nghề và chi phí bồi hoàn đào tạo (Chỉ bồi hoàn chi phí hợp lệ kèm chứng từ thực tế).',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_62',
+        url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx#dieu_62'
+      },
+      {
+        text: 'Điều 98 & 107 BLLĐ 2019: Tiền lương làm thêm giờ, thời giờ làm thêm và sự đồng ý của người lao động.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253#Dieu_98',
+        url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx#dieu_98'
+      }
+    ],
     linkText: 'Xem điều khoản chi tiết',
+    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=139253',
     url: 'https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Bo-Luat-lao-dong-2019-333670.aspx',
     iconType: 'labor',
     actionType: 'modal'
@@ -36,15 +82,38 @@ export const LEGAL_SOURCES: LegalSource[] = [
   {
     id: 'housing-code',
     title: 'Luật Nhà ở 2023 & Quy định Thuê trọ',
-    codeBadge: 'LNƠ 2023',
+    codeBadge: 'Luật số 27/2023/QH15',
     description: 'Quyền và nghĩa vụ các bên thuê nhà ở, giới hạn tăng giá điện nước, bảo vệ quyền cư trú hợp pháp.',
     articles: [
       'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.',
       'Thông tư 25/2018/TT-BCT & 09/2019/TT-BCT: Khung giá bán lẻ điện sinh hoạt cho sinh viên thuê nhà trọ theo giá bậc thang nhà nước.',
       'Nghị định 144/2021/NĐ-CP: Xử phạt hành vi xâm phạm chỗ ở hợp pháp và tự ý kiểm tra phòng trọ.',
-      'Quy chế quản lý cư trú: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.'
+      'Luật Cư trú 2020: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.'
+    ],
+    articleLinks: [
+      {
+        text: 'Điều 132 Luật Nhà ở 2023: Đơn phương chấm dứt thực hiện hợp đồng thuê nhà ở và thời hạn báo trước tối thiểu 30 ngày.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265#Dieu_132',
+        url: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-27-2023-QH15-538466.aspx#dieu_132'
+      },
+      {
+        text: 'Thông tư 25/2018/TT-BCT & 09/2019/TT-BCT: Khung giá bán lẻ điện sinh hoạt cho sinh viên thuê nhà trọ theo giá bậc thang nhà nước.',
+        govUrl: 'https://vbpl.vn/bocongthuong/Pages/vbpq-toanvan.aspx?ItemID=131257',
+        url: 'https://thuvienphapluat.vn/van-ban/Tai-chinh-nha-nuoc/Thong-tu-25-2018-TT-BCT-sua-doi-Thong-tu-16-2014-TT-BCT-thuc-hien-gia-ban-dien-394032.aspx'
+      },
+      {
+        text: 'Nghị định 144/2021/NĐ-CP: Xử phạt hành vi xâm phạm chỗ ở hợp pháp và tự ý kiểm tra phòng trọ.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=151722',
+        url: 'https://thuvienphapluat.vn/van-ban/Vi-pham-hanh-chinh/Nghi-dinh-144-2021-ND-CP-xu-phat-vi-pham-hanh-chinh-an-ninh-trat-tu-an-toan-xa-hoi-464315.aspx'
+      },
+      {
+        text: 'Luật Cư trú 2020: Đăng ký tạm trú và quyền lợi cư trú hợp pháp của người thuê nhà.',
+        govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=145689',
+        url: 'https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Luat-Cu-tru-2020-435315.aspx'
+      }
     ],
     linkText: 'Xem điều khoản chi tiết',
+    govUrl: 'https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=165265',
     url: 'https://thuvienphapluat.vn/van-ban/Bat-dong-san/Luat-Nha-o-2023-27-2023-QH15-538466.aspx',
     iconType: 'housing',
     actionType: 'modal'

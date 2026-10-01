@@ -22,7 +22,7 @@ export const LegalProcess: React.FC<LegalProcessProps> = ({ onStartProcess }) =>
       id="process-section"
       className="py-12 sm:py-16 bg-white dark:bg-[#0A1322]/60 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative scroll-mt-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 text-left">
           <div className="max-w-2xl">

@@ -38,6 +38,20 @@ class UserResponse(BaseModel):
     role: str
     is_active: bool
     created_at: datetime
+    plan_tier: str = "free"
+    daily_used: int = 0
+    daily_limit: int = 5
+    monthly_used: int = 0
+    monthly_limit: int = 30
+    max_batch_files: int = 1
+    can_view_clauses: bool = False
+    can_compare_contracts: bool = False
+    can_export_pdf: bool = False
+
+
+class ContractCompareRequest(BaseModel):
+    contract_id_a: UUID
+    contract_id_b: UUID
 
 
 class ContractResponse(BaseModel):
@@ -168,3 +182,35 @@ class AiChatSessionResponse(BaseModel):
 class AiChatSessionListResponse(BaseModel):
     items: list[AiChatSessionResponse]
     total: int
+
+
+class QuickCheckResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    contract_id: UUID
+    expected_sha256: str
+    actual_sha256: str
+    result: str
+    verification_log_id: UUID
+    duration_ms: int | None
+    risk_score: float = 0.0
+    risk_label: str = ""
+    ai_overview: str = ""
+    key_risks: list[str] = Field(default_factory=list)
+    high_risk_count: int = 0
+
+
+class ContractContentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    contract_id: UUID
+    original_filename: str
+    mime_type: str
+    file_size_bytes: int
+    sha256_hash: str
+    contract_type: str | None
+    created_at: datetime
+    text: str
+    char_count: int
+    is_image: bool = False
+    file_url: str | None = None
+
+

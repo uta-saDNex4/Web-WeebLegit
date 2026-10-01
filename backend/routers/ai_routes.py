@@ -17,6 +17,7 @@ from ..auth import _decode_access_token, get_current_user, oauth2_scheme
 from ..database import get_db
 from ..models import AiChatSession, User
 from ..services.contract_service import extract_text_from_file
+from ..services.subscription_service import check_ai_rate_limit, get_user_subscription_info
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
 
@@ -71,8 +72,23 @@ def _get_optional_user(token: str | None, db: Session) -> User | None:
 @router.post("/chat-upload", response_model=dict)
 async def upload_chat_attachment(
     file: Annotated[UploadFile, File(...)],
+    token: str | None = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
 ) -> dict[str, Any]:
-    """Parse an uploaded file or image from the AI chat input (+) button."""
+    """Parse an uploaded file or image from the AI chat input (+) button (Medium & Pro tiers only)."""
+    user = _get_optional_user(token, db)
+    if not user:
+        raise HTTPException(
+            status_code=403,
+            detail="Vui lòng đăng nhập tài khoản gói Medium hoặc Pro để đính kèm tệp/hình ảnh trong Trợ lý AI.",
+        )
+    sub_info = get_user_subscription_info(db, user)
+    if not sub_info["can_attach_chat_files"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Tính năng đính kèm tệp/hình ảnh (+) trong Trợ lý AI yêu cầu gói Medium hoặc Pro. Vui lòng nâng cấp tại /upgrade.",
+        )
+
     filename = Path(file.filename or "attachment").name[:255]
     ext = Path(filename).suffix.lower()
 
@@ -133,6 +149,18 @@ def chat_with_ai(
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:
     """Interact with AI assistant for contract questions, file/image attachments, and save session per account."""
+    user = _get_optional_user(token, db)
+    if user is not None:
+        sub_info = get_user_subscription_info(db, user)
+        plan_tier = sub_info["plan_tier"]
+        user_key = str(user.id)
+    else:
+        plan_tier = "free"
+        user_key = "anonymous"
+
+    tier_cfg = check_ai_rate_limit(user_key, plan_tier)
+    max_ctx_chars = int(tier_cfg.get("ai_context_chars", 2500))
+
     user_query = (payload.message or payload.question or "").strip()
     if not user_query:
         user_query = "Xin chào, hãy giải thích các bẫy điều khoản trong hợp đồng."
@@ -141,18 +169,21 @@ def chat_with_ai(
     if payload.history:
         history_dicts = [{"role": msg.role, "content": msg.content} for msg in payload.history]
 
+    trimmed_ctx = payload.contract_context[:max_ctx_chars] if payload.contract_context else None
+    trimmed_attach_text = payload.attachment_text[:max_ctx_chars] if payload.attachment_text else None
+    allowed_image_b64 = payload.image_base64 if tier_cfg.get("can_attach_chat_files") else None
+
     ai_res = ai_chat_response(
         message=user_query,
-        contract_context=payload.contract_context,
+        contract_context=trimmed_ctx,
         stage=payload.stage,
         history=history_dicts,
-        image_base64=payload.image_base64,
+        image_base64=allowed_image_b64,
         image_mime_type=payload.image_mime_type,
         attachment_filename=payload.attachment_name,
-        attachment_text=payload.attachment_text,
+        attachment_text=trimmed_attach_text,
     )
 
-    user = _get_optional_user(token, db)
     saved_session_id: UUID | None = payload.session_id
 
     if user is not None:

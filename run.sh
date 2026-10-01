@@ -15,9 +15,10 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     echo "[OK] Docker daemon đang hoạt động!"
     echo ""
     echo "Chọn chế độ khởi động:"
-    echo "  [1] Chạy Web kết nối tới Database Máy Host (192.168.105.109) [Khuyến nghị]"
-    echo "  [2] Chạy Độc lập (Tự tạo Database PostgreSQL riêng trên máy này)"
-    read -p "Nhập lựa chọn (mặc định 1): " DOCKER_MODE
+    echo "  [1] Chạy Web kết nối tới Database Máy Host chung trong LAN (192.168.105.109)"
+    echo "  [2] Chạy Độc lập Full Stack (Tự tạo DB PostgreSQL riêng - Dùng khi KHÁC MẠNG) [Mặc định]"
+    read -p "Nhập lựa chọn (mặc định 2): " DOCKER_MODE
+    DOCKER_MODE=${DOCKER_MODE:-2}
     if [ "$DOCKER_MODE" = "2" ]; then
         echo "[*] Đang khởi động Full Stack (DB riêng + Backend + Frontend)..."
         docker compose -f docker-compose.yml up --build -d
@@ -29,10 +30,10 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     echo "======================================================================"
     echo " [THÀNH CÔNG] Toàn bộ hệ thống Web đã hoạt động!"
     echo "======================================================================"
-    echo " 1. Truy cập trên máy này: http://localhost:3000"
-    echo " 2. Truy cập từ máy khác trong LAN: http://$LAN_IP:3000"
-    echo " 3. Admin Dashboard: http://$LAN_IP:3000/admin (admin@weeblegit.vn / Admin@123456)"
-    echo " 4. API Docs: http://$LAN_IP:8000/docs"
+    echo " 1. Truy cập trên máy này:          http://localhost:3000 | /history | /admin"
+    echo " 2. Truy cập từ máy khác trong LAN: http://$LAN_IP:3000 | /history | /admin"
+    echo " 3. Admin Dashboard:                http://$LAN_IP:3000/admin (admin@weeblegit.vn / Admin@123456)"
+    echo " 4. API Docs:                       http://$LAN_IP:8000/docs"
     echo "======================================================================"
 else
     echo "[CHÚ Ý] Docker chưa bật. Đang khởi động trực tiếp..."

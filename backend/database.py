@@ -77,32 +77,57 @@ def create_empty_database(max_retries: int = 10, delay_seconds: float = 2.0) -> 
                 print(f"[Database] Could not connect to database after {max_retries} attempts: {e}")
                 raise
 
-    # Ensure default admin account exists for admin dashboard access
+    # Ensure default admin account and 3 upgrade tier accounts (free, medium, pro) exist
     try:
         from datetime import datetime, timezone
         from uuid import uuid4
-        from .models import User
+        from .models import User, UserSubscription
         from .auth import get_password_hash
 
+        default_accounts = [
+            ("admin@weeblegit.vn", "Admin@123456", "Quản trị viên Hệ thống", "admin", "pro", False),
+            ("free@weeblegit.vn", "User@123456", "Sinh Viên (Gói Free)", "user", "free", False),
+            ("medium@weeblegit.vn", "User@123456", "Sinh Viên Xác Thực (Gói Medium)", "user", "medium", True),
+            ("pro@weeblegit.vn", "User@123456", "Freelancer Chuyên Nghiệp (Gói Pro)", "user", "pro", False),
+        ]
+
         with SessionLocal() as db:
-            admin_user = db.query(User).filter(User.email == "admin@weeblegit.vn").first()
-            if not admin_user:
-                now = datetime.now(timezone.utc)
-                admin_user = User(
-                    id=uuid4(),
-                    email="admin@weeblegit.vn",
-                    password_hash=get_password_hash("Admin@123456"),
-                    full_name="Quản trị viên Hệ thống",
-                    role="admin",
-                    is_active=True,
-                    created_at=now,
-                    updated_at=now,
-                )
-                db.add(admin_user)
-                db.commit()
-                print("[Database] Default admin account (admin@weeblegit.vn) initialized.")
+            now = datetime.now(timezone.utc)
+            for email, raw_pwd, full_name, role, tier, student_verified in default_accounts:
+                acct = db.query(User).filter(User.email == email).first()
+                if not acct:
+                    acct = User(
+                        id=uuid4(),
+                        email=email,
+                        password_hash=get_password_hash(raw_pwd),
+                        full_name=full_name,
+                        role=role,
+                        is_active=True,
+                        created_at=now,
+                        updated_at=now,
+                    )
+                    db.add(acct)
+                    db.flush()
+                    print(f"[Database] Default account ({email} | tier={tier}) initialized.")
+
+                sub = db.query(UserSubscription).filter(UserSubscription.user_id == acct.id).first()
+                if not sub:
+                    sub = UserSubscription(
+                        id=uuid4(),
+                        user_id=acct.id,
+                        plan_tier=tier,
+                        is_student_verified=student_verified,
+                        created_at=now,
+                        updated_at=now,
+                    )
+                    db.add(sub)
+                elif sub.plan_tier != tier:
+                    sub.plan_tier = tier
+                    sub.is_student_verified = student_verified
+                    sub.updated_at = now
+            db.commit()
     except Exception as e:
-        print(f"[Database] Notice: Default admin check skipped: {e}")
+        print(f"[Database] Notice: Default accounts check skipped: {e}")
 
 
 def get_db() -> Generator[Session, None, None]:

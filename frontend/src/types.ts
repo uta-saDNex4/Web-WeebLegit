@@ -43,13 +43,21 @@ export interface ChatMessage {
   lawCitation?: string;
 }
 
+export interface LegalArticleLink {
+  text: string;
+  url: string;
+  govUrl?: string;
+}
+
 export interface LegalSource {
   id: string;
   title: string;
   description: string;
   articles: string[];
+  articleLinks?: LegalArticleLink[];
   linkText: string;
   url?: string;
+  govUrl?: string;
   iconType: "labor" | "housing" | "storage" | "civil" | "security";
   codeBadge?: string;
   actionType?: "modal" | "checker";

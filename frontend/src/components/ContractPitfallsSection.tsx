@@ -144,7 +144,7 @@ export const ContractPitfallsSection: React.FC<ContractPitfallsSectionProps> = (
       id="pitfalls-section"
       className="py-12 sm:py-16 bg-white dark:bg-[#0A1322]/60 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative overflow-hidden transition-colors scroll-mt-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center max-w-4xl mx-auto mb-7">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#15233C] border border-[#D6C5A2] dark:border-[#22395D] mb-3">

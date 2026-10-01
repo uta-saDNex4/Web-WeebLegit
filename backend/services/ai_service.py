@@ -6,10 +6,10 @@ import threading
 from time import perf_counter
 from typing import Any
 from uuid import UUID, uuid4
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from ..models import RiskRule, LegalReference, AnalysisResult, Contract
+from ..models import AnalysisResult, Contract, LegalReference, RiskRule, VerificationLog
 from ..ai_engine import ai_analyze_contract_context, normalize_finding
 
 # In-memory mirror cache alongside DB storage for fast lookup and test compatibility
@@ -66,13 +66,27 @@ def save_analysis_result_to_db(
     duration_ms: int | None = None,
 ) -> AnalysisResult:
     """Persist an analysis result to the database for permanent history."""
-    if analysis_source not in ("deepseek", "rule-based", "hybrid"):
+    if analysis_source not in ("deepseek", "rule-based", "hybrid", "quick-check"):
         analysis_source = "hybrid"
+
+    # CRITICAL: Verify that log_id actually exists in verification_logs before setting FK
+    valid_log_id = None
+    if log_id:
+        try:
+            exists = db.scalar(
+                select(func.count()).select_from(VerificationLog).where(VerificationLog.id == log_id)
+            )
+            if exists:
+                valid_log_id = log_id
+        except Exception:
+            db.rollback()
+            valid_log_id = None
+
     record = AnalysisResult(
         id=uuid4(),
         contract_id=contract_id,
         user_id=user_id,
-        verification_log_id=log_id,
+        verification_log_id=valid_log_id,
         risk_score=float(report.get("risk_score", 0.0)),
         risk_label=str(report.get("risk_label", "")),
         ai_overview=report.get("ai_overview") or report.get("overview"),
@@ -81,10 +95,14 @@ def save_analysis_result_to_db(
         model_version=model_version,
         analysis_duration_ms=duration_ms,
     )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-    return record
+    try:
+        db.add(record)
+        db.commit()
+        db.refresh(record)
+        return record
+    except Exception as exc:
+        db.rollback()
+        raise exc
 
 
 class AIService:
@@ -144,6 +162,7 @@ class AIService:
                             )
                             reused_report["id"] = str(saved.id)
                         except Exception as exc:
+                            db.rollback()
                             print(f"[AIService] Failed to persist reused analysis result: {exc}")
                     store_cached_ai_analysis(log_id, reused_report)
                     return reused_report
@@ -262,6 +281,7 @@ class AIService:
                 )
                 report["id"] = str(saved.id)
             except Exception as exc:
+                db.rollback()
                 print(f"[AIService] Failed to persist analysis result: {exc}")
 
         store_cached_ai_analysis(log_id, report)

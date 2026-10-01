@@ -23,16 +23,30 @@ interface AuthState {
   ) => Promise<void>;
   logout: () => void;
   updateMe: (payload: { full_name?: string | null; password?: string | null }) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const parentCtx = useContext(AuthContext);
   const [user, setUser] = useState<api.UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Khôi phục session khi reload trang
+  const refreshUser = useCallback(async () => {
+    const token = api.getToken();
+    if (!token) return;
+    try {
+      const me = await api.getMe();
+      setUser(me);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Khôi phục session khi reload trang (bỏ qua nếu đã có AuthProvider cha)
   useEffect(() => {
+    if (parentCtx) return;
     let active = true;
     const restore = async () => {
       const token = api.getToken();
@@ -54,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [parentCtx]);
 
   const login = useCallback(async (email: string, password: string) => {
     await api.login(email, password);
@@ -83,8 +97,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  if (parentCtx) {
+    return <>{children}</>;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateMe }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateMe, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -12,6 +12,7 @@ from ..auth import check_admin_role, create_access_token, get_current_user, get_
 from ..database import get_db
 from ..models import User
 from ..schemas import TokenResponse, UserRegistration, UserResponse, UserUpdate
+from ..services.subscription_service import enrich_user_response
 
 router = APIRouter(prefix="/api", tags=["auth"])
 
@@ -37,7 +38,7 @@ def register(payload: UserRegistration, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+    return enrich_user_response(db, user)
 
 
 @router.post("/auth/login", response_model=TokenResponse)
@@ -80,9 +81,9 @@ async def login(request: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/auth/me", response_model=UserResponse)
-def me(current: User = Depends(get_current_user)):
-    """Get current user details."""
-    return current
+def me(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get current user details along with subscription tier and quota usage."""
+    return enrich_user_response(db, current)
 
 
 @router.put("/users/me", response_model=UserResponse)
@@ -100,7 +101,7 @@ def update_me(
     current.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(current)
-    return current
+    return enrich_user_response(db, current)
 
 
 @router.delete("/users/{user_id}", response_model=UserResponse)
@@ -117,4 +118,5 @@ def deactivate_user(
     user.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(user)
-    return user
+    return enrich_user_response(db, user)
+

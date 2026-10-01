@@ -35,7 +35,7 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
     {
       id: "check",
       badge: lang === "EN" ? "Instant Verification" : "Rà Soát Tức Thì",
-      name: lang === "EN" ? "Contract Verification" : "Kiểm Tra",
+      name: lang === "EN" ? "Quick Check" : "Kiểm Tra Nhanh",
       headline:
         lang === "EN"
           ? "Scan risks & verify document integrity in under 1 second"
@@ -44,7 +44,7 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
         lang === "EN"
           ? "Analyze clauses against Vietnam law with SHA-256 hash matching to verify document integrity before signing."
           : "Tự động phân tích điều khoản đối chiếu chuẩn luật, kết hợp mã băm SHA-256 kiểm chứng tính toàn vẹn trước khi ký.",
-      ctaText: lang === "EN" ? "Check Contract Now" : "Kiểm Tra Hợp Đồng Ngay",
+      ctaText: lang === "EN" ? "Quick Check Now" : "Kiểm Tra Nhanh Ngay",
       ctaAction: () => onOpenChecker(),
       tags:
         lang === "EN"
@@ -101,18 +101,18 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
       name: lang === "EN" ? "Legal References" : "Luật Tham Chiếu",
       headline:
         lang === "EN"
-          ? "Direct benchmark against 3 official Vietnamese statutory codes"
-          : "Cơ sở đối chiếu vững chắc từ 3 bộ luật hiện hành của Việt Nam",
+          ? "Direct benchmark against prevailing Vietnamese statutory regulations"
+          : "Cơ sở đối chiếu vững chắc từ hệ thống văn bản pháp luật hiện hành của Việt Nam",
       description:
         lang === "EN"
-          ? "Every warning and negotiation advice is grounded in official legislation enacted by the National Assembly: Labor Code 2019, Civil Code 2015, and Housing Law 2023."
-          : "Mọi cảnh báo và lời khuyên thương lượng đều được đối chiếu trực tiếp từ Bộ luật Lao động 2019, Bộ luật Dân sự 2015 và Luật Nhà ở 2023 do Quốc hội ban hành.",
+          ? "Every warning and negotiation advice is grounded in official Vietnamese legislation, decrees, and circulars (continuously updated & expanding across fields)."
+          : "Mọi cảnh báo và lời khuyên thương lượng đều được đối chiếu trực tiếp từ hệ thống bộ luật, luật chuyên ngành, nghị định và thông tư hiện hành (đang tiếp tục mở rộng).",
       ctaText: lang === "EN" ? "Browse Statutory Codes" : "Tra Cứu Nguồn Luật",
       ctaAction: () => onScrollToSection("sources-section"),
       tags:
         lang === "EN"
-          ? ["Labor Code 2019", "Civil Code 2015", "Housing Law 2023"]
-          : ["Bộ luật Lao động 2019", "Bộ luật Dân sự 2015", "Luật Nhà ở 2023"],
+          ? ["Labor & Civil Law", "Housing & Consumer", "Continuously Expanding"]
+          : ["Dân sự & Lao động", "Nhà ở & Tiêu dùng", "Đang tiếp tục mở rộng"],
       targetSection: "sources-section",
       themeColor: "from-emerald-600/15 via-emerald-500/5 to-transparent",
     },
@@ -148,7 +148,7 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
 
   return (
     <section className="pt-6 sm:pt-8 pb-10 scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         {/* Main Promotional Feature Card */}
         <div
           onMouseEnter={() => setIsPaused(true)}
@@ -331,7 +331,7 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
                                 2
                               </span>
                               <span>
-                                {lang === "EN" ? "AI Scans 250 Rules" : "AI rà soát 250 điều luật"}
+                                {lang === "EN" ? "AI Scans Legal Rules" : "AI rà soát hệ thống quy định"}
                               </span>
                             </div>
                             <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
@@ -357,15 +357,15 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
                       )}
 
                       {idx === 2 && (
-                        /* 3. BẪY THƯỜNG GẶP: 3 Identified Pitfalls Card */
+                        /* 3. BẪY THƯỜNG GẶP: Identified Pitfalls Card */
                         <div className="w-full max-w-md bg-white dark:bg-[#0D1829] rounded-2xl border-2 border-[#E5DBCA] dark:border-[#1E3558] p-5 sm:p-6 shadow-xl space-y-3">
                           <div className="flex items-center justify-between pb-2 border-b border-[#F0E8D8] dark:border-[#192B47]">
                             <div className="flex items-center gap-2">
                               <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                               <span className="text-xs font-black text-[#0F1E36] dark:text-white">
                                 {lang === "EN"
-                                  ? "3 Identified Contract Pitfalls"
-                                  : "3 Điểm Bẫy Đã Nhận Diện"}
+                                  ? "Identified Contract Pitfalls"
+                                  : "Các Điểm Bẫy Đã Nhận Diện"}
                               </span>
                             </div>
                             <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
@@ -391,7 +391,7 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
                             <div className="flex items-center gap-2 text-xs font-bold text-[#0F1E36] dark:text-white">
                               <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
                               <span>
-                                {lang === "EN" ? "Unfair Rental Penalties" : "Phạt bất công"}
+                                {lang === "EN" ? "Unfair Penalties" : "Phạt bất công"}
                               </span>
                             </div>
                             <span className="text-[10px] font-mono text-red-600 dark:text-red-400 font-bold">
@@ -421,8 +421,8 @@ export const FeaturePromoBanner: React.FC<FeaturePromoBannerProps> = ({
                             <Scale className="w-5 h-5 text-[#8A6731] dark:text-[#EAD7B8]" />
                             <span className="text-xs font-black text-[#0F1E36] dark:text-white">
                               {lang === "EN"
-                                ? "Statutory Benchmark Database"
-                                : "3 Bộ Luật Quốc Hội Hiện Hành"}
+                                ? "Statutory Benchmark Database (Expanding)"
+                                : "Hệ Thống Văn Bản Luật Hiện Hành (Đang Mở Rộng)"}
                             </span>
                           </div>
 

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Copy, Check, Code2, FolderTree, Terminal } from "lucide-react";
 import { motion } from "motion/react";
+import { useLanguage } from "../lib/language-context";
 
 interface NextjsExportModalProps {
   isOpen: boolean;
@@ -11,10 +12,22 @@ export const NextjsExportModal: React.FC<NextjsExportModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { lang } = useLanguage();
   const [activeTab, setActiveTab] = useState<"structure" | "page" | "guide">(
     "structure",
   );
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -115,12 +128,16 @@ export default function Home() {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto cursor-pointer"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-[#10253f] text-white rounded-2xl border border-[#26435e] shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden my-6"
+        onClick={(e) => e.stopPropagation()}
+        className="cursor-default bg-[#10253f] text-white rounded-2xl border border-[#26435e] shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden my-6"
       >
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#26435e] flex items-center justify-between bg-[#0c1c30]">
@@ -133,7 +150,9 @@ export default function Home() {
                 Next.js App Router Conversion
               </h3>
               <p className="text-xs text-[#8297ac]">
-                Codebase sẵn sàng copy & chạy trong Next.js 14 / 15
+                {lang === "EN"
+                  ? "Codebase ready to copy & run in Next.js App Router"
+                  : "Codebase sẵn sàng copy & chạy trong Next.js 14 / 15"}
               </p>
             </div>
           </div>
@@ -148,11 +167,15 @@ export default function Home() {
               ) : (
                 <Copy className="w-3.5 h-3.5" />
               )}
-              <span>{copied ? "Đã sao chép" : "Sao chép code"}</span>
+              <span>
+                {copied
+                  ? lang === "EN" ? "Copied" : "Đã sao chép"
+                  : lang === "EN" ? "Copy Code" : "Sao chép code"}
+              </span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#8297ac] hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-lg text-[#8297ac] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -163,17 +186,17 @@ export default function Home() {
         <div className="px-6 py-2.5 bg-[#173d5a]/60 border-b border-[#26435e] flex gap-2 text-xs font-medium">
           <button
             onClick={() => setActiveTab("structure")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "structure"
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "structure"
               ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
           >
             <FolderTree className="w-3.5 h-3.5" />
-            <span>Cấu trúc thư mục</span>
+            <span>{lang === "EN" ? "Folder Structure" : "Cấu trúc thư mục"}</span>
           </button>
           <button
             onClick={() => setActiveTab("page")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "page"
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "page"
               ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
@@ -183,13 +206,13 @@ export default function Home() {
           </button>
           <button
             onClick={() => setActiveTab("guide")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === "guide"
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "guide"
               ? "bg-[#EAD7B8] text-[#10253f] font-semibold"
               : "text-[#8297ac] hover:text-white"
               }`}
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>Hướng dẫn cài đặt</span>
+            <span>{lang === "EN" ? "Setup Guide" : "Hướng dẫn cài đặt"}</span>
           </button>
         </div>
 
@@ -205,7 +228,9 @@ export default function Home() {
             <div className="space-y-4 font-sans text-xs">
               <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-2">
                 <h4 className="font-bold text-white text-sm">
-                  1. Khởi tạo dự án Next.js (nếu chưa có):
+                  {lang === "EN"
+                    ? "1. Initialize Next.js project (if needed):"
+                    : "1. Khởi tạo dự án Next.js (nếu chưa có):"}
                 </h4>
                 <code className="block p-2 rounded bg-black/40 text-[#6fe0c0]">
                   npx create-next-app@latest my-contractly --typescript
@@ -214,7 +239,9 @@ export default function Home() {
               </div>
               <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-2">
                 <h4 className="font-bold text-white text-sm">
-                  2. Cài đặt các thư viện bổ sung:
+                  {lang === "EN"
+                    ? "2. Install additional libraries:"
+                    : "2. Cài đặt các thư viện bổ sung:"}
                 </h4>
                 <code className="block p-2 rounded bg-black/40 text-[#6fe0c0]">
                   npm install lucide-react motion
@@ -222,13 +249,26 @@ export default function Home() {
               </div>
               <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-2">
                 <h4 className="font-bold text-white text-sm">
-                  3. Copy các components & data:
+                  {lang === "EN"
+                    ? "3. Copy components & data:"
+                    : "3. Copy các components & data:"}
                 </h4>
                 <p className="text-[#8297ac]">
-                  Toàn bộ code trong source hiện tại được thiết kế 100% tương
-                  thích cả với Next.js App Router (thêm{" "}
-                  <code className="text-white">&#39;use client&#39;</code> ở đầu
-                  các file có hook/state).
+                  {lang === "EN" ? (
+                    <>
+                      All components in this source are 100% compatible with
+                      Next.js App Router (including{" "}
+                      <code className="text-white">&#39;use client&#39;</code>{" "}
+                      at the top of stateful files).
+                    </>
+                  ) : (
+                    <>
+                      Toàn bộ code trong source hiện tại được thiết kế 100% tương
+                      thích cả với Next.js App Router (thêm{" "}
+                      <code className="text-white">&#39;use client&#39;</code> ở đầu
+                      các file có hook/state).
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -241,7 +281,7 @@ export default function Home() {
             onClick={onClose}
             className="px-4 py-2 bg-[#26435e] hover:bg-[#34587a] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
           >
-            Đóng
+            {lang === "EN" ? "Close" : "Đóng"}
           </button>
         </div>
       </motion.div>

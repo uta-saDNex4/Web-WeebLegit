@@ -4,8 +4,6 @@
  */
 
 import React, { useState } from "react";
-import { AuthProvider } from "./lib/auth-context";
-import { LanguageProvider } from "./lib/language-context";
 
 // New Legal Components
 import { NavbarLegal } from "./components/NavbarLegal";
@@ -16,16 +14,18 @@ import { LegalMetricsBar } from "./components/LegalMetricsBar";
 import { LegalProcess } from "./components/LegalProcess";
 import { ContractPitfallsSection } from "./components/ContractPitfallsSection";
 import { StatuteReferenceSection } from "./components/StatuteReferenceSection";
+import { TemplateLibrary } from "./components/TemplateLibrary";
 import { CtaLegalBanner } from "./components/CtaLegalBanner";
 import { Footer } from "./components/Footer";
 
 // AI Assistant & Modals
 import { FloatingAiWidget } from "./components/FloatingAiWidget";
 import { ContractCheckerModal } from "./components/ContractCheckerModal";
+import { TemplateViewerModal } from "./components/TemplateViewerModal";
 import { LegalDetailsModal } from "./components/LegalDetailsModal";
 import { NextjsExportModal } from "./components/NextjsExportModal";
 import { AuthModal } from "./components/AuthModal";
-import { LegalSource } from "./types";
+import { ContractTemplate, LegalSource } from "./types";
 
 function AppInner() {
   const [isCheckerOpen, setIsCheckerOpen] = useState(false);
@@ -33,6 +33,7 @@ function AppInner() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authInitialTab, setAuthInitialTab] = useState<"login" | "register">("login");
   const [selectedSource, setSelectedSource] = useState<LegalSource | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<ContractTemplate | null>(null);
 
   const handleScrollTo = (elementId: string) => {
     const el = document.getElementById(elementId);
@@ -91,19 +92,24 @@ function AppInner() {
           onOpenChecker={handleOpenChecker}
         />
 
-        {/* 7. Bottom Call to Action Banner */}
+        {/* 7. Reference Contract Templates Library (Placed right after Statutory Legal References) */}
+        <TemplateLibrary
+          onSelectTemplate={(tmpl) => setSelectedTemplate(tmpl)}
+        />
+
+        {/* 8. Bottom Call to Action Banner */}
         <CtaLegalBanner
           onStart={handleOpenChecker}
         />
 
-        {/* 8. Trust & Legal Speed Metrics */}
+        {/* 9. Trust & Legal Speed Metrics */}
         <LegalMetricsBar />
       </main>
 
       {/* Floating Interactive AI Assistant Chat Bubble (bottom-right) */}
       <FloatingAiWidget />
 
-      {/* 9. Footer */}
+      {/* 10. Footer */}
       <Footer
         onOpenNextjsCode={() => setIsNextjsOpen(true)}
       />
@@ -121,6 +127,11 @@ function AppInner() {
         onNeedAuth={() => handleOpenAuth("login")}
       />
 
+      <TemplateViewerModal
+        template={selectedTemplate}
+        onClose={() => setSelectedTemplate(null)}
+      />
+
       <LegalDetailsModal
         source={selectedSource}
         onClose={() => setSelectedSource(null)}
@@ -135,11 +146,5 @@ function AppInner() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <LanguageProvider>
-        <AppInner />
-      </LanguageProvider>
-    </AuthProvider>
-  );
+  return <AppInner />;
 }

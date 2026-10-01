@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Menu,
   X,
@@ -10,6 +11,9 @@ import {
   Globe,
   Sun,
   Moon,
+  Clock,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLanguage } from "../lib/language-context";
@@ -84,6 +88,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t("nav.sources")}
           </button>
+          <Link
+            href="/workspace"
+            className="hover:text-[#8a6834] dark:hover:text-[#EAD7B8] text-[#8a6834] dark:text-[#EAD7B8] font-bold transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <span>Legal Studio</span>
+          </Link>
         </nav>
 
         {/* Action Buttons — Desktop */}
@@ -117,13 +127,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="relative ml-1">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#cbd5e1] dark:border-[#1a2d4b] hover:border-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223c] transition-all text-xs font-bold text-[#0f172a] dark:text-white cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#cbd5e1] dark:border-[#1a2d4b] hover:border-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223c] transition-all text-xs font-bold text-[#0f172a] dark:text-white cursor-pointer"
               >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#EAD7B8] to-[#d8bf97] flex items-center justify-center text-[#10253f] text-xs font-bold uppercase">
                   {(user.full_name ?? user.email).charAt(0)}
                 </div>
                 <span className="max-w-[120px] truncate">
                   {user.full_name ?? user.email}
+                </span>
+                <span className="text-[11px] font-normal opacity-55 lowercase">
+                  -{user.role === "admin" ? "pro/ad" : (user.plan_tier || "free")}-
                 </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 text-[#64748b] dark:text-[#8fa3bf] transition-transform ${
@@ -133,17 +146,56 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-[#0b1424] border border-[#e2e8f0] dark:border-[#1a2d4b] rounded-xl shadow-2xl py-1 z-50">
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#0b1424] border border-[#e2e8f0] dark:border-[#1a2d4b] rounded-xl shadow-2xl py-1 z-50">
                   <div className="px-3 py-2 border-b border-[#e2e8f0] dark:border-[#1a2d4b]">
-                    <p className="text-xs font-bold text-[#0f172a] dark:text-white truncate">
-                      {user.full_name ?? "Người dùng"}
+                    <p className="text-xs font-bold text-[#0f172a] dark:text-white truncate flex items-center gap-1.5">
+                      <span className="truncate">{user.full_name ?? "Người dùng"}</span>
+                      <span className="text-[11px] font-normal opacity-55 lowercase shrink-0">
+                        -{user.role === "admin" ? "pro/ad" : (user.plan_tier || "free")}-
+                      </span>
                     </p>
                     <p className="text-xs text-[#64748b] dark:text-[#8fa3bf] truncate">
                       {user.email}
                     </p>
                   </div>
+                  <Link
+                    href="/upgrade"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-[#8a6834] dark:text-[#EAD7B8] hover:bg-slate-50 dark:hover:bg-[#12223c] flex items-center gap-2 transition-colors border-b border-[#e2e8f0] dark:border-[#1a2d4b]"
+                  >
+                    <span>✨ {lang === "EN" ? "Upgrade Plan (/upgrade)" : "Nâng Cấp Gói (/upgrade)"}</span>
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full text-left px-3 py-2 text-xs font-bold text-[#8a6834] dark:text-[#EAD7B8] hover:bg-slate-50 dark:hover:bg-[#12223c] flex items-center gap-2 transition-colors border-b border-[#e2e8f0] dark:border-[#1a2d4b]"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>{lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị Admin"}</span>
+                    </Link>
+                  )}
+                  <Link
+                    href="/workspace"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-[#8a6834] dark:text-[#EAD7B8] hover:bg-slate-50 dark:hover:bg-[#12223c] flex items-center gap-2 transition-colors border-b border-[#e2e8f0] dark:border-[#1a2d4b]"
+                  >
+                    <FileText className="w-4 h-4 text-[#8a6834] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Legal Studio (/workspace)" : "Legal Studio (/workspace)"}</span>
+                  </Link>
+                  <Link
+                    href="/history"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-[#334155] dark:text-[#94a9c9] hover:bg-slate-50 dark:hover:bg-[#12223c] hover:text-[#8a6834] dark:hover:text-[#EAD7B8] flex items-center gap-2 transition-colors border-b border-[#e2e8f0] dark:border-[#1a2d4b]"
+                  >
+                    <Clock className="w-4 h-4 text-[#8a6834] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
+                  </Link>
                   <button
-                    onClick={onOpenChecker}
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      onOpenChecker();
+                    }}
                     className="w-full text-left px-3 py-2 text-xs font-medium text-[#334155] dark:text-[#94a9c9] hover:bg-slate-50 dark:hover:bg-[#12223c] hover:text-[#8a6834] dark:hover:text-[#EAD7B8] flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <User className="w-4 h-4" /> {t("nav.verify_contract")}
@@ -254,6 +306,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {user.full_name ?? user.email}
                   </strong>
                 </div>
+                <Link
+                  href="/history"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2 px-3 text-left text-xs font-bold text-[#0f172a] dark:text-[#e2e8f0] hover:bg-slate-50 dark:hover:bg-[#12223c] rounded-xl flex items-center gap-2"
+                >
+                  <Clock className="w-4 h-4 text-[#8a6834]" />
+                  <span>{lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
+                </Link>
+                {user.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2 px-3 text-left text-xs font-bold text-[#8a6834] dark:text-[#EAD7B8] hover:bg-slate-50 dark:hover:bg-[#12223c] rounded-xl flex items-center gap-2"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>{lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị"}</span>
+                  </Link>
+                )}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);

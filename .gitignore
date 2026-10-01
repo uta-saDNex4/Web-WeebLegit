@@ -10,3 +10,4 @@ dist/
 storage/
 secure_storage/
 *.db
+scratch/

@@ -270,6 +270,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
       const savedLang = localStorage.getItem('lang') as Language;
       if (savedLang === 'EN' || savedLang === 'VI') {
         setLangState(savedLang);
+        document.documentElement.lang = savedLang === 'EN' ? 'en' : 'vi';
       }
     } catch {}
   }, []);
@@ -278,6 +279,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLangState(newLang);
     try {
       localStorage.setItem('lang', newLang);
+      document.documentElement.lang = newLang === 'EN' ? 'en' : 'vi';
     } catch {}
   };
 

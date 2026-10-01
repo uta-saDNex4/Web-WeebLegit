@@ -25,6 +25,9 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://admin:matkhau_xinfu@db:5432/contract_verifier_db}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://vibi.top/v1}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-v4.1-flash}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       STORAGE_ROOT: /data/storage
       SECURE_STORAGE_ROOT: /data/secure_storage
@@ -33,6 +36,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
       - backend-storage:/data/storage
       - backend-secure-storage:/data/secure_storage
     depends_on:

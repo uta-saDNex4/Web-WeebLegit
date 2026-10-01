@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "../index.css";
 import { ThemeProvider } from "../lib/theme-context";
+import { LanguageProvider } from "../lib/language-context";
+import { AuthProvider } from "../lib/auth-context";
 
 export const metadata: Metadata = {
   title: "WeebLegit – Trợ lý hợp đồng thông minh cho sinh viên",
@@ -29,6 +31,10 @@ export default function RootLayout({
                   document.documentElement.classList.remove('dark');
                   document.documentElement.setAttribute('data-theme', 'light');
                 }
+                var lang = localStorage.getItem('lang');
+                if (lang === 'EN') {
+                  document.documentElement.lang = 'en';
+                }
               } catch(e) {}
             })();`,
           }}
@@ -46,7 +52,9 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          {children}
+          <LanguageProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

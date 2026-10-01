@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   ShieldCheck,
   Sparkles,
@@ -28,9 +29,9 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
   return (
     <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden">
       {/* Subtle Background Glows (Không chói, chuẩn màu #EAD7B8) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-[#EAD7B8]/20 via-[#EAD7B8]/5 to-transparent pointer-events-none -z-10 blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] h-96 bg-gradient-to-b from-[#EAD7B8]/20 via-[#EAD7B8]/5 to-transparent pointer-events-none -z-10 blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Column: Heading, Value Props & High-Contrast CTA Buttons */}
           <motion.div
@@ -44,8 +45,8 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
               <Scale className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />
               <span className="text-xs font-black text-[#8A6731] dark:text-[#EAD7B8] uppercase tracking-wider">
                 {lang === "EN"
-                  ? "Safe Contracts For Everyone"
-                  : "Bảo Vệ Bạn Khi Đi Làm & Thuê Nhà"}
+                  ? "Safe Contracts & Transactions For Everyone"
+                  : "Bảo Vệ Quyền Lợi Trong Mọi Giao Kết Hợp Đồng"}
               </span>
             </div>
 
@@ -71,8 +72,8 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
             {/* Subtitle Description */}
             <p className="text-base sm:text-lg text-[#334764] dark:text-[#9FB3CF] font-medium leading-relaxed max-w-2xl">
               {lang === "EN"
-                ? "Upload your job or rent contract. Get plain-language advice on unfair clauses and simple scripts to negotiate back. 100% free."
-                : "Hệ thống tự động đọc hiểu từng câu chữ, chỉ ra những điều khoản bất lợi, trái luật và chỉ bạn cách nói khéo để sửa lại. Dễ hiểu, nhanh chóng và miễn phí 100%."}
+                ? "Upload your contract document across diverse civil, commercial, or service transactions. Get plain-language advice on unfair clauses and simple scripts to negotiate back (continuously expanding)."
+                : "Hệ thống tự động đọc hiểu từng câu chữ trên đa dạng các loại giao dịch và hợp đồng, chỉ ra những điều khoản bất lợi, trái luật và gợi ý cách thương lượng lại (đang tiếp tục mở rộng)."}
             </p>
 
             {/* Key Trust Guarantees */}
@@ -91,15 +92,23 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
               </div>
             </div>
 
-            {/* HIGH-CONTRAST ACTION BUTTON */}
-            <div className="pt-2">
+            {/* HIGH-CONTRAST ACTION BUTTONS */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <Link
+                href="/workspace"
+                className="group relative inline-flex items-center justify-center gap-3 px-6 py-3.5 text-sm sm:text-base font-black text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] active:bg-[#d4b78c] rounded-2xl border-2 border-[#10253f] dark:border-[#EAD7B8] shadow-lg shadow-[#EAD7B8]/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <Sparkles className="w-5 h-5 text-[#10253f] group-hover:rotate-12 transition-transform" />
+                <span>{lang === "EN" ? "Open Legal Studio (/workspace)" : "Vào Legal Studio Thẩm Định"}</span>
+                <ArrowRight className="w-4 h-4 text-[#10253f] group-hover:translate-x-1 transition-transform" />
+              </Link>
+
               <button
                 onClick={onOpenChecker}
-                className="group relative inline-flex items-center justify-center gap-3 px-7 py-4 text-sm sm:text-base font-black text-[#EAD7B8] bg-[#0F223D] hover:bg-[#162E52] active:bg-[#0A182B] rounded-2xl border-2 border-[#EAD7B8] shadow-lg shadow-[#0F223D]/30 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-bold text-[#0F1E36] dark:text-[#CAD8ED] bg-[#FAF5ED] dark:bg-[#15233C] hover:bg-[#EFE8D8] dark:hover:bg-[#1E3558] rounded-2xl border border-[#D6C5A2] dark:border-[#22395D] shadow-sm transition-all hover:scale-[1.02] cursor-pointer"
               >
-                <Sparkles className="w-5 h-5 text-[#EAD7B8] group-hover:rotate-12 transition-transform" />
-                <span>{lang === "EN" ? "Upload Contract Now" : "Kiểm Tra Hợp Đồng Của Bạn"}</span>
-                <ArrowRight className="w-4 h-4 text-[#EAD7B8] group-hover:translate-x-1 transition-transform" />
+                <FileText className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                <span>{lang === "EN" ? "Quick Check (Modal)" : "Kiểm Tra Nhanh (Modal)"}</span>
               </button>
             </div>
           </motion.div>
@@ -122,10 +131,10 @@ export const HeroLegal: React.FC<HeroLegalProps> = ({
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-[#0F1E36] dark:text-white uppercase tracking-wider truncate">
-                    {lang === "EN" ? "SAMPLE EMPLOYMENT CONTRACT" : "HỢP ĐỒNG LAO ĐỘNG MẪU"}
+                    {lang === "EN" ? "CONTRACT ANALYSIS PREVIEW" : "BẢN XEM TRƯỚC PHÂN TÍCH ĐIỀU KHOẢN"}
                   </h3>
                   <p className="text-[11px] text-[#65778F] dark:text-[#8FA3BF] truncate">
-                    {lang === "EN" ? "Subtle trap detection • Statutory audit" : "Ví dụ hợp đồng thực tế • Bóc tách bẫy ngầm"}
+                    {lang === "EN" ? "Subtle trap detection • Statutory audit" : "Ví dụ minh họa • Bóc tách điều khoản bất lợi"}
                   </p>
                 </div>
               </div>

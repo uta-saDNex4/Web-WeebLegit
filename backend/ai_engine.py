@@ -1,6 +1,7 @@
 """AI Engine supporting DeepSeek LLM analysis with fallback to local rule-based scanner."""
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
@@ -123,8 +124,8 @@ def _call_deepseek_api(contract_text: str, metadata: dict[str, Any] | None = Non
         f"CHỈ trả về JSON thuần túy, KHÔNG bọc trong markdown code block.\n"
     )
 
-    base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
-    model_name = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+    base_url = os.getenv("DEEPSEEK_BASE_URL", "https://vibi.top/v1").rstrip("/")
+    model_name = os.getenv("DEEPSEEK_MODEL", "deepseek-v4.1-flash")
     url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
 
     payload = {
@@ -138,6 +139,7 @@ def _call_deepseek_api(contract_text: str, metadata: dict[str, Any] | None = Non
         ],
         "temperature": 0.0,
         "max_tokens": 4096,
+        "thinking": {"type": "disabled"},
         "response_format": {"type": "json_object"},
     }
     body_bytes = json.dumps(payload).encode("utf-8")
@@ -148,13 +150,14 @@ def _call_deepseek_api(contract_text: str, metadata: dict[str, Any] | None = Non
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {api_key}",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WeebLegit-AI/1.0",
         },
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=35) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            raw_text = data["choices"][0]["message"]["content"].strip()
+            raw_text = (data["choices"][0]["message"].get("content") or "").strip()
             # Strip markdown code fences if present
             if raw_text.startswith("```"):
                 lines = raw_text.split("\n")
@@ -171,13 +174,76 @@ def _call_deepseek_api(contract_text: str, metadata: dict[str, Any] | None = Non
                 result["findings"] = findings
                 result["ai_overview"] = overview_str
                 result["overview"] = overview_str
-                result["model_version"] = "deepseek-chat"
+                result["model_version"] = model_name
                 return result
     except Exception as exc:
         print(f"[AI] DeepSeek API failed: {exc}")
 
     return None
 
+
+def ocr_image_with_vision(image_bytes: bytes, mime_type: str = "image/jpeg") -> str:
+    """Extract full Vietnamese text from an image or scanned document using Multimodal Vision."""
+    if not image_bytes:
+        return ""
+
+    api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        return ""
+
+    b64 = base64.b64encode(image_bytes).decode("ascii")
+    base_url = os.getenv("DEEPSEEK_BASE_URL", "https://vibi.top/v1").rstrip("/")
+    url = f"{base_url}/chat/completions"
+
+    # Multimodal vision models on vibi.top: gemini-3.7-flash, gemini-3.6-flash, qwen3.8-flash
+    vision_models = ["gemini-3.7-flash", "gemini-3.6-flash", "qwen3.8-flash"]
+
+    prompt = (
+        "Bạn là chuyên gia OCR văn bản pháp lý tiếng Việt và hợp đồng.\n"
+        "Nhiệm vụ: Hãy đọc và trích xuất TOÀN BỘ nội dung chữ trong hình ảnh này một cách chính xác tuyệt đối từng từ ngữ, số tiền, ngày tháng, tên các bên và các điều khoản.\n"
+        "Giữ nguyên cấu trúc phân đoạn, tiêu đề (Điều 1, Điều 2...), danh sách liệt kê.\n"
+        "Chỉ trả về nội dung văn bản thuần túy trích xuất được từ ảnh, KHÔNG thêm lời chào, không giải thích hay nhận xét nào khác."
+    )
+
+    for model in vision_models:
+        payload = {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{mime_type};base64,{b64}"},
+                        },
+                    ],
+                }
+            ],
+            "temperature": 0.0,
+            "max_tokens": 4096,
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WeebLegit-OCR/1.0",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=35) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                text = (data["choices"][0]["message"].get("content") or "").strip()
+                if text:
+                    return text
+        except Exception as exc:
+            print(f"[OCR] Vision model {model} failed: {exc}")
+            continue
+
+    return ""
 
 
 def local_rule_analysis(contract_text: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -274,6 +340,148 @@ def ai_analyze_contract_context(contract_text: str, metadata: dict[str, Any] | N
     }
 
 
+def _call_deepseek_quick_check(contract_text: str, metadata: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """Call DeepSeek API for low-token, highly consistent Quick Check contract assessment."""
+    api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        return None
+
+    prompt = (
+        f"Bạn là AI chuyên gia pháp lý thẩm định nhanh rủi ro hợp đồng (WeebLegit Quick Check).\n"
+        f"Nhiệm vụ: Đánh giá độ rủi ro tổng quát và liệt kê tối đa 3-5 bẫy pháp lý hoặc điều khoản bất lợi nghiêm trọng nhất.\n"
+        f"Nội dung hợp đồng:\n{contract_text[:3500]}\n"
+        f"Metadata: {metadata or {}}\n\n"
+        f"Định dạng trả về DUY NHẤT một JSON object không markdown:\n"
+        f"{{\n"
+        f'  "risk_score": <float 0-100>,\n'
+        f'  "risk_label": "Chưa phát hiện rủi ro nổi bật" | "Cần rà soát thêm" | "Rủi ro trung bình-cao" | "Rủi ro cao",\n'
+        f'  "ai_overview": "<tóm tắt 2-3 câu đánh giá rủi ro pháp lý>",\n'
+        f'  "key_risks": ["<bẫy rủi ro 1 kèm căn cứ luật ngắn gọn>", "<bẫy rủi ro 2>", ...],\n'
+        f'  "high_risk_count": <số lượng điều khoản rủi ro cao>\n'
+        f"}}"
+    )
+
+    base_url = os.getenv("DEEPSEEK_BASE_URL", "https://vibi.top/v1").rstrip("/")
+    model_name = os.getenv("DEEPSEEK_MODEL", "deepseek-v4.1-flash")
+    url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
+
+    payload = {
+        "model": model_name,
+        "messages": [
+            {
+                "role": "system",
+                "content": "Bạn là AI thẩm định hợp đồng chính xác cao, nhiệt độ 0.0, luôn trả JSON thuần túy.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        "temperature": 0.0,
+        "max_tokens": 450,
+        "thinking": {"type": "disabled"},
+        "response_format": {"type": "json_object"},
+    }
+    body_bytes = json.dumps(payload).encode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        data=body_bytes,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WeebLegit-AI/1.0",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            raw_text = (data["choices"][0]["message"].get("content") or "").strip()
+            if raw_text.startswith("```"):
+                lines = raw_text.split("\n")
+                lines = [l for l in lines if not l.strip().startswith("```")]
+                raw_text = "\n".join(lines).strip()
+            result = json.loads(raw_text)
+            if "risk_score" in result:
+                result["risk_score"] = round(float(result.get("risk_score", 0.0)), 1)
+                result["model_version"] = model_name
+                return result
+    except Exception as exc:
+        print(f"[QuickCheck AI] DeepSeek quick check failed: {exc}")
+
+    return None
+
+
+def local_quick_check(contract_text: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Deterministic, zero-cost legal rule scanner for Quick Check with minimal score variance."""
+    rule_res = local_rule_analysis(contract_text, metadata)
+    findings = rule_res.get("findings", [])
+    high_findings = [f for f in findings if f.get("severity") == "high"]
+    
+    key_risks: list[str] = []
+    for f in (high_findings if high_findings else findings)[:4]:
+        term = f.get("matched_term", "")
+        warn = f.get("warning", "")
+        ref = f.get("reference", "")
+        key_risks.append(f"{term.capitalize()}: {warn} ({ref})")
+
+    if not key_risks:
+        key_risks = ["Chưa phát hiện bẫy điều khoản nguy hiểm điển hình trong danh mục quy tắc."]
+
+    return {
+        "risk_score": rule_res.get("risk_score", 0.0),
+        "risk_label": rule_res.get("risk_label", "Chưa phát hiện dấu hiệu rủi ro nổi bật"),
+        "ai_overview": rule_res.get("ai_overview", ""),
+        "key_risks": key_risks,
+        "high_risk_count": len(high_findings),
+        "analysis_source": "rule-based",
+    }
+
+
+def quick_check_contract_skill(contract_text: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Specialized AI Quick Check Skill ensuring low token usage and minimal variance between runs."""
+    local_res = local_quick_check(contract_text, metadata)
+    ai_res = _call_deepseek_quick_check(contract_text, metadata)
+
+    if not ai_res:
+        return {
+            **local_res,
+            "analysis_source": "rule-based",
+        }
+
+    rule_score = float(local_res.get("risk_score", 0.0))
+    ai_score = float(ai_res.get("risk_score", 0.0))
+
+    if rule_score > 0 and ai_score > 0:
+        hybrid_score = round(min(100.0, 0.6 * rule_score + 0.4 * ai_score), 1)
+    elif rule_score > 0:
+        hybrid_score = rule_score
+    else:
+        hybrid_score = ai_score
+
+    if hybrid_score >= 70:
+        label = "Rủi ro cao"
+    elif hybrid_score >= 35:
+        label = "Rủi ro trung bình-cao"
+    elif hybrid_score > 0:
+        label = "Cần rà soát thêm"
+    else:
+        label = "Chưa phát hiện dấu hiệu rủi ro nổi bật"
+
+    overview = ai_res.get("ai_overview") or local_res.get("ai_overview", "")
+    key_risks = ai_res.get("key_risks") or local_res.get("key_risks", [])
+
+    return {
+        "risk_score": hybrid_score,
+        "risk_label": label,
+        "ai_overview": overview,
+        "overview": overview,
+        "key_risks": key_risks,
+        "high_risk_count": ai_res.get("high_risk_count", local_res.get("high_risk_count", 0)),
+        "analysis_source": "quick-check",
+        "model_version": ai_res.get("model_version"),
+    }
+
+
+
 def ai_chat_response(
     message: str,
     contract_context: str | None = None,
@@ -330,62 +538,73 @@ def ai_chat_response(
                 role = "user" if turn.get("role") == "user" else "assistant"
                 chat_messages.append({"role": role, "content": turn.get("content", "")})
 
-        # DeepSeek doesn't support inline image data; if an image is attached,
-        # add a descriptive note so the model knows about the attachment
+        # If an image is attached, switch to multimodal vision model gemini-3.7-flash
         user_message = message
-        if image_base64 and image_mime_type:
-            user_message = (
-                f"[Người dùng đã gửi kèm ảnh chụp hợp đồng (file: {attachment_filename or 'ảnh hợp đồng'}, "
-                f"loại: {image_mime_type}). Hãy phân tích dựa trên ngữ cảnh và nội dung văn bản đã cung cấp.]\n\n"
-                + user_message
-            )
-        chat_messages.append({"role": "user", "content": user_message})
+        model_name = os.getenv("DEEPSEEK_MODEL", "deepseek-v4.1-flash")
 
-        base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
-        model_name = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+        if image_base64 and image_mime_type:
+            model_name = "gemini-3.7-flash"
+            chat_messages.append({
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": f"[Người dùng đã gửi kèm ảnh tài liệu: {attachment_filename or 'ảnh hợp đồng'}]:\n{user_message}"},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{image_mime_type};base64,{image_base64}"},
+                    },
+                ],
+            })
+        else:
+            chat_messages.append({"role": "user", "content": user_message})
+
+        base_url = os.getenv("DEEPSEEK_BASE_URL", "https://vibi.top/v1").rstrip("/")
         url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
         try:
-            payload = {
+            payload: dict[str, Any] = {
                 "model": model_name,
                 "messages": chat_messages,
                 "temperature": 0.2,
                 "max_tokens": 2048,
                 "response_format": {"type": "json_object"},
             }
+            if "deepseek" in model_name.lower():
+                payload["thinking"] = {"type": "disabled"}
             req = urllib.request.Request(
                 url,
                 data=json.dumps(payload).encode("utf-8"),
                 headers={
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {api_key}",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WeebLegit-AI/1.0",
                 },
             )
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=35) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
-                raw_text = data["choices"][0]["message"]["content"].strip()
+                raw_text = (data["choices"][0]["message"].get("content") or "").strip()
                 # Strip markdown code fences if present
                 if raw_text.startswith("```"):
                     lines = raw_text.split("\n")
                     lines = [l for l in lines if not l.strip().startswith("```")]
                     raw_text = "\n".join(lines).strip()
-                try:
-                    parsed = json.loads(raw_text)
-                    if isinstance(parsed, dict) and "reply" in parsed:
+                if raw_text:
+                    try:
+                        parsed = json.loads(raw_text)
+                        if isinstance(parsed, dict) and str(parsed.get("reply") or "").strip():
+                            return {
+                                "reply": str(parsed.get("reply", "")).strip(),
+                                "citations": parsed.get("citations", []),
+                                "negotiation_script": parsed.get("negotiation_script"),
+                                "source": "deepseek-live",
+                                "model": model_name,
+                            }
+                    except json.JSONDecodeError:
                         return {
-                            "reply": parsed.get("reply", ""),
-                            "citations": parsed.get("citations", []),
-                            "negotiation_script": parsed.get("negotiation_script"),
+                            "reply": raw_text,
+                            "citations": [],
+                            "negotiation_script": None,
                             "source": "deepseek-live",
-                            "model": "deepseek-chat",
+                            "model": model_name,
                         }
-                except json.JSONDecodeError:
-                    return {
-                        "reply": raw_text,
-                        "citations": [],
-                        "negotiation_script": None,
-                        "source": "deepseek-live",
-                        "model": "deepseek-chat",
-                    }
         except Exception as exc:
             print(f"[AI] DeepSeek chat failed: {exc}")
 

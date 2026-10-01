@@ -17,12 +17,12 @@ export const LegalMetricsBar: React.FC = () => {
     },
     {
       icon: Scale,
-      val: lang === "EN" ? "3 Laws" : "3 Bộ Luật",
-      title: lang === "EN" ? "Statutory Database" : "Cơ Sở Đối Chiếu",
+      val: lang === "EN" ? "Multi-Law" : "Đa Lĩnh Vực",
+      title: lang === "EN" ? "Statutory Database" : "Hệ Thống Đối Chiếu",
       desc:
         lang === "EN"
-          ? "Labor Code 2019, Civil Code 2015 & Housing Law 2023"
-          : "Bộ luật Lao động 2019, Dân sự 2015 & Luật Nhà ở 2023",
+          ? "Grounded in prevailing Vietnamese legislation & continuously expanding"
+          : "Đối chiếu hệ thống văn bản pháp luật Việt Nam hiện hành & liên tục mở rộng",
     },
     {
       icon: Lock,
@@ -43,7 +43,7 @@ export const LegalMetricsBar: React.FC = () => {
 
   return (
     <section className="pt-0 pb-12 sm:pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {metrics.map((m, idx) => {
             const Icon = m.icon;

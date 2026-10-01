@@ -55,26 +55,49 @@ docker compose up --build -d
 
 ---
 
-### Cách 3: Truy cập trực tiếp qua Trình duyệt (Dành cho điện thoại / laptop khác)
+### Cách 3: Truy cập trực tiếp qua Trình duyệt trong cùng mạng Wi-Fi / LAN
 
 Nếu máy Host (`192.168.105.109`) hoặc một máy bất kỳ trong nhóm đã bật Web:
 
 - Các thiết bị khác (điện thoại, tablet, laptop khác) trong cùng mạng Wi-Fi **KHÔNG CẦN cài đặt gì cả, KHÔNG CẦN Docker hay Git**.
 - Chỉ cần mở trình duyệt và truy cập theo địa chỉ IP của máy đang bật web:
-  - **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000` (Ví dụ: `http://192.168.105.109:3000` hoặc `http://192.168.105.126:3000`)
+  - **Trang chủ Web**: `http://<IP_MÁY_CHẠY>:3000`
+  - **Trang Nâng cấp Gói cước**: `http://<IP_MÁY_CHẠY>:3000/upgrade`
+  - **Lịch sử Hợp đồng**: `http://<IP_MÁY_CHẠY>:3000/history`
+  - **Hồ sơ & Lịch sử AI Chat**: `http://<IP_MÁY_CHẠY>:3000/profile`
   - **Admin Dashboard**: `http://<IP_MÁY_CHẠY>:3000/admin`
   - **Tài liệu API (Swagger UI)**: `http://<IP_MÁY_CHẠY>:8000/docs`
 
-> **Lưu ý mạng LAN**: Hệ thống đã được tích hợp sẵn cấu hình `0.0.0.0`, CORS (`Access-Control-Allow-Origin: *`) và **Private Network Access (PNA)** (`Access-Control-Allow-Private-Network: true`) cùng cơ chế phát hiện hostname động trong `frontend/src/lib/api.ts`. Bất kỳ thiết bị nào truy cập từ xa qua mạng LAN đều gọi API mượt mà, không bị lỗi CORS hay dính `localhost`.
+> **Lưu ý mạng LAN**: Hệ thống đã được tích hợp sẵn cấu hình `0.0.0.0`, CORS (`Access-Control-Allow-Origin: *`), **Private Network Access (PNA)** và cơ chế Next.js Rewrite Proxy trong `frontend/next.config.mjs` kết hợp `frontend/src/lib/api.ts`. Bất kỳ thiết bị nào truy cập từ xa đều tự động định tuyến API qua cùng origin, không bị lỗi CORS hay gọi nhầm `localhost`.
 
 ---
 
-## 🔑 Thông tin Đăng nhập & Quản trị
+### Cách 4: Truy cập từ KHÁC MẠNG (4G / 5G / Wi-Fi khác hoàn toàn qua Cloudflare Tunnel)
 
-| Vai trò                   | Email đăng nhập                                     | Mật khẩu mặc định          | Ghi chú                                                                                         |
-| ------------------------- | --------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Quản trị viên (Admin)** | `admin@weeblegit.vn`                                | `Admin@123456`             | Toàn quyền xem thống kê, quản lý hợp đồng, người dùng, quy tắc rủi ro và audit log tại `/admin` |
-| **Người dùng thường**     | Có thể bấm **Đăng ký** trực tiếp trên giao diện Web | Tự tạo (tối thiểu 8 ký tự) | Tải lên hợp đồng, đối chiếu mã SHA-256, tra cứu điều khoản, chat với AI                         |
+Khi máy bạn đang bật App nhưng muốn cho điện thoại dùng 4G/5G hoặc máy tính ở mạng Wi-Fi khác truy cập toàn bộ các trang (`/`, `/upgrade`, `/history`, `/profile`, `/admin`):
+
+1. Mở PowerShell hoặc CMD tại thư mục gốc dự án (`Web-WeebLegit`) và chạy lệnh:
+
+```powershell
+.\cloudflared.exe tunnel --url http://localhost:3000
+```
+
+2. Sao chép đường dẫn HTTPS công khai do Cloudflare cấp (ví dụ: `https://xxxx-xxxx.trycloudflare.com`).
+3. Nhờ cơ chế Next.js Rewrite Proxy, bạn **chỉ cần mở duy nhất 1 tunnel cho cổng `3000`** — toàn bộ lời gọi API `/api/*` ở tất cả các trang (`/`, `/upgrade`, `/history`, `/profile`, `/admin`) sẽ tự động đi qua tunnel này vào thẳng Backend `8000`.
+
+---
+
+## 🔑 Thông tin Đăng nhập & 3 Tài khoản Phân quyền Gói Upgrade (`Free` / `Medium` / `Pro`)
+
+Hệ thống khởi tạo sẵn **tài khoản Admin** và **3 tài khoản riêng biệt đại diện cho 3 gói cước** để kiểm thử trực tiếp phân quyền tính năng:
+
+| Gói / Vai trò | Nhãn hiển thị | Email đăng nhập | Mật khẩu mặc định | Quyền hạn & Giới hạn tính năng |
+| :--- | :---: | :--- | :--- | :--- |
+| **Gói Free** | `-free-` | `free@weeblegit.vn` | `User@123456` | • Chỉ chấm **1 hợp đồng / lần**<br>• Giới hạn **5 lượt / ngày** và **30 lượt / tháng**<br>• Chỉ xem điểm rủi ro tổng quát & mã SHA-256 (khóa phân tích chi tiết từng điều khoản & khóa so sánh hợp đồng)<br>• Tốc độ & giới hạn tần suất (Rate Limit) AI ở mức cơ bản |
+| **Gói Medium** | `-medium-` | `medium@weeblegit.vn` | `User@123456` | • Gửi **nhiều hợp đồng cùng lúc** (Batch Upload tối đa 5 hợp đồng/lần)<br>• Mở khóa **đánh giá chi tiết từng điều khoản**, biểu đồ nhiệt & gợi ý đàm phán<br>• Mở khóa **so sánh các hợp đồng cùng loại** & đối chiếu giá thị trường<br>• Nới rộng hạn mức **25 lượt / ngày** & **200 lượt / tháng**, AI phân tích mức cao |
+| **Gói Pro** | `-pro-` | `pro@weeblegit.vn` | `User@123456` | • **Loại bỏ mọi giới hạn** lượt phân tích ngày & tháng (`Unlimited`)<br>• Gửi nhiều hợp đồng cùng lúc, so sánh đa hợp đồng cùng loại<br>• AI phân tích chuyên sâu mức tối đa (Zero Rate-limit), xuất/in **Báo cáo Pháp lý PDF** |
+| **Quản trị viên (Admin)** | `-pro/ad-` | `admin@weeblegit.vn` | `Admin@123456` | • Toàn quyền quản trị hệ thống tại `/admin` + đầy đủ tính năng không giới hạn của gói **Pro** |
+| **Đăng ký mới** | `-free-` | Tự đăng ký trên Web | Tự tạo ($\ge 8$ ký tự) | • Mặc định khởi tạo ở gói **Free (`-free-`)** |
 
 ---
 

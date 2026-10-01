@@ -94,3 +94,33 @@ html.dark .fixed .bg-\[\#f8fafd\] {
   color: #e2e8f0 !important;
   border-color: #1a2d4b !important;
 }
+
+/* ── Print / PDF Export Styles for Legal Studio ── */
+@media print {
+  @page {
+    margin: 15mm;
+    size: A4;
+  }
+  body, html {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .no-print,
+  header,
+  nav,
+  button,
+  input,
+  select,
+  [role="button"] {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page-break {
+    page-break-before: always;
+  }
+}
+

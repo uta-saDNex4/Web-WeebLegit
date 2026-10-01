@@ -7,11 +7,18 @@ export function getBaseUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
   if (typeof window !== 'undefined') {
-    // Nếu biến môi trường là URL từ xa (như localtunnel, ngrok, cloudflare tunnel), ưu tiên sử dụng
-    if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    // Chỉ dùng envUrl trực tiếp trên trình duyệt nếu đó là public tunnel (ngrok, localtunnel, cloudflare)
+    // Còn khi truy cập qua localhost hoặc IP LAN của máy host (192.168.x.x, 10.x.x.x, 172.x.x.x),
+    // luôn dùng relative path '' để đồng bộ 100% với window.location.origin hiện tại qua Next.js rewrite proxy,
+    // tránh việc đang ở IP máy host lại gọi nhầm sang localhost hoặc ngược lại.
+    if (
+      envUrl &&
+      (envUrl.includes('.loca.lt') ||
+        envUrl.includes('.ngrok') ||
+        envUrl.includes('.trycloudflare.com'))
+    ) {
       return envUrl;
     }
-    // Mặc định trên trình duyệt dùng relative path để Next.js proxy rewrite
     return '';
   }
 
@@ -93,6 +100,17 @@ export interface UserResponse {
   role: string;
   is_active: boolean;
   created_at: string;
+  plan_tier?: 'free' | 'medium' | 'pro';
+  daily_used?: number;
+  daily_limit?: number;
+  monthly_used?: number;
+  monthly_limit?: number;
+  max_batch_files?: number;
+  can_view_clauses?: boolean;
+  can_compare_contracts?: boolean;
+  can_export_pdf?: boolean;
+  can_attach_chat_files?: boolean;
+  ai_speed_tier?: string;
 }
 
 export interface TokenResponse {
@@ -123,6 +141,35 @@ export interface VerificationResponse {
   ai_overview?: string;
   ai_findings?: AiFindingItem[];
 }
+
+export interface QuickCheckResponse {
+  contract_id: string;
+  expected_sha256: string;
+  actual_sha256: string;
+  result: 'matched' | 'mismatched' | 'failed';
+  verification_log_id: string;
+  duration_ms: number | null;
+  risk_score: number;
+  risk_label: string;
+  ai_overview: string;
+  key_risks: string[];
+  high_risk_count: number;
+}
+
+export interface ContractContentResponse {
+  contract_id: string;
+  original_filename: string;
+  mime_type: string;
+  file_size_bytes: number;
+  sha256_hash: string;
+  contract_type: string | null;
+  created_at: string;
+  text: string;
+  char_count: number;
+  is_image?: boolean;
+  file_url?: string | null;
+}
+
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -175,9 +222,15 @@ export async function uploadContract(
 ): Promise<ContractResponse> {
   const formData = new FormData();
   formData.append('file', file);
+  if (contractType) {
+    formData.append('contract_type', contractType);
+  }
 
   const headers: Record<string, string> = {};
-  if (contractType) headers['contract-type'] = contractType;
+  if (contractType) {
+    // encodeURIComponent prevents "String contains non ISO-8859-1 code point" in browser fetch
+    headers['contract-type'] = encodeURIComponent(contractType);
+  }
 
   return apiFetch<ContractResponse>('/api/contracts', {
     method: 'POST',
@@ -201,6 +254,23 @@ export async function verifyContract(
   return apiFetch<VerificationResponse>(
     `/api/contracts/${contractId}/verify`,
     { method: 'POST' },
+  );
+}
+
+export async function quickCheckContract(
+  contractId: string,
+): Promise<QuickCheckResponse> {
+  return apiFetch<QuickCheckResponse>(
+    `/api/contracts/${contractId}/quick-check`,
+    { method: 'POST' },
+  );
+}
+
+export async function getContractContent(
+  contractId: string,
+): Promise<ContractContentResponse> {
+  return apiFetch<ContractContentResponse>(
+    `/api/contracts/${contractId}/content`,
   );
 }
 
@@ -230,6 +300,47 @@ export async function listContracts(params?: {
   if (params?.limit) q.set('limit', String(params.limit));
   const qs = q.toString() ? `?${q.toString()}` : '';
   return apiFetch<ContractListResponse>(`/api/contracts${qs}`);
+}
+
+export interface ContractComparisonSide {
+  contract_id: string;
+  original_filename: string;
+  contract_type: string;
+  sha256_hash: string;
+  created_at: string | null;
+  risk_score: number;
+  risk_label: string;
+  overview: string;
+  findings_count: number;
+  high_risk_count: number;
+  medium_risk_count: number;
+  low_risk_count: number;
+  findings: AiFindingItem[];
+}
+
+export interface ContractComparisonResponse {
+  contract_type: string;
+  contract_a: ContractComparisonSide;
+  contract_b: ContractComparisonSide;
+  score_difference: number;
+  safer_contract_id: string;
+  safer_filename: string;
+  recommendation_vi: string;
+  recommendation_en: string;
+}
+
+export async function compareContracts(
+  contractIdA: string,
+  contractIdB: string,
+): Promise<ContractComparisonResponse> {
+  return apiFetch<ContractComparisonResponse>('/api/contracts/compare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contract_id_a: contractIdA,
+      contract_id_b: contractIdB,
+    }),
+  });
 }
 
 // ─── AI Analysis Polling ───────────────────────────────────────────────────────
@@ -623,6 +734,7 @@ export interface AdminUserResponse {
   full_name: string | null;
   role: string;
   is_active: boolean;
+  plan_tier?: string;
   created_at: string;
 }
 
@@ -666,6 +778,30 @@ export async function getAdminUsers(): Promise<AdminUserResponse[]> {
   return apiFetch<AdminUserResponse[]>('/api/admin/users');
 }
 
+export async function updateAdminUserTier(
+  userId: string,
+  planTier: 'free' | 'medium' | 'pro',
+  isStudentVerified?: boolean,
+): Promise<{ message: string; user_id: string; plan_tier: string; is_student_verified: boolean }> {
+  return apiFetch(`/api/admin/users/${userId}/tier`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      plan_tier: planTier,
+      is_student_verified: isStudentVerified,
+    }),
+  });
+}
+
+export async function updateAdminUserStatus(
+  userId: string,
+  isActive: boolean,
+): Promise<{ message: string; is_active: boolean }> {
+  return apiFetch(`/api/admin/users/${userId}/status?is_active=${isActive}`, {
+    method: 'PUT',
+  });
+}
+
 export async function getAdminContracts(): Promise<AdminContractItem[]> {
   return apiFetch<AdminContractItem[]>('/api/admin/contracts');
 }
@@ -690,4 +826,5 @@ export async function createAdminRiskRule(payload: {
     body: JSON.stringify(payload),
   });
 }
+
 

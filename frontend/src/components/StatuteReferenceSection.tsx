@@ -19,9 +19,9 @@ export const StatuteReferenceSection: React.FC<StatuteReferenceSectionProps> = (
       id="sources-section"
       className="py-12 sm:py-16 border-t border-[#E6DEC8] dark:border-[#1A2D49] relative scroll-mt-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="mb-10 text-left">
+        <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6 text-left">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF5ED] dark:bg-[#15233C] border border-[#D6C5A2] dark:border-[#22395D] text-xs font-black text-[#8A6731] dark:text-[#EAD7B8] uppercase tracking-wider mb-2.5">
               <Scale className="w-3.5 h-3.5 text-[#8A6731] dark:text-[#EAD7B8]" />
@@ -36,13 +36,27 @@ export const StatuteReferenceSection: React.FC<StatuteReferenceSectionProps> = (
 
             <p className="text-sm sm:text-base text-[#465A75] dark:text-[#9FB3CF] font-medium leading-relaxed">
               {lang === "EN"
-                ? "Clear provisions enacted by Vietnam National Assembly to give you firm ground when negotiating."
-                : "Các quy định pháp luật rõ ràng từ Nhà nước giúp bạn có căn cứ vững chắc khi trao đổi với chủ nhà hoặc người tuyển dụng:"}
+                ? "Official provisions enacted by the State to give you firm ground when negotiating. Click any article or portal button to view the original statutory text directly on the National Legal Database (continuously expanding)."
+                : "Các quy định pháp luật rõ ràng từ Nhà nước giúp bạn có căn cứ vững chắc khi trao đổi. Bạn có thể bấm trực tiếp vào từng điều khoản hoặc nút Cổng VBQPPL Quốc gia để xem toàn văn trên trang Nhà nước (danh mục luật đang tiếp tục mở rộng):"}
             </p>
           </div>
+
+          <a
+            href="https://vbpl.vn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FAF5ED] dark:bg-[#15233C] hover:bg-[#EAD7B8]/30 dark:hover:bg-[#1E3456] border border-[#D6C5A2] dark:border-[#274068] text-xs font-black text-[#8A6731] dark:text-[#EAD7B8] shrink-0 transition-all shadow-2xs"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>
+              {lang === "EN"
+                ? "National Legal Portal (vbpl.vn)"
+                : "Cổng Cơ Sở Dữ Liệu Luật Quốc Gia (vbpl.vn)"}
+            </span>
+          </a>
         </div>
 
-        {/* 3 Statute Cards Grid */}
+        {/* Statute Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {LEGAL_SOURCES.map((source) => (
             <div
@@ -70,24 +84,57 @@ export const StatuteReferenceSection: React.FC<StatuteReferenceSectionProps> = (
                   {source.description}
                 </p>
 
-                {/* Articles preview */}
-                <div className="space-y-1.5 mb-5">
-                  {source.articles.slice(0, 2).map((art, idx) => (
-                    <div
+                {/* Articles preview with direct State Portal jump links */}
+                <div className="space-y-2 mb-5">
+                  {(source.articleLinks || source.articles.map((text) => ({ text, url: source.url || "#", govUrl: source.govUrl }))).slice(0, 3).map((art, idx) => (
+                    <a
                       key={idx}
-                      className="text-[11px] font-semibold text-[#1E324F] dark:text-[#CAD8ED] flex items-start gap-1.5 line-clamp-1"
+                      href={art.govUrl || art.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Bấm để xem trực tiếp điều khoản trên Cổng Pháp luật Nhà nước (vbpl.vn)"
+                      className="group/art p-2 rounded-lg bg-[#FAF8F5] dark:bg-[#122038] hover:bg-[#FAF5ED] dark:hover:bg-[#182B49] border border-transparent hover:border-[#D6C5A2] dark:hover:border-[#2B4670] text-[11px] font-semibold text-[#1E324F] dark:text-[#CAD8ED] flex items-center justify-between gap-2 transition-all"
                     >
-                      <span className="text-[#8A6731] dark:text-[#EAD7B8]">•</span>
-                      <span className="truncate">{art}</span>
-                    </div>
+                      <div className="flex items-start gap-1.5 min-w-0">
+                        <span className="text-[#8A6731] dark:text-[#EAD7B8] shrink-0">•</span>
+                        <span className="truncate group-hover/art:text-[#8A6731] dark:group-hover/art:text-[#EAD7B8] group-hover/art:underline">
+                          {art.text}
+                        </span>
+                      </div>
+                      <ExternalLink className="w-3 h-3 text-[#8A6731] dark:text-[#EAD7B8] shrink-0 opacity-70 group-hover/art:opacity-100" />
+                    </a>
                   ))}
                 </div>
               </div>
 
-              {/* Card Footer Link */}
-              <div className="pt-3.5 border-t border-[#EFE8D8] dark:border-[#1A2D49] flex items-center justify-between text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] group-hover:underline">
-                <span>{source.linkText}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              {/* Card Footer Actions: Modal Summary + Direct State Portal Link */}
+              <div className="pt-3.5 border-t border-[#EFE8D8] dark:border-[#1A2D49] flex flex-wrap items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectSource(source);
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#0F1E36] dark:text-[#CAD8ED] hover:text-[#8A6731] dark:hover:text-[#EAD7B8] cursor-pointer"
+                >
+                  <span>{lang === "EN" ? "View Summary" : source.linkText}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                {(source.govUrl || source.url) && (
+                  <a
+                    href={source.govUrl || source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#0F223D] hover:bg-[#162E52] text-[#EAD7B8] border border-[#EAD7B8]/50 text-[11px] font-bold shadow-2xs transition-all hover:scale-102"
+                    title="Mở trực tiếp văn bản gốc trên Cổng thông tin Pháp luật Quốc gia (vbpl.vn)"
+                  >
+                    <span>{lang === "EN" ? "State Portal (vbpl.vn)" : "Trang Nhà nước (vbpl.vn)"}</span>
+                    <ExternalLink className="w-3 h-3 text-[#EAD7B8]" />
+                  </a>
+                )}
               </div>
             </div>
           ))}

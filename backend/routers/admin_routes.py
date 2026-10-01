@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import check_admin_role
 from ..database import get_db
-from ..models import Contract, ContractClause, LegalReference, RiskRule, User, VerificationLog
+from ..models import Contract, ContractClause, LegalReference, RiskRule, User, UserSubscription, VerificationLog
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -31,7 +31,13 @@ class AdminUserResponse(BaseModel):
     full_name: str | None
     role: str
     is_active: bool
+    plan_tier: str = "free"
     created_at: Any
+
+
+class AdminUserTierUpdate(BaseModel):
+    plan_tier: str = Field(..., pattern="^(free|medium|pro)$")
+    is_student_verified: bool | None = None
 
 
 class AdminContractItem(BaseModel):
@@ -94,19 +100,26 @@ def get_all_users(
     admin: User = Depends(check_admin_role),
     db: Session = Depends(get_db),
 ):
-    """List all registered users (Admin only)."""
-    users = db.scalars(select(User).order_by(User.created_at.desc())).all()
-    return [
-        {
+    """List all registered users (Admin only) with live plan tier."""
+    query = (
+        select(User, UserSubscription.plan_tier)
+        .outerjoin(UserSubscription, User.id == UserSubscription.user_id)
+        .order_by(User.created_at.desc())
+    )
+    rows = db.execute(query).all()
+    results = []
+    for u, sub_tier in rows:
+        tier = sub_tier or ("pro" if u.role == "admin" else "free")
+        results.append({
             "id": u.id,
             "email": u.email,
             "full_name": u.full_name,
             "role": u.role,
             "is_active": u.is_active,
+            "plan_tier": tier,
             "created_at": u.created_at,
-        }
-        for u in users
-    ]
+        })
+    return results
 
 
 @router.put("/users/{user_id}/status")
@@ -123,6 +136,42 @@ def update_user_status(
     user.is_active = is_active
     db.commit()
     return {"message": "User status updated", "is_active": user.is_active}
+
+
+@router.put("/users/{user_id}/tier")
+def update_user_tier(
+    user_id: UUID,
+    payload: AdminUserTierUpdate,
+    admin: User = Depends(check_admin_role),
+    db: Session = Depends(get_db),
+):
+    """Upgrade or change user subscription tier (free, medium, pro) directly in real-time."""
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(404, "User not found")
+
+    sub = db.scalars(select(UserSubscription).where(UserSubscription.user_id == user.id)).first()
+    if not sub:
+        sub = UserSubscription(
+            id=uuid4(),
+            user_id=user.id,
+            plan_tier=payload.plan_tier,
+            is_student_verified=(payload.is_student_verified if payload.is_student_verified is not None else (payload.plan_tier == "medium")),
+        )
+        db.add(sub)
+    else:
+        sub.plan_tier = payload.plan_tier
+        if payload.is_student_verified is not None:
+            sub.is_student_verified = payload.is_student_verified
+
+    db.commit()
+    db.refresh(sub)
+    return {
+        "message": f"User tier updated to {sub.plan_tier}",
+        "user_id": str(user_id),
+        "plan_tier": sub.plan_tier,
+        "is_student_verified": sub.is_student_verified,
+    }
 
 
 @router.get("/contracts", response_model=list[AdminContractItem])

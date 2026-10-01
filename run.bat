@@ -25,11 +25,11 @@ if !ERRORLEVEL! NEQ 0 goto docker_not_running
 echo [OK] Docker daemon dang hoat dong.
 echo.
 echo Chon che do khoi dong:
-echo   [1] Chay Web ket noi toi Database May Host (192.168.105.109) - Khuyen nghi
-echo   [2] Chay Doc lap (Tu tao Database PostgreSQL rieng tren may nay)
+echo   [1] Chay Web ket noi toi Database May Host chung trong LAN (192.168.105.109)
+echo   [2] Chay Doc lap Full Stack (Tu tao DB PostgreSQL rieng - Dung khi KHAC MANG) [Mac dinh]
 echo.
-set DOCKER_MODE=1
-set /p DOCKER_MODE="Nhap lua chon [1 hoac 2, mac dinh 1]: "
+set DOCKER_MODE=2
+set /p DOCKER_MODE="Nhap lua chon [1 hoac 2, mac dinh 2]: "
 
 if "!DOCKER_MODE!"=="2" goto run_full_docker
 
@@ -63,16 +63,29 @@ echo  [THANH CONG] Toan bo he thong Web da hoat dong.
 echo ======================================================================
 echo.
 echo  1. TRUY CAP TRUC TIEP TREN MAY NAY:
-echo     - Giao dien Web:        http://localhost:3000
+echo     - Trang chu Web:       http://localhost:3000
+echo     - Lich su hop dong:    http://localhost:3000/history
 echo     - Admin Dashboard:     http://localhost:3000/admin
 echo       (Tai khoan: admin@weeblegit.vn ^| Mat khau: Admin@123456)
 echo     - Tai lieu API:        http://localhost:8000/docs
 echo.
-echo  2. TRUY CAP TU MAY KHAC / DIEN THOAI TRONG CUNG MANG LAN:
-echo     - Giao dien Web:        http://!LAN_IP!:3000
+echo  2. TRUY CAP TU MAY KHAC / DIEN THOAI TRONG CUNG MANG LAN (Wi-Fi):
+echo     - Trang chu Web:       http://!LAN_IP!:3000
+echo     - Lich su hop dong:    http://!LAN_IP!:3000/history
 echo     - Admin Dashboard:     http://!LAN_IP!:3000/admin
 echo     - API Backend:         http://!LAN_IP!:8000/docs
+echo.
+echo  3. TRUY CAP TU KHAC MANG (4G/5G/Wi-Fi noi khac qua Cloudflare Tunnel):
+echo     - Chay lenh: .\cloudflared.exe tunnel --url http://localhost:3000
 echo ======================================================================
+if exist cloudflared.exe (
+    echo.
+    set OPEN_TUNNEL=N
+    set /p OPEN_TUNNEL="Ban co muon bat luon link Public (Cloudflare Tunnel) cho may KHAC MANG truy cap khong? [Y/N, mac dinh N]: "
+    if /i "!OPEN_TUNNEL!"=="Y" (
+        start "WeebLegit - Cloudflare Public Tunnel" cmd /k ".\cloudflared.exe tunnel --url http://localhost:3000"
+    )
+)
 goto finish
 
 :docker_not_running
@@ -87,8 +100,8 @@ echo [*] Tao thu muc luu tru file...
 if not exist storage mkdir storage
 if not exist secure_storage mkdir secure_storage
 
-set HOST_IP=192.168.105.109
-set /p INPUT_IP="Nhap IP may Host Database [Nhan Enter de dung !HOST_IP!]: "
+set HOST_IP=localhost
+set /p INPUT_IP="Nhap IP Database (Nhan Enter de dung localhost:5432 / SQLite fallback, hoac nhap IP LAN Host): "
 if not "!INPUT_IP!"=="" set HOST_IP=!INPUT_IP!
 
 echo [*] Dang khoi dong Backend FastAPI (Port 8000)...
@@ -102,8 +115,9 @@ cd ..
 echo.
 echo ======================================================================
 echo  [THANH CONG] Da bat 2 cua so Backend ^& Frontend.
-echo  - May nay: http://localhost:3000
-echo  - May khac trong LAN: http://!LAN_IP!:3000
+echo  - May nay:           http://localhost:3000  ^| /history ^| /admin
+echo  - May khac trong LAN: http://!LAN_IP!:3000   ^| /history ^| /admin
+echo  - Khac mang (4G/Internet): .\cloudflared.exe tunnel --url http://localhost:3000
 echo ======================================================================
 
 :finish

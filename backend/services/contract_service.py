@@ -22,19 +22,71 @@ SECURE_STORAGE_ROOT = Path(os.getenv("SECURE_STORAGE_ROOT", str(PROJECT_ROOT / "
 
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MiB
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10 MiB
-ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".json"}
+ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".json", ".jpg", ".jpeg", ".png", ".webp"}
 CHUNK_SIZE = 1024 * 1024
 
 
 def extract_text_from_file(file_path: Path, max_chars: int = 500_000) -> str:
-    """Extract readable text from PDF, DOCX, or plain text files.
+    """Extract readable text from PDF, DOCX, image, or plain text files.
 
-    Uses proper parsers for binary formats instead of raw byte decode,
-    ensuring Vietnamese text is preserved for rule-based risk analysis.
+    Uses PyMuPDF/pypdf for PDF (with automatic Vision OCR for scanned PDFs),
+    direct Vision OCR for images (.jpg, .jpeg, .png, .webp), and python-docx for Word.
     """
     ext = file_path.suffix.lower()
 
+    if ext in {".jpg", ".jpeg", ".png", ".webp"}:
+        try:
+            from ..ai_engine import ocr_image_with_vision
+            mime_map = {
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".png": "image/png",
+                ".webp": "image/webp",
+            }
+            mime = mime_map.get(ext, "image/jpeg")
+            raw_bytes = file_path.read_bytes()
+            ocr_text = ocr_image_with_vision(raw_bytes, mime_type=mime)
+            if ocr_text:
+                return ocr_text[:max_chars]
+        except Exception as exc:
+            print(f"[TextExtract] Vision OCR failed for image {file_path.name}: {exc}")
+        return ""
+
     if ext == ".pdf":
+        # First attempt fast PyMuPDF extraction
+        try:
+            import pymupdf as fitz
+            doc = fitz.open(str(file_path))
+            pages_text = []
+            total = 0
+            for page in doc:
+                t = page.get_text() or ""
+                pages_text.append(t)
+                total += len(t)
+                if total >= max_chars:
+                    break
+            combined = "\n".join(pages_text).strip()
+
+            # If document has pages but text is empty or very short (< 50 chars),
+            # it is a SCANNED PDF -> render pages to images and run Multimodal Vision OCR!
+            if len(combined) < 50 and len(doc) > 0:
+                print(f"[TextExtract] Scanned PDF detected: {file_path.name} ({len(doc)} pages). Running Vision OCR...")
+                from ..ai_engine import ocr_image_with_vision
+                ocr_pages = []
+                for idx, page in enumerate(doc[:5]):  # Process up to first 5 pages
+                    pix = page.get_pixmap(dpi=150)
+                    png_bytes = pix.tobytes("png")
+                    page_text = ocr_image_with_vision(png_bytes, mime_type="image/png")
+                    if page_text:
+                        ocr_pages.append(f"--- [Trang {idx + 1}] ---\n{page_text}")
+                if ocr_pages:
+                    return "\n\n".join(ocr_pages)[:max_chars]
+
+            return combined[:max_chars]
+        except Exception as exc:
+            print(f"[TextExtract] PyMuPDF failed for {file_path.name}: {exc}")
+
+        # Fallback to pypdf
         try:
             import pypdf
             reader = pypdf.PdfReader(str(file_path))
@@ -48,10 +100,49 @@ def extract_text_from_file(file_path: Path, max_chars: int = 500_000) -> str:
                     break
             return "\n".join(pages_text)[:max_chars]
         except Exception as exc:
-            print(f"[TextExtract] pypdf failed for {file_path.name}: {exc}")
+            print(f"[TextExtract] pypdf fallback failed for {file_path.name}: {exc}")
             return ""
 
-    if ext == ".docx":
+    if ext in {".docx", ".doc"}:
+        # 1. If legacy Word 97-2003 .doc (OLE2 binary) or file starts with OLE signature, use antiword / catdoc
+        is_ole_doc = False
+        try:
+            with file_path.open("rb") as f:
+                sig = f.read(8)
+                is_ole_doc = sig.startswith(b"\xd0\xcf\x11\xe0")
+        except Exception:
+            pass
+
+        if ext == ".doc" or is_ole_doc:
+            # Try antiword first with UTF-8 mapping
+            try:
+                import subprocess
+                res = subprocess.run(
+                    ["antiword", "-m", "UTF-8.txt", str(file_path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                if res.returncode == 0 and res.stdout.strip():
+                    return res.stdout.strip()[:max_chars]
+            except Exception as exc:
+                print(f"[TextExtract] antiword failed for {file_path.name}: {exc}")
+
+            # Try catdoc as second fallback
+            try:
+                import subprocess
+                res = subprocess.run(
+                    ["catdoc", "-dutf-8", str(file_path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                if res.returncode == 0 and res.stdout.strip():
+                    return res.stdout.strip()[:max_chars]
+            except Exception as exc:
+                print(f"[TextExtract] catdoc failed for {file_path.name}: {exc}")
+
+        # 2. Try python-docx (for modern .docx or docx files named .doc)
         try:
             import docx
             doc = docx.Document(str(file_path))
@@ -62,10 +153,32 @@ def extract_text_from_file(file_path: Path, max_chars: int = 500_000) -> str:
                 total += len(para.text)
                 if total >= max_chars:
                     break
-            return "\n".join(paragraphs)[:max_chars]
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = " | ".join(cell.text.strip() for cell in row.cells if cell.text.strip())
+                    if row_text:
+                        paragraphs.append(row_text)
+            text = "\n".join(paragraphs).strip()
+            if text:
+                return text[:max_chars]
         except Exception as exc:
             print(f"[TextExtract] python-docx failed for {file_path.name}: {exc}")
-            return ""
+
+        # 3. Final fallback: try antiword on any docx/doc
+        try:
+            import subprocess
+            res = subprocess.run(
+                ["antiword", "-m", "UTF-8.txt", str(file_path)],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                return res.stdout.strip()[:max_chars]
+        except Exception:
+            pass
+
+        return ""
 
     # .txt, .json, or other text-based formats
     try:
@@ -80,13 +193,19 @@ def extract_text_from_file(file_path: Path, max_chars: int = 500_000) -> str:
 
 
 def validate_magic_bytes(header: bytes, ext: str) -> bool:
-    """Verify standard magic numbers for supported document formats."""
+    """Verify standard magic numbers for supported document and image formats."""
     if ext == ".pdf":
         return header.startswith(b"%PDF")
-    if ext == ".docx" or ext == ".doc":
+    if ext in {".docx", ".doc"}:
         # DOCX is zip archive starting with PK\x03\x04 or legacy OLE Compound File \xd0\xcf\x11\xe0
         return header.startswith(b"PK\x03\x04") or header.startswith(b"\xd0\xcf\x11\xe0")
-    if ext == ".txt" or ext == ".json":
+    if ext in {".jpg", ".jpeg"}:
+        return header.startswith(b"\xff\xd8\xff")
+    if ext == ".png":
+        return header.startswith(b"\x89PNG\r\n\x1a\n")
+    if ext == ".webp":
+        return header.startswith(b"RIFF") and b"WEBP" in header[:16]
+    if ext in {".txt", ".json"}:
         # ASCII / UTF-8 text file check
         try:
             header.decode("utf-8")

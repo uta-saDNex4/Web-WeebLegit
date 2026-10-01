@@ -17,7 +17,7 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
 
   return (
     <section id="check-section" className="py-8 scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         <div className="bg-gradient-to-r from-white via-[#FAFAFA] to-white dark:from-[#0E1A2D] dark:via-[#0A1424] dark:to-[#0E1A2D] rounded-3xl border-2 border-[#E5DBCA] dark:border-[#1E3558] p-6 sm:p-9 shadow-lg">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Description */}
@@ -29,8 +29,8 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
 
               <h2 className="text-xl sm:text-2xl font-black text-[#0F1E36] dark:text-white tracking-tight">
                 {lang === "EN"
-                  ? "Check Your Contract Right Here"
-                  : "Kiểm Tra Hợp Đồng Ngay Tại Đây"}
+                  ? "Quick Check Your Contract Right Here"
+                  : "Kiểm Tra Nhanh Hợp Đồng Ngay Tại Đây"}
               </h2>
 
               <p className="text-xs sm:text-sm text-[#465A75] dark:text-[#9FB3CF] leading-relaxed font-medium">
@@ -47,11 +47,11 @@ export const QuickDropzone: React.FC<QuickDropzoneProps> = ({ onOpenChecker }) =
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8] shrink-0" />
-                  <span>{lang === "EN" ? "Direct benchmark against 3 official statutory codes" : "Đối chiếu trực tiếp với 3 bộ luật hiện hành"}</span>
+                  <span>{lang === "EN" ? "Direct benchmark against prevailing statutory regulations (continuously expanding)" : "Đối chiếu trực tiếp hệ thống văn bản pháp luật hiện hành (đang tiếp tục mở rộng)"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8] shrink-0" />
-                  <span>{lang === "EN" ? "Instant explanation in simple, student-friendly terms" : "Giải thích chi tiết, dễ hiểu dành riêng cho sinh viên"}</span>
+                  <span>{lang === "EN" ? "Instant explanation in plain, easy-to-understand language" : "Giải thích chi tiết, ngôn ngữ bình dân dễ hiểu cho mọi người"}</span>
                 </div>
               </div>
             </div>

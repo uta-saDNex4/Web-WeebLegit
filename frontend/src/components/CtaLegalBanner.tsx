@@ -11,7 +11,7 @@ export const CtaLegalBanner: React.FC<CtaLegalBannerProps> = ({ onStart }) => {
 
   return (
     <section className="pt-12 sm:pt-16 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-[#0F223D] dark:bg-[#091424] border-2 border-[#EAD7B8] p-8 sm:p-14 text-center shadow-2xl">
           {/* Subtle Ambient Light */}
           <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 rounded-full bg-[#EAD7B8]/15 blur-3xl pointer-events-none" />
@@ -33,8 +33,8 @@ export const CtaLegalBanner: React.FC<CtaLegalBannerProps> = ({ onStart }) => {
           {/* Subtitle with Certified Information */}
           <p className="relative text-sm sm:text-base text-[#D0DDF0] font-medium max-w-3xl mx-auto mb-8 leading-relaxed">
             {lang === "EN"
-              ? "Referenced directly against the Labor Code (Law 45/2019/QH14), Civil Code (Law 91/2015/QH13), and Housing Law (Law 27/2023/QH15) to help you spot hidden risks and protect your lawful rights."
-              : "Hệ thống đối chiếu trực tiếp theo Bộ luật Lao động (Luật số 45/2019/QH14), Bộ luật Dân sự (Luật số 91/2015/QH13) và Luật Nhà ở (Luật số 27/2023/QH15), giúp bạn phát hiện rủi ro và an tâm bảo vệ quyền lợi của mình."}
+              ? "Referenced directly against prevailing Vietnamese statutory codes, decrees, and circulars (continuously expanding across contract categories) to help you spot hidden risks and protect your lawful rights."
+              : "Hệ thống đối chiếu trực tiếp theo hệ thống các bộ luật, luật chuyên ngành, nghị định và văn bản hướng dẫn hiện hành của Việt Nam (đang tiếp tục mở rộng danh mục), giúp bạn phát hiện rủi ro và an tâm bảo vệ quyền lợi."}
           </p>
 
           {/* Certified Technical & Statutory Points */}
@@ -43,8 +43,8 @@ export const CtaLegalBanner: React.FC<CtaLegalBannerProps> = ({ onStart }) => {
               <CheckCircle2 className="w-4 h-4 text-[#EAD7B8]" />
               <span>
                 {lang === "EN"
-                  ? "Referenced to Labor Code 2019, Civil Code 2015 & Housing Law 2023"
-                  : "Căn cứ Bộ luật Lao động 2019, Bộ luật Dân sự 2015 & Luật Nhà ở 2023"}
+                  ? "Referenced to prevailing Vietnamese legislation (continuously expanding)"
+                  : "Căn cứ hệ thống văn bản pháp luật Việt Nam hiện hành (liên tục mở rộng)"}
               </span>
             </div>
             <div className="flex items-center gap-2">

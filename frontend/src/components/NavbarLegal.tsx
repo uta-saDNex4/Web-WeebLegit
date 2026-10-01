@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ShieldCheck,
   Globe,
@@ -16,6 +17,7 @@ import {
   ChevronDown,
   Sparkles,
   Clock,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLanguage } from "../lib/language-context";
@@ -63,6 +65,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
       "process-section",
       "pitfalls-section",
       "sources-section",
+      "templates-section",
     ];
 
     const handleScroll = () => {
@@ -105,7 +108,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/92 dark:bg-[#09111E]/92 border-b border-[#E6DEC8] dark:border-[#1A2D49] transition-colors shadow-2xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center shrink-0">
           <a
@@ -128,20 +131,20 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
         </div>
 
         {/* Desktop Navigation Links with Active Highlighting */}
-        <nav className="hidden lg:flex items-center gap-2 text-sm">
-          {/* 1. Kiểm Tra */}
+        <nav className="hidden lg:flex items-center gap-1.5 text-sm">
+          {/* 1. Kiểm Tra Nhanh */}
           <button
             onClick={() => {
               setActiveSection("check-section");
               onScrollToSection("check-section");
             }}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-xl transition-all cursor-pointer ${
               activeSection === "check-section"
                 ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
                 : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
             }`}
           >
-            {lang === "EN" ? "Check" : "Kiểm Tra"}
+            {lang === "EN" ? "Quick Check" : "Kiểm Tra Nhanh"}
           </button>
 
           {/* 2. Cách Sử Dụng */}
@@ -150,7 +153,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               setActiveSection("process-section");
               onScrollToSection("process-section");
             }}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-xl transition-all cursor-pointer ${
               activeSection === "process-section"
                 ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
                 : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
@@ -165,7 +168,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               setActiveSection("pitfalls-section");
               onScrollToSection("pitfalls-section");
             }}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-xl transition-all cursor-pointer ${
               activeSection === "pitfalls-section"
                 ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
                 : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
@@ -180,7 +183,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
               setActiveSection("sources-section");
               onScrollToSection("sources-section");
             }}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-xl transition-all cursor-pointer ${
               activeSection === "sources-section"
                 ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
                 : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
@@ -189,13 +192,32 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             {lang === "EN" ? "Legal References" : "Luật Tham Chiếu"}
           </button>
 
-          {/* 5. Lịch Sử */}
-          <a
-            href="/history"
-            className="px-3.5 py-2 rounded-xl transition-all cursor-pointer font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+          {/* 5. Mẫu Hợp Đồng */}
+          <button
+            onClick={() => {
+              setActiveSection("templates-section");
+              onScrollToSection("templates-section");
+            }}
+            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+              activeSection === "templates-section"
+                ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068] shadow-xs"
+                : "font-semibold text-[#1E324F] dark:text-[#A9BCD6] hover:bg-[#F2ECE0] dark:hover:bg-[#12223C] hover:text-[#8A6731] dark:hover:text-[#EAD7B8]"
+            }`}
           >
-            {lang === "EN" ? "History" : "Lịch Sử"}
-          </a>
+            {lang === "EN" ? "Templates" : "Mẫu Hợp Đồng"}
+          </button>
+
+          {/* 6. Legal Studio */}
+          <Link
+            href="/workspace"
+            className="px-3 py-1.5 rounded-xl transition-all font-black text-[#10253f] dark:text-[#0F1E36] bg-[#EAD7B8] hover:bg-[#dfc59f] flex items-center gap-1.5 shadow-sm hover:scale-102 cursor-pointer ml-1"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#10253f]" />
+            <span>Legal Studio</span>
+            <span className="text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-[#10253f] text-[#EAD7B8] tracking-wider">
+              MỚI
+            </span>
+          </Link>
         </nav>
 
         {/* Right Action Tools: Language, Theme & High-Contrast Buttons */}
@@ -233,41 +255,73 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             <div className="relative" ref={userDropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-[#11213A] border border-[#DCD3BE] dark:border-[#22395D] text-xs font-bold text-[#0F1E36] dark:text-white shadow-xs cursor-pointer hover:border-[#8A6731]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#11213A] border border-[#DCD3BE] dark:border-[#22395D] text-xs font-bold text-[#0F1E36] dark:text-white shadow-xs cursor-pointer hover:border-[#8A6731]"
               >
                 <div className="w-6 h-6 rounded-full bg-[#EAD7B8] flex items-center justify-center text-[#0F1E36] text-[11px] font-black uppercase">
                   {(user.full_name ?? user.email).charAt(0)}
                 </div>
                 <span className="max-w-[110px] truncate">{user.full_name ?? user.email}</span>
+                <span className="text-[11px] font-normal opacity-55 lowercase">
+                  -{user.role === "admin" ? "pro/ad" : (user.plan_tier || "free")}-
+                </span>
                 <ChevronDown className="w-3.5 h-3.5 text-[#65778F]" />
               </button>
 
               {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-[#0D1829] border border-[#E6DEC8] dark:border-[#1F3557] rounded-xl shadow-xl py-1 z-50">
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0D1829] border border-[#E6DEC8] dark:border-[#1F3557] rounded-xl shadow-xl py-1 z-50">
                   <div className="px-3.5 py-2 border-b border-[#EFE8D8] dark:border-[#1F3557]">
-                    <p className="text-xs font-bold text-[#0F1E36] dark:text-white truncate">
-                      {user.full_name ?? "Người dùng"}
+                    <p className="text-xs font-bold text-[#0F1E36] dark:text-white truncate flex items-center gap-1.5">
+                      <span className="truncate">{user.full_name ?? "Người dùng"}</span>
+                      <span className="text-[11px] font-normal opacity-55 lowercase shrink-0">
+                        -{user.role === "admin" ? "pro/ad" : (user.plan_tier || "free")}-
+                      </span>
                     </p>
                     <p className="text-[11px] text-[#65778F] dark:text-[#8FA3BF] truncate">
                       {user.email}
                     </p>
                   </div>
+                  <Link
+                    href="/profile"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                  >
+                    <User className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Profile & AI History" : "Hồ Sơ & Lịch Sử AI"}</span>
+                  </Link>
+                  <Link
+                    href="/upgrade"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Upgrade Plan (/upgrade)" : "Nâng Cấp Gói (/upgrade)"}</span>
+                  </Link>
                   {user.role === "admin" && (
-                    <a
+                    <Link
                       href="/admin"
+                      onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
                     >
                       <ShieldCheck className="w-4 h-4 text-[#8A6731] dark:text-[#EAD7B8]" />
                       <span>{lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị Admin"}</span>
-                    </a>
+                    </Link>
                   )}
-                  <a
+                  <Link
+                    href="/workspace"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#8A6834] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
+                  >
+                    <FileText className="w-4 h-4 text-[#8A6834] dark:text-[#EAD7B8]" />
+                    <span>{lang === "EN" ? "Legal Studio (/workspace)" : "Legal Studio (/workspace)"}</span>
+                  </Link>
+                  <Link
                     href="/history"
+                    onClick={() => setUserDropdownOpen(false)}
                     className="w-full text-left px-3.5 py-2 text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#162744] flex items-center gap-2 cursor-pointer border-b border-[#EFE8D8] dark:border-[#1F3557]"
                   >
                     <Clock className="w-4 h-4 text-[#8A6731]" />
                     <span>{lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
-                  </a>
+                  </Link>
                   <button
                     onClick={() => {
                       setUserDropdownOpen(false);
@@ -308,14 +362,14 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
             </div>
           )}
 
-          {/* High-Contrast Main Action Button */}
-          <button
-            onClick={onOpenChecker}
+          {/* High-Contrast Action Button: Link to /upgrade */}
+          <Link
+            href="/upgrade"
             className="flex items-center gap-2 px-4.5 h-9 rounded-xl bg-[#0F223D] hover:bg-[#152e50] text-[#EAD7B8] border border-[#EAD7B8] hover:border-white font-extrabold text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg active:scale-98 shrink-0"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#EAD7B8] animate-pulse" />
-            <span>{lang === "EN" ? "Check Contract" : "Kiểm Tra Ngay"}</span>
-          </button>
+            <span>{lang === "EN" ? "Upgrade Plan" : "Nâng Cấp Gói"}</span>
+          </Link>
         </div>
 
         {/* Mobile Hamburger Toggle Button */}
@@ -385,7 +439,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                   : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
               }`}
             >
-              <span>🔍 {lang === "EN" ? "Contract Check" : "Kiểm Tra Hợp Đồng"}</span>
+              <span>🔍 {lang === "EN" ? "Quick Check" : "Kiểm Tra Nhanh"}</span>
               {activeSection === "check-section" && (
                 <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
               )}
@@ -441,20 +495,37 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                 <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
               )}
             </button>
-            <a
-              href="/history"
-              className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+            <button
+              onClick={() => {
+                setActiveSection("templates-section");
+                setMobileMenuOpen(false);
+                onScrollToSection("templates-section");
+              }}
+              className={`w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between ${
+                activeSection === "templates-section"
+                  ? "font-black text-[#8A6731] dark:text-[#EAD7B8] bg-[#FAF5ED] dark:bg-[#162744] border border-[#E0D5BE] dark:border-[#274068]"
+                  : "font-semibold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+              }`}
             >
-              <span>📜 {lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
-            </a>
-            {user?.role === "admin" && (
-              <a
-                href="/admin"
-                className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between font-semibold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
-              >
-                <span>🛡️ {lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị"}</span>
-              </a>
-            )}
+              <span>📑 {lang === "EN" ? "Contract Templates" : "Mẫu Hợp Đồng"}</span>
+              {activeSection === "templates-section" && (
+                <span className="w-2 h-2 rounded-full bg-[#8A6731] dark:bg-[#EAD7B8]" />
+              )}
+            </button>
+
+            <Link
+              href="/workspace"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-left py-2.5 px-3 rounded-xl font-black text-[#10253f] bg-[#EAD7B8] hover:bg-[#dfc59f] flex items-center justify-between shadow-sm cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#10253f]" />
+                <span>Legal Studio (/workspace)</span>
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-[#10253f] text-[#EAD7B8]">
+                MỚI
+              </span>
+            </Link>
           </div>
 
           <div className="pt-3 border-t border-[#EFE8D8] dark:border-[#162744] flex flex-col gap-2">
@@ -467,7 +538,7 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                   }}
                   className="py-2.5 rounded-xl border border-[#DCD3BE] dark:border-[#1F3354] text-xs font-bold text-[#0F1E36] dark:text-white text-center"
                 >
-                  Đăng nhập
+                  {lang === "EN" ? "Sign In" : "Đăng nhập"}
                 </button>
                 <button
                   onClick={() => {
@@ -476,30 +547,72 @@ export const NavbarLegal: React.FC<NavbarLegalProps> = ({
                   }}
                   className="py-2.5 rounded-xl border border-[#8A6731] bg-[#FAF5ED] dark:bg-[#12223C] text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] text-center"
                 >
-                  Đăng ký
+                  {lang === "EN" ? "Register" : "Đăng ký"}
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="py-2 text-xs font-bold text-red-600 text-center"
-              >
-                Đăng xuất ({user.email})
-              </button>
+              <div className="space-y-1.5 pb-1">
+                <div className="px-3 py-1.5 rounded-xl bg-[#FAF5ED] dark:bg-[#12223C] border border-[#E6DEC8] dark:border-[#1F3557]">
+                  <p className="text-xs font-bold text-[#0F1E36] dark:text-white truncate flex items-center gap-1.5">
+                    <span>{user.full_name ?? "Người dùng"}</span>
+                    <span className="text-[11px] font-normal opacity-55 lowercase">
+                      -{user.role === "admin" ? "pro/ad" : (user.plan_tier || "free")}-
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-[#65778F] dark:text-[#8FA3BF] truncate">
+                    {user.email}
+                  </p>
+                </div>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+                >
+                  <span>👤 {lang === "EN" ? "Profile & AI History" : "Hồ Sơ & Lịch Sử AI"}</span>
+                </Link>
+                <Link
+                  href="/upgrade"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+                >
+                  <span>✨ {lang === "EN" ? "Upgrade Plan (/upgrade)" : "Nâng Cấp Gói (/upgrade)"}</span>
+                </Link>
+                <Link
+                  href="/history"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between text-xs font-bold text-[#1E324F] dark:text-[#CAD8ED] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+                >
+                  <span>📜 {lang === "EN" ? "Contract History" : "Lịch Sử Hợp Đồng"}</span>
+                </Link>
+                {user.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-left py-2 px-3 rounded-xl transition-all flex items-center justify-between text-xs font-bold text-[#8A6731] dark:text-[#EAD7B8] hover:bg-[#FAF6EF] dark:hover:bg-[#12223C]"
+                  >
+                    <span>🛡️ {lang === "EN" ? "Admin Dashboard" : "Trang Quản Trị"}</span>
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full py-2 text-xs font-bold text-red-600 text-center cursor-pointer"
+                >
+                  {lang === "EN" ? `Sign Out (${user.email})` : `Đăng xuất (${user.email})`}
+                </button>
+              </div>
             )}
 
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenChecker();
-              }}
-              className="w-full py-3 rounded-xl bg-[#0F223D] text-[#EAD7B8] border border-[#EAD7B8] font-black text-xs uppercase tracking-wider text-center shadow-md"
+            <Link
+              href="/upgrade"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-3 rounded-xl bg-[#0F223D] text-[#EAD7B8] border border-[#EAD7B8] font-black text-xs uppercase tracking-wider text-center shadow-md flex items-center justify-center gap-2"
             >
-              🚀 Bắt Đầu Kiểm Tra Hợp Đồng Ngay
-            </button>
+              <Sparkles className="w-4 h-4 text-[#EAD7B8]" />
+              <span>{lang === "EN" ? "Upgrade Plan (/upgrade)" : "Nâng Cấp Gói (/upgrade)"}</span>
+            </Link>
           </div>
         </div>
       )}
